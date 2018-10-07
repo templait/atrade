@@ -7,12 +7,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-DataSourceQUIK::DataSourceQUIK(ETimeInterval interval, const QString & className, const QString& code, const QString &hostName, quint16 port, QObject *parent) :
+DataSourceQUIK::DataSourceQUIK(ETimeInterval interval, const QString & className, const QString& code, const QString &fileName, QObject *parent) :
 	BDataSource(interval, parent)
 {
 	mSettings.className = className;
 	mSettings.code = code;
-	mSettings.hostName = hostName;
+	mSettings.hostName = fileName;
 	mSettings.port = port;
 
 	mSocket = new QTcpSocket(this);

@@ -21,7 +21,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 
 	layout->addWidget(chartWidget);
 
-	setMinimumSize(1000,800);
+	setMinimumSize(1000,700);
 }
 
 ChartWindow::~ChartWindow()
