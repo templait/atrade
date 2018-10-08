@@ -3,7 +3,7 @@
 #include <QAbstractSocket>
 #include <QTextStream>
 
-#include <bdatasource.h>
+#include <datasources/bdatasource.h>
 #include <candle.h>
 
 class QHostAddress;

@@ -7,12 +7,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-DataSourceQUIK::DataSourceQUIK(ETimeInterval interval, const QString & className, const QString& code, const QString &fileName, QObject *parent) :
+DataSourceQUIK::DataSourceQUIK(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent) :
 	BDataSource(interval, parent)
 {
 	mSettings.className = className;
 	mSettings.code = code;
-	mSettings.hostName = fileName;
+	mSettings.hostName = hostName;
 	mSettings.port = port;
 
 	mSocket = new QTcpSocket(this);
@@ -62,7 +62,8 @@ QString DataSourceQUIK::sourceName() const
 {
 	return QString("QUIK DS: %1:%2, %3:%4").arg(mSettings.hostName).arg(mSettings.port).arg(mSettings.className).arg(mSettings.code);
 }
-
+// telnet command
+// (echo '{"command":"GetDataSource", "Class":"TQBR", "Code":"SBER", "TimeFrame":1440}'; sleep 1) | telnet 192.168.9.63 5000
 void DataSourceQUIK::onStateChanged(QAbstractSocket::SocketState socketState)
 {
 	switch(socketState)

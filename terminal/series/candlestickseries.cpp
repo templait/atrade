@@ -1,0 +1,69 @@
+#include "candlestickseries.h"
+#include "datasources/bdatasource.h"
+#include "candle.h"
+#include <cmath>
+
+#include <QCandlestickSet>
+
+using namespace QtCharts;
+
+CandlestickSeries::CandlestickSeries(QObject *parent) : QCandlestickSeries(parent), mDataSource(0)
+{
+	setPen({Qt::black, 1});
+}
+
+void CandlestickSeries::setDataSource(BDataSource *dataSource)
+{
+	if(mDataSource)
+	{
+		disconnect(mDataSource, 0, this, 0);
+	}
+
+	mDataSource = dataSource;
+	clear();
+	if(mDataSource)
+	{
+		connect(mDataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
+	}
+}
+
+QPair<qreal, qreal> CandlestickSeries::valueRange(const QDateTime &start, const QDateTime &end) const
+{
+	QPair<qreal, qreal> rv(NAN, NAN);
+
+	for(QCandlestickSet *set : sets())
+	{
+		if(set->timestamp() >= start.toMSecsSinceEpoch() && set->timestamp() <= end.toMSecsSinceEpoch())
+		{
+			if(qIsNaN(rv.first) || set->low() < rv.first)
+			{	rv.first = set->low();		}
+			if(qIsNaN(rv.second) || set->high() > rv.second)
+			{	rv.second = set->high();	}
+		}
+	}
+
+	return rv;
+}
+
+QPair<QDateTime, QDateTime> CandlestickSeries::timeRange() const
+{
+	QPair<QDateTime, QDateTime> rv;
+	QList<QCandlestickSet*> sets;
+	if(sets.size())
+	{
+		rv = {QDateTime::fromMSecsSinceEpoch(sets.first()->timestamp()), QDateTime::fromMSecsSinceEpoch(sets.last()->timestamp())};
+	}
+	return rv;
+}
+
+void CandlestickSeries::onCandlesAppended(int count)
+{
+	BDataSource& ds = *mDataSource;
+	QList<QCandlestickSet*> sets;
+	for(int i=ds.size()-count; i<ds.size(); i++)
+	{
+		sets << new QCandlestickSet(ds[i].open(), ds[i].high(), ds[i].low(), ds[i].close(), ds[i].time().toMSecsSinceEpoch());
+	}
+	append(sets);
+}
+
