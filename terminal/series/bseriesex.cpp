@@ -3,6 +3,11 @@
 
 using namespace QtCharts;
 
+BSeriesEx::~BSeriesEx()
+{
+
+}
+
 QAbstractSeries* BSeriesEx::abstractSeries()
 {
 	return dynamic_cast<QAbstractSeries*>(this);

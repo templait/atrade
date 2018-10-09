@@ -6,17 +6,29 @@
 
 class QHostAddress;
 class QTcpSocket;
+class QFile;
 
 class DataSourceFile : public BDataSource
 {
 	Q_OBJECT
 public:
-	DataSourceFile(ETimeInterval interval, const QString &className, const QString &code, QObject* parent=0);
-	~DataSourceFile();
+	DataSourceFile(const QString &fileName, QObject* parent=0);
+	virtual ~DataSourceFile();
 private:
-	void onIntervalChanged() override;
+	struct
+	{
+		QString fileName;
+		QString className;
+		QString code;
+		ETimeInterval interval;
+	} mSettings;
 
 	QList<Candle> mCandles;
+	QFile *mFile;
+
+	QString sourceName() const;
+	void readData();
+	bool readSettings(const QJsonObject& obj);
 
 	// BDataSource interface
 public:
@@ -24,4 +36,5 @@ public:
 	const Candle &operator [](int index) const override;
 	bool isActive() const override;
 	QString errorString() const override;
+	ETimeInterval interval() const override;
 };

@@ -2,10 +2,11 @@
 
 enum ETimeInterval
 {
-	TICK,
-	M1, M5,	M10, M15, M20, M30,
-	H1, H2, H4,
-	D1,
-	W1,
-	MN1
+	IntervalUnknown,
+	IntervalTICK,
+	IntervalM1, IntervalM5,	IntervalM10, IntervalM15, IntervalM20, IntervalM30,
+	IntervalH1, IntervalH2, IntervalH4,
+	IntervalD1,
+	IntervalW1,
+	IntervalMN1
 };

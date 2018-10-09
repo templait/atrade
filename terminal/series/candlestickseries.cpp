@@ -21,6 +21,8 @@ void CandlestickSeries::setDataSource(BDataSource *dataSource)
 
 	mDataSource = dataSource;
 	clear();
+	if(dataSource->size()>0)
+	{	onCandlesAppended(dataSource->size());	}
 	if(mDataSource)
 	{
 		connect(mDataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));

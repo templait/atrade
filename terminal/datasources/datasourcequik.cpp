@@ -8,8 +8,9 @@
 #include <QJsonObject>
 
 DataSourceQUIK::DataSourceQUIK(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent) :
-	BDataSource(interval, parent)
+	BDataSource(parent)
 {
+	mSettings.interval = interval;
 	mSettings.className = className;
 	mSettings.code = code;
 	mSettings.hostName = hostName;
@@ -51,11 +52,6 @@ bool DataSourceQUIK::isActive() const
 QString DataSourceQUIK::errorString() const
 {
 	return mSocket->errorString();
-}
-
-void DataSourceQUIK::onIntervalChanged()
-{
-
 }
 
 QString DataSourceQUIK::sourceName() const
@@ -124,4 +120,9 @@ void DataSourceQUIK::onReadyRead()
 void DataSourceQUIK::onError(QAbstractSocket::SocketError)
 {
 	Log::warning(sourceName() + ": \"" + errorString() + '"');
+}
+
+ETimeInterval DataSourceQUIK::interval() const
+{
+	return mSettings.interval;
 }

@@ -14,11 +14,10 @@ MainWindow::MainWindow()
 	mMdiArea = new QMdiArea(this);
 	setCentralWidget(mMdiArea);
 
-	ChartWindow* w = new ChartWindow;
-	w->setObjectName("ssss");
-	mMdiArea->addSubWindow(w);
-
 	initDocks();
+
+	ChartWindow* w = new ChartWindow;
+	mMdiArea->addSubWindow(w);
 
 	QSettings settings;
 	restoreGeometry(settings.value("geometry").toByteArray());

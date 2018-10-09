@@ -23,6 +23,9 @@ private:
 	QtCharts::QChart *mChart;
 	QtCharts::QValueAxis *mValueAxis;
 	QtCharts::QDateTimeAxis *mTimeAxis;
+
+	void adjustValueAxis();
+	QPair<QDateTime, QDateTime> timeRange();
 private slots:
 	void onCountChanged();
 };

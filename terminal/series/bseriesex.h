@@ -12,6 +12,7 @@ class QAbstractSeries;
 class BSeriesEx
 {
 public:
+	virtual ~BSeriesEx();
 	virtual QPair<qreal, qreal> valueRange(const QDateTime& start, const QDateTime& end) const = 0;
 	virtual QPair<QDateTime, QDateTime> timeRange() const = 0;
 

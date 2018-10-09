@@ -1,5 +1,7 @@
 #include "chartwidget.h"
 
+#include <math.h>
+
 #include <QBarCategoryAxis>
 #include <QChartView>
 #include <QDateTimeAxis>
@@ -41,6 +43,7 @@ void ChartWidget::addSeries(BSeriesEx *series)
 	mChart->addSeries(s);
 	s->attachAxis(mValueAxis);
 	s->attachAxis(mTimeAxis);
+	adjustValueAxis();
 	connect(s, SIGNAL(countChanged()), SLOT(onCountChanged()));
 
 
@@ -48,11 +51,36 @@ void ChartWidget::addSeries(BSeriesEx *series)
 	mChart->legend()->setAlignment(Qt::AlignBottom);
 }
 
+void ChartWidget::adjustValueAxis()
+{
+	qreal min = NAN;
+	qreal max = NAN;
+	for(const QAbstractSeries* s : mChart->series())
+	{
+		const BSeriesEx* ex = BSeriesEx::interface(s);
+		auto seriesRange = ex->valueRange(timeRange().first, timeRange().second);
+		if(qIsNaN(min) || min > seriesRange.first)
+		{	min = seriesRange.first;	}
+		if(qIsNaN(max) || max < seriesRange.second)
+		{	max = seriesRange.second;	}
+	}
+	if(! (qIsNaN(min) || qIsNaN(max)) )
+	{	mValueAxis->setRange(min*0.99, max*1.01);	}
+}
+
+QPair<QDateTime, QDateTime> ChartWidget::timeRange()
+{
+	return {QDateTime::currentDateTime().addDays(-200), QDateTime::currentDateTime()};
+}
+
 void ChartWidget::onCountChanged()
 {
+	/*
 	const QAbstractSeries* s = static_cast<QAbstractSeries*>(sender());
 	const BSeriesEx* ex = BSeriesEx::interface(s);
 	auto r = ex->valueRange(QDateTime::currentDateTime().addDays(-200), QDateTime::currentDateTime());
 	if(!(qIsNaN(r.first) || qIsNaN(r.second)))
 	{	mValueAxis->setRange(r.first*0.99, r.second*1.01);	}
+	*/
+	adjustValueAxis();
 }

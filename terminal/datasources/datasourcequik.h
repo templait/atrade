@@ -17,7 +17,6 @@ public:
 	~DataSourceQUIK();
 private:
 	void connectToTerminal();
-	void onIntervalChanged() override;
 
 	QString sourceName() const;
 	QTcpSocket *mSocket;
@@ -30,6 +29,7 @@ private:
 		quint16 port;
 		QString className;
 		QString code;
+		ETimeInterval interval;
 	} mSettings;
 
 private slots:
@@ -39,6 +39,7 @@ private slots:
 
 	// IDataSource interface
 public:
+	ETimeInterval interval() const override;
 	int size() const override;
 	const Candle &operator [](int index) const override;
 	bool isActive() const override;
