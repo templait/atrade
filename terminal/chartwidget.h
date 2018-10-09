@@ -31,4 +31,6 @@ private:
 	QtCharts::QDateTimeAxis *mTimeAxis;
 private slots:
 	void onCountChanged();
+signals:
+
 };

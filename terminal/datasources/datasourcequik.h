@@ -17,6 +17,7 @@ public:
 	~DataSourceQUIK();
 private:
 	void connectToTerminal();
+	int quikInterval() const;
 
 	QString sourceName() const;
 	QTcpSocket *mSocket;

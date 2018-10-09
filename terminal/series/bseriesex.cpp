@@ -3,6 +3,11 @@
 
 using namespace QtCharts;
 
+BSeriesEx::BSeriesEx(BDataSource *dataSource) : mDataSource(dataSource)
+{
+
+}
+
 BSeriesEx::~BSeriesEx()
 {
 
@@ -16,6 +21,11 @@ QAbstractSeries* BSeriesEx::abstractSeries()
 const QAbstractSeries* BSeriesEx::abstractSeries() const
 {
 	return dynamic_cast<const QAbstractSeries*>(this);
+}
+
+BDataSource *BSeriesEx::dataSource() const
+{
+	return mDataSource;
 }
 
 BSeriesEx *BSeriesEx::interface(QAbstractSeries *series)

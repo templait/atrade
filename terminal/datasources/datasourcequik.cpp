@@ -34,6 +34,53 @@ void DataSourceQUIK::connectToTerminal()
 	mSocket->connectToHost(mSettings.hostName, mSettings.port);
 }
 
+int DataSourceQUIK::quikInterval() const
+{
+	int rv = -1;
+	switch(interval())
+	{
+	case IntervalM1:
+		rv = 1;
+		break;
+	case IntervalM5:
+		rv = 5;
+		break;
+	case IntervalM10:
+		rv = 10;
+		break;
+	case IntervalM15:
+		rv = 15;
+		break;
+	case IntervalM20:
+		rv = 20;
+		break;
+	case IntervalM30:
+		rv = 30;
+		break;
+	case IntervalH1:
+		rv = 60;
+		break;
+	case IntervalH2:
+		rv = 60*2;
+		break;
+	case IntervalH4:
+		rv = 60*4;
+		break;
+	case IntervalD1:
+		rv = 60*24;
+		break;
+	case IntervalW1:
+		rv = 60*24*7;
+		break;
+	case IntervalMN1:
+		rv = 23200;
+		break;
+	default:
+		rv = -1;
+	}
+	return rv;
+}
+
 int DataSourceQUIK::size() const
 {
 	return mCandles.size();
@@ -66,7 +113,7 @@ void DataSourceQUIK::onStateChanged(QAbstractSocket::SocketState socketState)
 	{
 	case QAbstractSocket::ConnectedState:
 	{
-		QString cmd = QString("{\"command\":\"GetDataSource\", \"Class\":\"%1\", \"Code\":\"%2\", \"TimeFrame\":%3}\n").arg("TQBR").arg("SBER").arg(60*24);
+		QString cmd = QString("{\"command\":\"GetDataSource\", \"Class\":\"%1\", \"Code\":\"%2\", \"TimeFrame\":%3}\n").arg(mSettings.className).arg(mSettings.code).arg(quikInterval());
 		mStream << cmd;
 		mStream.flush();
 	}
@@ -82,7 +129,7 @@ void DataSourceQUIK::onStateChanged(QAbstractSocket::SocketState socketState)
 void DataSourceQUIK::onReadyRead()
 {
 	QString line;
-	int candlesApp = 0;
+	int candles = mCandles.size();
 	while(mSocket->canReadLine())
 	{
 		line = mStream.readLine();
@@ -104,17 +151,17 @@ void DataSourceQUIK::onReadyRead()
 							time
 						);
 				if(mCandles.size()==index) // Добавим свечку в конец
-				{
-					mCandles << c;
-					candlesApp++;
-				}
+				{	mCandles << c;			}
 				else if(mCandles.size() > index)	// Обнови свечку
-				{	mCandles[index] = c;	}
+				{
+					mCandles[index] = c;
+					emit candleUpdated(index);
+				}
 			}
 		}
 	}
-	if(candlesApp>0)
-	{	emit candlesAppended(candlesApp);	}
+	if(candles<mCandles.size())
+	{	emit candlesAppended(mCandles.size()-candles);	}
 }
 
 void DataSourceQUIK::onError(QAbstractSocket::SocketError)

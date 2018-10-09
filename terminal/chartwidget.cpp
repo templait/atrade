@@ -25,16 +25,11 @@ ChartWidget::ChartWidget(QWidget *parent) : QWidget(parent)
 	mChart = new QChart();
 	//mChart->setAnimationOptions(QChart::SeriesAnimations);
 
-
-
 	mChartView->setChart(mChart);
 	mValueAxis = new QValueAxis;
 	mTimeAxis = new QDateTimeAxis;
 	mChart->addAxis(mValueAxis, Qt::AlignLeft);
 	mChart->addAxis(mTimeAxis, Qt::AlignBottom);
-
-	//mValueAxis->setRange(140, 260);
-	mTimeAxis->setRange(QDateTime::currentDateTime().addDays(-200), QDateTime::currentDateTime());
 }
 
 void ChartWidget::addSeries(BSeriesEx *series)
@@ -65,7 +60,7 @@ void ChartWidget::adjustValueAxis()
 		{	max = seriesRange.second;	}
 	}
 	if(! (qIsNaN(min) || qIsNaN(max)) )
-	{	mValueAxis->setRange(min*0.99, max*1.01);	}
+	{	mValueAxis->setRange(min, max);	}
 }
 
 TimeRange ChartWidget::viewTimeRange() const
@@ -101,12 +96,5 @@ QRectF ChartWidget::plotArea() const
 
 void ChartWidget::onCountChanged()
 {
-	/*
-	const QAbstractSeries* s = static_cast<QAbstractSeries*>(sender());
-	const BSeriesEx* ex = BSeriesEx::interface(s);
-	auto r = ex->valueRange(QDateTime::currentDateTime().addDays(-200), QDateTime::currentDateTime());
-	if(!(qIsNaN(r.first) || qIsNaN(r.second)))
-	{	mValueAxis->setRange(r.first*0.99, r.second*1.01);	}
-	*/
 	adjustValueAxis();
 }

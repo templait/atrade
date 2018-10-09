@@ -21,18 +21,18 @@ public:
 	ChartWindow(QWidget* parent=0);
 	~ChartWindow();
 
-	void addSeries(BSeriesEx *series, int widgetNum=0);
+	void addDataSource(BDataSource *dataSource, int widgetNum=0);
 
 private:
-	QDateTime timeFrame() const;	//!< Размер временного окна, помещаемого в график.
-	qreal secsInInterval() const;
+	qint64 timeFrame() const;	//!< Размер временного окна, помещаемого в график.
+	qint64 secsInInterval() const;
 	void setViewTimeRange(TimeRange range);
 	TimeRange seriesTimeRange() const;
 	void adjustScroll();
 	void adjustValueAxises();
 	void setScrollValue(int value);
 
-	BDataSource *mDataSource;
+	QList<BDataSource*> mDataSources;
 	QScrollBar* mScrollBar;
 	QVBoxLayout *mLayout;
 	ETimeInterval mTimeInterval;
@@ -40,6 +40,7 @@ private:
 
 	QList<ChartWidget*> mChartWidgets;
 private slots:
+	void onCandlesAppend(int);
 
 	// QWidget interface
 protected:

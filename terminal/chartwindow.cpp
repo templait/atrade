@@ -14,8 +14,6 @@
 
 using namespace QtCharts;
 
-//return {QDateTime::currentDateTime().addDays(-200), QDateTime::currentDateTime()};
-
 ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
 	mLayout = new QVBoxLayout;
@@ -23,15 +21,24 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mCandleWidth = 7;
 	setLayout(mLayout);
 
-	//mDataSource = new DataSourceQUIK(ETimeInterval::IntervalD1, "TQBR", "GAZP", "192.168.9.62", 5000, this);
-	mDataSource = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
+	BDataSource *ds;
+/*
+	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.62", 5000, this);
+	addDataSource(ds, 0);
+	mDataSources << ds;
 
-	CandlestickSeries* series = new CandlestickSeries;
-	series->setDataSource(mDataSource);
-	addSeries(series);
+	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.62", 5000, this);
+	addDataSource(ds, 1);
+	mDataSources << ds;
+*/
+
+	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
+	addDataSource(ds);
+	mDataSources << ds;
 
 	mScrollBar = new QScrollBar(Qt::Horizontal);
-	connect(mScrollBar, &QAbstractSlider::actionTriggered, [this](int){setScrollValue(mScrollBar->value());});
+	mScrollBar->setEnabled(false);
+	connect(mScrollBar, &QAbstractSlider::actionTriggered, [this](int){setScrollValue(mScrollBar->sliderPosition());});
 	mLayout->addWidget(mScrollBar);
 
 	adjustScroll();
@@ -40,11 +47,14 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 
 ChartWindow::~ChartWindow()
 {
+	qDeleteAll(mDataSources);
 }
 
-void ChartWindow::addSeries(BSeriesEx *series, int widgetNum)
+void ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
 {
 	ChartWidget* widget = 0;
+
+	CandlestickSeries* series = new CandlestickSeries(dataSource);
 
 	if(widgetNum >= mChartWidgets.size())
 	{
@@ -55,24 +65,26 @@ void ChartWindow::addSeries(BSeriesEx *series, int widgetNum)
 	else
 	{	widget = mChartWidgets[widgetNum];	}
 
+	connect(dataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppend(int)));
+
 	widget->addSeries(series);
 }
 
-QDateTime ChartWindow::timeFrame() const
+qint64 ChartWindow::timeFrame() const
 {
-	QDateTime rv;
+	qint64 rv(-1);
 	if(mChartWidgets.size()>0)
 	{
 		qreal width = mChartWidgets[0]->plotArea().width();
 		qreal candleCount = width/mCandleWidth;
-		rv = QDateTime::fromSecsSinceEpoch(secsInInterval()*candleCount);
+		rv = secsInInterval()*candleCount;
 	}
 	return rv;
 }
 
-qreal ChartWindow::secsInInterval() const
+qint64 ChartWindow::secsInInterval() const
 {
-	qreal rv = NAN;
+	qint64 rv = -1;
 	switch(mTimeInterval)
 	{
 	case IntervalM1:
@@ -112,7 +124,7 @@ qreal ChartWindow::secsInInterval() const
 		rv = 60*60*24*DAYS_IN_YEAR/12;
 		break;
 	default:
-		rv = NAN;
+		rv = -2;
 	}
 	return rv;
 }
@@ -144,15 +156,20 @@ void ChartWindow::adjustScroll()
 	TimeRange range = seriesTimeRange();
 	if(! (range.first.isNull() || range.second.isNull()))
 	{
-		mScrollBar->setMaximum(range.second.toSecsSinceEpoch());
-		mScrollBar->setMinimum(range.first.toSecsSinceEpoch()+timeFrame().toSecsSinceEpoch());
+		mScrollBar->setMaximum(range.second.toSecsSinceEpoch()+secsInInterval());
+		mScrollBar->setMinimum(range.first.toSecsSinceEpoch()+timeFrame());
 		mScrollBar->setSingleStep(secsInInterval());
-		mScrollBar->setPageStep(timeFrame().toSecsSinceEpoch());
-		mScrollBar->setValue(range.second.toSecsSinceEpoch());
+		mScrollBar->setPageStep(timeFrame());
+		if(! mScrollBar->isEnabled())
+		{
+			mScrollBar->setEnabled(true);
+			mScrollBar->setSliderPosition(range.second.toSecsSinceEpoch());
+		}
 	}
 	else
 	{
 		mScrollBar->setRange(0,0);
+		mScrollBar->setEnabled(false);
 	}
 }
 
@@ -165,21 +182,31 @@ void ChartWindow::adjustValueAxises()
 void ChartWindow::setScrollValue(int value)
 {
 	QDateTime max = QDateTime::fromSecsSinceEpoch(value);
-	QDateTime min = QDateTime::fromSecsSinceEpoch(value - timeFrame().toSecsSinceEpoch());
+	QDateTime min = QDateTime::fromSecsSinceEpoch(value - timeFrame());
 	setViewTimeRange({min, max});
 	adjustValueAxises();
 }
 
+void ChartWindow::onCandlesAppend(int)
+{
+	bool need2Last = false;
+	if(mScrollBar->sliderPosition() == mScrollBar->maximum())
+	{	need2Last = true;	}
+	adjustScroll();
+	if(need2Last)
+	{	setScrollValue(mScrollBar->maximum());	}
+}
+
 void ChartWindow::resizeEvent(QResizeEvent *event)
 {
-	mScrollBar->setPageStep(timeFrame().toSecsSinceEpoch());
+	mScrollBar->setPageStep(timeFrame());
 	setScrollValue(mScrollBar->value());
 	QWidget::resizeEvent(event);
 }
 
 void ChartWindow::showEvent(QShowEvent *event)
 {
-	mScrollBar->setPageStep(timeFrame().toSecsSinceEpoch());
+	mScrollBar->setPageStep(timeFrame());
 	setScrollValue(mScrollBar->value());
 	QWidget::showEvent(event);
 }
