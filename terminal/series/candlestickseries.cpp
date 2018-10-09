@@ -29,9 +29,9 @@ void CandlestickSeries::setDataSource(BDataSource *dataSource)
 	}
 }
 
-QPair<qreal, qreal> CandlestickSeries::valueRange(const QDateTime &start, const QDateTime &end) const
+ValueRange CandlestickSeries::valueRange(const QDateTime &start, const QDateTime &end) const
 {
-	QPair<qreal, qreal> rv(NAN, NAN);
+	ValueRange rv(NAN, NAN);
 
 	for(QCandlestickSet *set : sets())
 	{
@@ -47,13 +47,12 @@ QPair<qreal, qreal> CandlestickSeries::valueRange(const QDateTime &start, const 
 	return rv;
 }
 
-QPair<QDateTime, QDateTime> CandlestickSeries::timeRange() const
+TimeRange CandlestickSeries::timeRange() const
 {
-	QPair<QDateTime, QDateTime> rv;
-	QList<QCandlestickSet*> sets;
-	if(sets.size())
+	TimeRange rv;
+	if(sets().size())
 	{
-		rv = {QDateTime::fromMSecsSinceEpoch(sets.first()->timestamp()), QDateTime::fromMSecsSinceEpoch(sets.last()->timestamp())};
+		rv = {QDateTime::fromMSecsSinceEpoch(sets().first()->timestamp()), QDateTime::fromMSecsSinceEpoch(sets().last()->timestamp())};
 	}
 	return rv;
 }

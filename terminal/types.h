@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QDateTime>
+
 enum ETimeInterval
 {
 	IntervalUnknown,
@@ -10,3 +12,8 @@ enum ETimeInterval
 	IntervalW1,
 	IntervalMN1
 };
+
+typedef QPair<QDateTime, QDateTime> TimeRange;
+typedef QPair<qreal, qreal> ValueRange;
+
+#define DAYS_IN_YEAR 365.259641

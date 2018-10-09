@@ -23,7 +23,7 @@ ChartWidget::ChartWidget(QWidget *parent) : QWidget(parent)
 	layout->addWidget(mChartView);
 
 	mChart = new QChart();
-	mChart->setAnimationOptions(QChart::SeriesAnimations);
+	//mChart->setAnimationOptions(QChart::SeriesAnimations);
 
 
 
@@ -58,7 +58,7 @@ void ChartWidget::adjustValueAxis()
 	for(const QAbstractSeries* s : mChart->series())
 	{
 		const BSeriesEx* ex = BSeriesEx::interface(s);
-		auto seriesRange = ex->valueRange(timeRange().first, timeRange().second);
+		auto seriesRange = ex->valueRange(viewTimeRange().first, viewTimeRange().second);
 		if(qIsNaN(min) || min > seriesRange.first)
 		{	min = seriesRange.first;	}
 		if(qIsNaN(max) || max < seriesRange.second)
@@ -68,9 +68,35 @@ void ChartWidget::adjustValueAxis()
 	{	mValueAxis->setRange(min*0.99, max*1.01);	}
 }
 
-QPair<QDateTime, QDateTime> ChartWidget::timeRange()
+TimeRange ChartWidget::viewTimeRange() const
 {
-	return {QDateTime::currentDateTime().addDays(-200), QDateTime::currentDateTime()};
+	return {mTimeAxis->min(), mTimeAxis->max()};
+}
+
+void ChartWidget::setViewTimeRange(const TimeRange &range)
+{
+	mTimeAxis->setRange(range.first, range.second);
+}
+
+TimeRange ChartWidget::seriesTimeRange() const
+{
+	TimeRange rv;
+	for(const QAbstractSeries* s : mChart->series())
+	{
+		const BSeriesEx* ex = BSeriesEx::interface(s);
+		QPair<QDateTime, QDateTime> seriesRange = ex->timeRange();
+		if(rv.first.isNull() || rv.first > seriesRange.first)
+		{	rv.first = seriesRange.first;	}
+		if(rv.second.isNull() || rv.second < seriesRange.second)
+		{	rv.second = seriesRange.second;	}
+	}
+
+	return rv;
+}
+
+QRectF ChartWidget::plotArea() const
+{
+	return mChart->plotArea();
 }
 
 void ChartWidget::onCountChanged()

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <etimeinterval.h>
+#include <types.h>
 
 class Candle;
 

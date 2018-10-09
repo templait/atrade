@@ -6,7 +6,7 @@ QT = core widgets network charts
 
 SOURCES = main.cpp
 
-HEADERS += log.h   etimeinterval.h
+HEADERS += log.h   types.h
 SOURCES += log.cpp
 
 HEADERS += mainwindow.h   chartwindow.h   chartwidget.h   candle.h

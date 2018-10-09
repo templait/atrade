@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include "types.h"
 
 namespace QtCharts
 {
@@ -18,14 +19,16 @@ class ChartWidget : public QWidget
 public:
 	ChartWidget(QWidget* parent=0);
 	void addSeries(BSeriesEx *series);
+	TimeRange viewTimeRange() const;
+	void setViewTimeRange(const TimeRange& range);
+	TimeRange seriesTimeRange() const;
+	QRectF plotArea() const;
+	void adjustValueAxis();
 private:
 	QtCharts::QChartView *mChartView;
 	QtCharts::QChart *mChart;
 	QtCharts::QValueAxis *mValueAxis;
 	QtCharts::QDateTimeAxis *mTimeAxis;
-
-	void adjustValueAxis();
-	QPair<QDateTime, QDateTime> timeRange();
 private slots:
 	void onCountChanged();
 };

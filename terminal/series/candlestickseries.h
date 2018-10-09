@@ -12,8 +12,8 @@ public:
 	CandlestickSeries(QObject* parent=0);
 	void setDataSource(BDataSource* dataSource);
 
-	QPair<qreal, qreal> valueRange(const QDateTime& start, const QDateTime& end) const override;
-	QPair<QDateTime, QDateTime> timeRange() const override;
+	ValueRange valueRange(const QDateTime& start, const QDateTime& end) const override;
+	TimeRange timeRange() const override;
 private:
 	BDataSource* mDataSource;
 private slots:
