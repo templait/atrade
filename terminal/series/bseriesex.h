@@ -18,6 +18,7 @@ public:
 	virtual ~BSeriesEx();
 	virtual ValueRange valueRange(const QDateTime& start, const QDateTime& end) const = 0;
 	virtual TimeRange timeRange() const = 0;
+	virtual void setViewTimeRange(const TimeRange& range) = 0;
 
 	QtCharts::QAbstractSeries* abstractSeries();
 	const QtCharts::QAbstractSeries *abstractSeries() const;

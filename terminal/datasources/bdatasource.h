@@ -17,6 +17,9 @@ public:
 	virtual QString errorString() const = 0;
 	virtual ETimeInterval interval() const = 0;
 
+	const Candle& first() const;
+	const Candle& last() const;
+
 	virtual ~BDataSource(){}
 signals:
 	void candlesAppended(int);

@@ -28,6 +28,7 @@ ChartWidget::ChartWidget(QWidget *parent) : QWidget(parent)
 	mChartView->setChart(mChart);
 	mValueAxis = new QValueAxis;
 	mTimeAxis = new QDateTimeAxis;
+	connect(mTimeAxis, SIGNAL(rangeChanged(QDateTime,QDateTime)), SLOT(onTimeRangeChanged(QDateTime,QDateTime)));
 	mChart->addAxis(mValueAxis, Qt::AlignLeft);
 	mChart->addAxis(mTimeAxis, Qt::AlignBottom);
 }
@@ -61,6 +62,16 @@ void ChartWidget::adjustValueAxis()
 	}
 	if(! (qIsNaN(min) || qIsNaN(max)) )
 	{	mValueAxis->setRange(min, max);	}
+}
+
+QValueAxis *ChartWidget::valueAxis()
+{
+	return mValueAxis;
+}
+
+QDateTimeAxis *ChartWidget::timeAxis()
+{
+	return mTimeAxis;
 }
 
 TimeRange ChartWidget::viewTimeRange() const
@@ -97,4 +108,13 @@ QRectF ChartWidget::plotArea() const
 void ChartWidget::onCountChanged()
 {
 	adjustValueAxis();
+}
+
+void ChartWidget::onTimeRangeChanged(QDateTime min, QDateTime max)
+{
+	for(QAbstractSeries* s : mChart->series())
+	{
+		BSeriesEx* ex = BSeriesEx::interface(s);
+		ex->setViewTimeRange({min, max});
+	}
 }

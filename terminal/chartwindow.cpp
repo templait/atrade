@@ -3,6 +3,7 @@
 #include <QAbstractSeries>
 #include <QScrollBar>
 #include <QVBoxLayout>
+#include <QDateTimeAxis>
 #include <QDir> // killme
 
 #include "chartwidget.h"
@@ -17,12 +18,13 @@ using namespace QtCharts;
 ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
 	mLayout = new QVBoxLayout;
-	mTimeInterval = IntervalD1;
+	mLayout->setSpacing(0);
+	mTimeInterval = IntervalM1;
 	mCandleWidth = 7;
 	setLayout(mLayout);
 
 	BDataSource *ds;
-/*
+//*
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.62", 5000, this);
 	addDataSource(ds, 0);
 	mDataSources << ds;
@@ -30,15 +32,18 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.62", 5000, this);
 	addDataSource(ds, 1);
 	mDataSources << ds;
-*/
 
-	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
+//*/
+/*
+	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-M1.txt", this);
 	addDataSource(ds);
 	mDataSources << ds;
-
+*/
 	mScrollBar = new QScrollBar(Qt::Horizontal);
 	mScrollBar->setEnabled(false);
-	connect(mScrollBar, &QAbstractSlider::actionTriggered, [this](int){setScrollValue(mScrollBar->sliderPosition());});
+	connect(mScrollBar, &QAbstractSlider::actionTriggered, [this](int){
+		setScrollValue(mScrollBar->sliderPosition());
+	});
 	mLayout->addWidget(mScrollBar);
 
 	adjustScroll();
@@ -58,6 +63,8 @@ void ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
 
 	if(widgetNum >= mChartWidgets.size())
 	{
+		for(ChartWidget* w : mChartWidgets)
+		{	w->timeAxis()->hide();		}
 		widget = new ChartWidget;
 		mLayout->insertWidget(widgetNum, widget);
 		mChartWidgets << widget;
@@ -158,12 +165,12 @@ void ChartWindow::adjustScroll()
 	{
 		mScrollBar->setMaximum(range.second.toSecsSinceEpoch()+secsInInterval());
 		mScrollBar->setMinimum(range.first.toSecsSinceEpoch()+timeFrame());
-		mScrollBar->setSingleStep(secsInInterval());
+		mScrollBar->setSingleStep(secsInInterval()); // нужно выровнять разницу между минимумом и максимумом по минимальному шагу
 		mScrollBar->setPageStep(timeFrame());
 		if(! mScrollBar->isEnabled())
 		{
 			mScrollBar->setEnabled(true);
-			mScrollBar->setSliderPosition(range.second.toSecsSinceEpoch());
+			mScrollBar->setSliderPosition(mScrollBar->maximum());
 		}
 	}
 	else
@@ -200,14 +207,14 @@ void ChartWindow::onCandlesAppend(int)
 void ChartWindow::resizeEvent(QResizeEvent *event)
 {
 	mScrollBar->setPageStep(timeFrame());
-	setScrollValue(mScrollBar->value());
+	setScrollValue(mScrollBar->sliderPosition());
 	QWidget::resizeEvent(event);
 }
 
 void ChartWindow::showEvent(QShowEvent *event)
 {
 	mScrollBar->setPageStep(timeFrame());
-	setScrollValue(mScrollBar->value());
+	setScrollValue(mScrollBar->sliderPosition());
 	QWidget::showEvent(event);
 }
 
