@@ -38,11 +38,37 @@ ValueRange CandlestickSeries::valueRange(const QDateTime &start, const QDateTime
 TimeRange CandlestickSeries::timeRange() const
 {
 	TimeRange rv;
-	if(sets().size())
+	if(dataSource()->size()>0)
 	{
-		rv = {QDateTime::fromMSecsSinceEpoch(sets().first()->timestamp()), QDateTime::fromMSecsSinceEpoch(sets().last()->timestamp())};
+		rv = {dataSource()->first().time(), dataSource()->last().time()};
 	}
 	return rv;
+}
+
+void CandlestickSeries::setViewTimeRange(const TimeRange &range)
+{
+	mTimeRange = range;
+	clear();
+	QList<QCandlestickSet*> sets;
+	for(int i=0; i<dataSource()->size(); i++)
+	{
+		const Candle & candle = (*dataSource())[i];
+		if(isCandleInTimeRange(candle))
+		{
+			sets << createSet(candle);
+		}
+	}
+	append(sets);
+}
+
+QCandlestickSet *CandlestickSeries::createSet(const Candle &candle) const
+{
+	return new QCandlestickSet(candle.open(), candle.high(), candle.low(), candle.close(), candle.time().toMSecsSinceEpoch());
+}
+
+bool CandlestickSeries::isCandleInTimeRange(const Candle &candle) const
+{
+	return candle.time() >= mTimeRange.first && candle.time() <= mTimeRange.second;
 }
 
 void CandlestickSeries::onCandlesAppended(int count)
@@ -51,23 +77,28 @@ void CandlestickSeries::onCandlesAppended(int count)
 	QList<QCandlestickSet*> sets;
 	for(int i=ds.size()-count; i<ds.size(); i++)
 	{
-		sets << new QCandlestickSet(ds[i].open(), ds[i].high(), ds[i].low(), ds[i].close(), ds[i].time().toMSecsSinceEpoch());
+		if(isCandleInTimeRange(ds[i]))
+		sets << createSet(ds[i]);
 	}
 	append(sets);
 }
 
 void CandlestickSeries::onCandleUpdated(int index)
 {
-	auto sts = sets();
-	if(index < sts.size())
+	BDataSource& ds = *dataSource();
+	if(index < ds.size() && isCandleInTimeRange(ds[index]))
 	{
-		QCandlestickSet* set = sts[index];
-		const Candle& candle = (*dataSource())[index];
-		set->setOpen(candle.open());
-		set->setClose(candle.close());
-		set->setHigh(candle.high());
-		set->setLow(candle.low());
-		set->setTimestamp(candle.time().toMSecsSinceEpoch());
+		for(QCandlestickSet* set : sets())
+		{
+			if(ds[index].time().toMSecsSinceEpoch() == set->timestamp())
+			{
+				set->setOpen(ds[index].open());
+				set->setClose(ds[index].close());
+				set->setHigh(ds[index].high());
+				set->setLow(ds[index].low());
+				set->setTimestamp(ds[index].time().toMSecsSinceEpoch());
+			}
+		}
 	}
 }
 

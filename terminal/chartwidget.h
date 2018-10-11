@@ -24,6 +24,9 @@ public:
 	TimeRange seriesTimeRange() const;
 	QRectF plotArea() const;
 	void adjustValueAxis();
+
+	QtCharts::QValueAxis* valueAxis();
+	QtCharts::QDateTimeAxis* timeAxis();
 private:
 	QtCharts::QChartView *mChartView;
 	QtCharts::QChart *mChart;
@@ -31,6 +34,7 @@ private:
 	QtCharts::QDateTimeAxis *mTimeAxis;
 private slots:
 	void onCountChanged();
+	void onTimeRangeChanged(QDateTime min, QDateTime max);
 signals:
 
 };
