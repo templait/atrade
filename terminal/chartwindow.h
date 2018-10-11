@@ -1,13 +1,15 @@
 #pragma once
 
-#include "datasources/bdatasource.h"
-
 #include <QWidget>
+#include "types.h"
 
-class QScrollBar;
+class BDataSource;
 class ChartWidget;
 class QVBoxLayout;
-class BSeriesEx;
+class QGraphicsView;
+class QGraphicsWidget;
+class QGraphicsGridLayout;
+class QScrollBar;
 
 namespace QtCharts
 {
@@ -24,21 +26,26 @@ public:
 	void addDataSource(BDataSource *dataSource, int widgetNum=0);
 
 private:
-	qint64 timeFrame() const;	//!< Размер временного окна, помещаемого в график.
-	qint64 secsInInterval() const;
-	void setViewTimeRange(TimeRange range);
-	TimeRange seriesTimeRange() const;
-	void adjustScroll();
-	void adjustValueAxises();
-	void setScrollValue(int value);
-
-	QList<BDataSource*> mDataSources;
-	QScrollBar* mScrollBar;
 	QVBoxLayout *mLayout;
+	QGraphicsView *mGraphicsView;
+	QGraphicsWidget* mGraphicsWidget;
+	QGraphicsGridLayout* mSceneLayout;
+	QScrollBar* mScrollBar;
 	ETimeInterval mTimeInterval;
 	qreal mCandleWidth;
 
+	QList<BDataSource*> mDataSources;
 	QList<ChartWidget*> mChartWidgets;
+
+	void adjustScroll();
+	void setScrollValue(int value);
+	TimeRange seriesTimeRange() const;
+	qint64 secsInInterval() const;
+	qint64 timeFrame() const;	//!< Размер временного окна, помещаемого в график.
+	void setViewTimeRange(const TimeRange &range);
+	void adjustValueAxises();
+	void adjustGraphicsScene();
+
 private slots:
 	void onCandlesAppend(int);
 

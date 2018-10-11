@@ -2,35 +2,28 @@
 
 #include <math.h>
 
-#include <QBarCategoryAxis>
-#include <QChartView>
+#include <series/bseriesex.h>
+
+#include <QChart>
 #include <QDateTimeAxis>
-#include <QDateTime>
-#include <QVBoxLayout>
+#include <QGraphicsLinearLayout>
 #include <QValueAxis>
 
-#include "series/bseriesex.h"
 
 using namespace QtCharts;
 
-ChartWidget::ChartWidget(QWidget *parent) : QWidget(parent)
+ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
 {
-	QVBoxLayout *layout = new QVBoxLayout;
+	QGraphicsLinearLayout* layout = new QGraphicsLinearLayout;
+	layout->setContentsMargins(0,0,0,0);
 	setLayout(layout);
-	layout->setSpacing(0);
-	layout->setMargin(0);
 
-	mChartView = new QChartView(this);
-	//mChartView->setRenderHint(QPainter::Antialiasing);
-	layout->addWidget(mChartView);
+	mChart = new QChart;
+	layout->addItem(mChart);
 
-	mChart = new QChart();
-	//mChart->setMargins({0,0,0,0});
-	//mChart->setAnimationOptions(QChart::SeriesAnimations);
-
-	mChartView->setChart(mChart);
 	mValueAxis = new QValueAxis;
 	mTimeAxis = new QDateTimeAxis;
+	//mTimeAxis->setFormat("dd");
 	connect(mTimeAxis, SIGNAL(rangeChanged(QDateTime,QDateTime)), SLOT(onTimeRangeChanged(QDateTime,QDateTime)));
 	mChart->addAxis(mValueAxis, Qt::AlignLeft);
 	mChart->addAxis(mTimeAxis, Qt::AlignBottom);
@@ -45,8 +38,7 @@ void ChartWidget::addSeries(BSeriesEx *series)
 	adjustValueAxis();
 	connect(s, SIGNAL(countChanged()), SLOT(onCountChanged()));
 
-
-	mChart->legend()->setVisible(true);
+	//mChart->legend()->setVisible(true);
 	mChart->legend()->setAlignment(Qt::AlignBottom);
 }
 
@@ -81,10 +73,10 @@ TimeRange ChartWidget::viewTimeRange() const
 {
 	return {mTimeAxis->min(), mTimeAxis->max()};
 }
-
-void ChartWidget::setViewTimeRange(const TimeRange &range)
+#include<QtDebug>
+void ChartWidget::setViewTimeRange(const TimeRange & range)
 {
-	mTimeAxis->setRange(range.first, range.second);
+	mTimeAxis->setRange(range.first.addMSecs(-1), range.second.addMSecs(1)); // Полный бред, но без добавления этих миллисекунд ось не отображается
 }
 
 TimeRange ChartWidget::seriesTimeRange() const

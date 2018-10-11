@@ -1,30 +1,54 @@
+#include "chartwidget.h"
 #include "chartwindow.h"
 
-#include <QAbstractSeries>
-#include <QScrollBar>
+#include <QGraphicsGridLayout>
+#include <QGraphicsView>
+#include <QGraphicsWidget>
 #include <QVBoxLayout>
-#include <QDateTimeAxis>
 #include <QDir> // killme
+#include <QScrollBar>
+#include <QDateTimeAxis>
 
-#include "chartwidget.h"
-#include "datasources/datasourcefile.h" // killme
-#include "datasources/datasourcequik.h" // killme
-#include "series/candlestickseries.h"
+#include <datasources/datasourcefile.h>  // killme
+#include <datasources/datasourcequik.h>  // killme
 
-#include "math.h"
+#include <series/candlestickseries.h>
+
 
 using namespace QtCharts;
 
 ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
+	setMinimumSize(1000,700);
+
+	mTimeInterval = IntervalD1;
+	mCandleWidth = 6;
+
 	mLayout = new QVBoxLayout;
-	mTimeInterval = IntervalM1;
-	mCandleWidth = 7;
 	setLayout(mLayout);
-	mLayout->setSpacing(0);
+	mLayout->setSpacing(1);
+
+	mGraphicsView = new QGraphicsView;
+	mGraphicsView->setScene(new QGraphicsScene(mGraphicsView));
+	mGraphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	mGraphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	mGraphicsWidget = new QGraphicsWidget;
+
+	QPalette p;
+	p.setColor(QPalette::Background, Qt::red);
+	mGraphicsWidget->setPalette(p);
+	mGraphicsWidget->setAutoFillBackground(true);
+
+	mGraphicsView->scene()->addItem(mGraphicsWidget);
+	mSceneLayout = new QGraphicsGridLayout;
+	mSceneLayout->setSpacing(-15);
+	mSceneLayout->setContentsMargins(0,0,0,0);
+	mGraphicsWidget->setLayout(mSceneLayout);
+
+	mLayout->addWidget(mGraphicsView);
 
 	BDataSource *ds;
-//*
+/*
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.62", 5000, this);
 	addDataSource(ds, 0);
 	mDataSources << ds;
@@ -32,13 +56,13 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.62", 5000, this);
 	addDataSource(ds, 1);
 	mDataSources << ds;
+*/
 
-//*/
-/*
-	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-M1.txt", this);
+	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
 	addDataSource(ds);
 	mDataSources << ds;
-*/
+
+
 	mScrollBar = new QScrollBar(Qt::Horizontal);
 	mScrollBar->setEnabled(false);
 	connect(mScrollBar, &QAbstractSlider::actionTriggered, [this](int){
@@ -47,7 +71,6 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mLayout->addWidget(mScrollBar);
 
 	adjustScroll();
-	setMinimumSize(1000,700);
 }
 
 ChartWindow::~ChartWindow()
@@ -68,15 +91,16 @@ void ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
 			w->timeAxis()->setLineVisible(false);
 			w->timeAxis()->setLabelsVisible(false);
 		}
+		widgetNum = mChartWidgets.size();
 		widget = new ChartWidget;
-		mLayout->insertWidget(widgetNum, widget);
+		widget->timeAxis()->setLabelsVisible(true);
+		mSceneLayout->addItem(widget, widgetNum, 0);
 		mChartWidgets << widget;
 	}
 	else
 	{	widget = mChartWidgets[widgetNum];	}
 
 	connect(dataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppend(int)));
-
 	widget->addSeries(series);
 }
 
@@ -86,7 +110,7 @@ qint64 ChartWindow::timeFrame() const
 	if(mChartWidgets.size()>0)
 	{
 		qreal width = mChartWidgets[0]->plotArea().width();
-		qreal candleCount = width/mCandleWidth;
+		qreal candleCount = width/(mCandleWidth+1);
 		rv = secsInInterval()*candleCount;
 	}
 	return rv;
@@ -139,7 +163,7 @@ qint64 ChartWindow::secsInInterval() const
 	return rv;
 }
 
-void ChartWindow::setViewTimeRange(TimeRange range)
+void ChartWindow::setViewTimeRange(const TimeRange & range)
 {
 	for(ChartWidget *w : mChartWidgets)
 	{
@@ -167,17 +191,17 @@ void ChartWindow::adjustScroll()
 	if(! (range.first.isNull() || range.second.isNull()))
 	{
 		qint64 max = range.second.toSecsSinceEpoch()+secsInInterval();
-		qint64 min = range.first.toSecsSinceEpoch()+timeFrame();
+		qint64 min = range.first.toSecsSinceEpoch()+timeFrame()-secsInInterval();
 		qint64 step = secsInInterval();
 
-		mScrollBar->setMaximum(max);
-		mScrollBar->setMinimum(min);
-
+		// нужно выровнять разницу между минимумом и максимумом по минимальному шагу
 		qint64 rem = (max-min+1)%step;
 		if(rem>0)
 		{	max+=step-rem;	}
 
-		mScrollBar->setSingleStep(step); // нужно выровнять разницу между минимумом и максимумом по минимальному шагу
+		mScrollBar->setRange(min, max);
+
+		mScrollBar->setSingleStep(step);
 		mScrollBar->setPageStep(timeFrame());
 		if(! mScrollBar->isEnabled())
 		{
@@ -221,8 +245,15 @@ void ChartWindow::onCandlesAppend(int)
 	}
 }
 
+void ChartWindow::adjustGraphicsScene()
+{
+	mGraphicsWidget->setGeometry(mGraphicsView->childrenRect());
+	mGraphicsView->scene()->setSceneRect(mGraphicsView->childrenRect());
+}
+
 void ChartWindow::resizeEvent(QResizeEvent *event)
 {
+	adjustGraphicsScene();
 	mScrollBar->setPageStep(timeFrame());
 	setScrollValue(mScrollBar->sliderPosition());
 	QWidget::resizeEvent(event);
@@ -230,8 +261,8 @@ void ChartWindow::resizeEvent(QResizeEvent *event)
 
 void ChartWindow::showEvent(QShowEvent *event)
 {
+	adjustGraphicsScene();
 	mScrollBar->setPageStep(timeFrame());
 	setScrollValue(mScrollBar->sliderPosition());
 	QWidget::showEvent(event);
 }
-
