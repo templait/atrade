@@ -18,10 +18,10 @@ using namespace QtCharts;
 ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
 	mLayout = new QVBoxLayout;
-	mLayout->setSpacing(0);
 	mTimeInterval = IntervalM1;
 	mCandleWidth = 7;
 	setLayout(mLayout);
+	mLayout->setSpacing(0);
 
 	BDataSource *ds;
 //*
@@ -64,7 +64,10 @@ void ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
 	if(widgetNum >= mChartWidgets.size())
 	{
 		for(ChartWidget* w : mChartWidgets)
-		{	w->timeAxis()->hide();		}
+		{
+			w->timeAxis()->setLineVisible(false);
+			w->timeAxis()->setLabelsVisible(false);
+		}
 		widget = new ChartWidget;
 		mLayout->insertWidget(widgetNum, widget);
 		mChartWidgets << widget;
@@ -163,9 +166,18 @@ void ChartWindow::adjustScroll()
 	TimeRange range = seriesTimeRange();
 	if(! (range.first.isNull() || range.second.isNull()))
 	{
-		mScrollBar->setMaximum(range.second.toSecsSinceEpoch()+secsInInterval());
-		mScrollBar->setMinimum(range.first.toSecsSinceEpoch()+timeFrame());
-		mScrollBar->setSingleStep(secsInInterval()); // нужно выровнять разницу между минимумом и максимумом по минимальному шагу
+		qint64 max = range.second.toSecsSinceEpoch()+secsInInterval();
+		qint64 min = range.first.toSecsSinceEpoch()+timeFrame();
+		qint64 step = secsInInterval();
+
+		mScrollBar->setMaximum(max);
+		mScrollBar->setMinimum(min);
+
+		qint64 rem = (max-min+1)%step;
+		if(rem>0)
+		{	max+=step-rem;	}
+
+		mScrollBar->setSingleStep(step); // нужно выровнять разницу между минимумом и максимумом по минимальному шагу
 		mScrollBar->setPageStep(timeFrame());
 		if(! mScrollBar->isEnabled())
 		{
@@ -201,7 +213,12 @@ void ChartWindow::onCandlesAppend(int)
 	{	need2Last = true;	}
 	adjustScroll();
 	if(need2Last)
-	{	setScrollValue(mScrollBar->maximum());	}
+	{
+		mScrollBar->blockSignals(true);
+		setScrollValue(mScrollBar->maximum());
+		mScrollBar->setSliderPosition(mScrollBar->maximum());
+		mScrollBar->blockSignals(false);
+	}
 }
 
 void ChartWindow::resizeEvent(QResizeEvent *event)

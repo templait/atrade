@@ -17,12 +17,15 @@ ChartWidget::ChartWidget(QWidget *parent) : QWidget(parent)
 {
 	QVBoxLayout *layout = new QVBoxLayout;
 	setLayout(layout);
+	layout->setSpacing(0);
+	layout->setMargin(0);
 
 	mChartView = new QChartView(this);
 	//mChartView->setRenderHint(QPainter::Antialiasing);
 	layout->addWidget(mChartView);
 
 	mChart = new QChart();
+	//mChart->setMargins({0,0,0,0});
 	//mChart->setAnimationOptions(QChart::SeriesAnimations);
 
 	mChartView->setChart(mChart);
