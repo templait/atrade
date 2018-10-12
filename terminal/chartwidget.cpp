@@ -73,7 +73,7 @@ TimeRange ChartWidget::viewTimeRange() const
 {
 	return {mTimeAxis->min(), mTimeAxis->max()};
 }
-#include<QtDebug>
+
 void ChartWidget::setViewTimeRange(const TimeRange & range)
 {
 	mTimeAxis->setRange(range.first.addMSecs(-1), range.second.addMSecs(1)); // Полный бред, но без добавления этих миллисекунд ось не отображается

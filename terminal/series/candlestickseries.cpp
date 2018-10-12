@@ -50,14 +50,10 @@ void CandlestickSeries::setViewTimeRange(const TimeRange &range)
 	mTimeRange = range;
 	clear();
 	QList<QCandlestickSet*> sets;
-	for(int i=0; i<dataSource()->size(); i++)
-	{
-		const Candle & candle = (*dataSource())[i];
-		if(isCandleInTimeRange(candle))
-		{
-			sets << createSet(candle);
-		}
-	}
+
+	for(const Candle& c : dataSource()->getTimeRange(range))
+	{	sets << createSet(c);	}
+
 	append(sets);
 }
 
