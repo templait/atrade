@@ -42,7 +42,7 @@ private slots:
 public:
 	ETimeInterval interval() const override;
 	int size() const override;
-	const Candle &operator [](int index) const override;
+	const Candle * at(int index) const override;
 	bool isActive() const override;
 	QString errorString() const override;
 };

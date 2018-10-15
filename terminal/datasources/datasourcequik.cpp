@@ -86,9 +86,12 @@ int DataSourceQUIK::size() const
 	return mCandles.size();
 }
 
-const Candle &DataSourceQUIK::operator[](int index) const
+const Candle *DataSourceQUIK::at(int index) const
 {
-	return mCandles.at(index);
+	const Candle * rv = 0;
+	if(index < size())
+	{	rv = &(mCandles.at(index));	}
+	return rv;
 }
 
 bool DataSourceQUIK::isActive() const

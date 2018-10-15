@@ -1,31 +1,71 @@
 #include "bdatasource.h"
 
+class BDataSource::const_iterator : public std::iterator<std::random_access_iterator_tag, Candle>
+{
+	friend class BDataSource;
+public:
+	inline bool operator==(const const_iterator& other) const	{return mPos==other.mPos;}
+	inline bool operator<(const const_iterator& other) const	{return mPos<other.mPos;}
+	inline bool operator>(const const_iterator& other) const	{return mPos>other.mPos;}
+	inline bool operator<=(const const_iterator& other) const	{return mPos<=other.mPos;}
+	inline bool operator>=(const const_iterator& other) const	{return mPos>=other.mPos;}
+	inline const_iterator& operator++() {mPos++; return *this;}
+	inline const_iterator& operator--() {mPos--; return *this;}
+	inline const Candle& operator*() const	{return *mDataSource->at(mPos);}
+	inline const Candle* operator->() const	{return mDataSource->at(mPos);}
+	inline difference_type operator-(const const_iterator& other) const	{return mPos-other.mPos;}
+	inline const_iterator& operator+=(difference_type val){mPos+=val; return *this;}
+
+private:
+	const_iterator(const BDataSource * dataSource, int pos) : mDataSource(dataSource), mPos(pos){}
+
+	const BDataSource *mDataSource;
+	int mPos;
+};
+
 BDataSource::BDataSource(QObject *parent) : QObject(parent)
 {
 
 }
 
+const Candle &BDataSource::operator[](int index) const
+{
+	return *at(index);
+}
+
 const Candle &BDataSource::first() const
 {
-	return operator[](0);
+	return *at(0);
 }
 
 const Candle &BDataSource::last() const
 {
-	return operator[](size()-1);
+	return *at(size()-1);
+}
+
+BDataSource::const_iterator BDataSource::begin() const
+{
+	return const_iterator(this, 0);
+}
+
+BDataSource::const_iterator BDataSource::end() const
+{
+	return const_iterator(this, size()-1);
 }
 
 QList<Candle> BDataSource::getTimeRange(const TimeRange& range) const
 {
 	QList<Candle> rv;
-	for(int i=0; i<size(); i++)
+
+	const_iterator end_it   = std::lower_bound(begin(), end(), range.second, [](const Candle& candle, const QDateTime& t){return candle.time()<t;});
+	const_iterator start_it = std::upper_bound(begin(), end(), range.first, [](const QDateTime& t, const Candle& candle){return t<candle.time();});
+
+	while(start_it < end_it)
 	{
-		const Candle & candle = (*this)[i];
-		if(candle.time() >= range.first && candle.time() <= range.second)
-		{
-			rv << candle;
-		}
+		rv << *start_it;
+		++start_it;
 	}
+
 	return rv;
 }
 

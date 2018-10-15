@@ -118,9 +118,12 @@ int DataSourceFile::size() const
 	return mCandles.size();
 }
 
-const Candle &DataSourceFile::operator[](int index) const
+const Candle *DataSourceFile::at(int index) const
 {
-	return mCandles.at(index);
+	const Candle * rv = 0;
+	if(index < size())
+	{	rv = &(mCandles.at(index));	}
+	return rv;
 }
 
 bool DataSourceFile::isActive() const

@@ -33,7 +33,7 @@ private:
 	// BDataSource interface
 public:
 	int size() const override;
-	const Candle &operator [](int index) const override;
+	const Candle * at(int index) const override;
 	bool isActive() const override;
 	QString errorString() const override;
 	ETimeInterval interval() const override;
