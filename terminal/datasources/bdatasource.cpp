@@ -50,15 +50,15 @@ BDataSource::const_iterator BDataSource::begin() const
 
 BDataSource::const_iterator BDataSource::end() const
 {
-	return const_iterator(this, size()-1);
+	return const_iterator(this, size());
 }
 
 QList<Candle> BDataSource::getTimeRange(const TimeRange& range) const
 {
 	QList<Candle> rv;
 
-	const_iterator end_it   = std::lower_bound(begin(), end(), range.second, [](const Candle& candle, const QDateTime& t){return candle.time()<t;});
-	const_iterator start_it = std::upper_bound(begin(), end(), range.first, [](const QDateTime& t, const Candle& candle){return t<candle.time();});
+	const_iterator end_it   = std::upper_bound(begin(), end(), range.second,[](const QDateTime& t, const Candle& candle){return t<candle.time();});
+	const_iterator start_it = std::lower_bound(begin(), end(), range.first, [](const Candle& candle, const QDateTime& t){return candle.time()<t;});
 
 	while(start_it < end_it)
 	{
