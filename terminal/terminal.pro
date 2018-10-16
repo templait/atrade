@@ -4,15 +4,14 @@ include(../project.pri)
 
 QT = core widgets network charts
 
+LIBS += -lcore
+INCLUDEPATH += ../corelib
+
 SOURCES = main.cpp
 
-HEADERS += log.h   types.h
-SOURCES += log.cpp
-
-HEADERS += mainwindow.h   chartwindow.h   chartwidget.h   candle.h
-SOURCES += mainwindow.cpp chartwindow.cpp chartwidget.cpp candle.cpp
+HEADERS += mainwindow.h   chartwindow.h   chartwidget.h
+SOURCES += mainwindow.cpp chartwindow.cpp chartwidget.cpp
 FORMS	=  mainwindow.ui
 
 include(logdoc/logdoc.pri)
-include(datasources/datasources.pri)
 include(series/series.pri)

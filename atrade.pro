@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
-SUBDIRS	 = terminal tests
+SUBDIRS	 = corelib terminal tests
 
