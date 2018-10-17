@@ -21,7 +21,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
 	setMinimumSize(1000,700);
 
-	mTimeInterval = IntervalD1;
+	mTimeInterval = IntervalM1;
 	mCandleWidth = 6;
 
 	mLayout = new QVBoxLayout;
@@ -48,20 +48,19 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mLayout->addWidget(mGraphicsView);
 
 	BDataSource *ds;
-/*
-	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.62", 5000, this);
+
+	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.156", 5000, this);
 	addDataSource(ds, 0);
 	mDataSources << ds;
 
-	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.62", 5000, this);
+	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.156", 5000, this);
 	addDataSource(ds, 1);
 	mDataSources << ds;
-*/
-
+/*
 	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
 	addDataSource(ds);
 	mDataSources << ds;
-
+*/
 
 	mScrollBar = new QScrollBar(Qt::Horizontal);
 	mScrollBar->setEnabled(false);
@@ -82,26 +81,19 @@ void ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
 {
 	ChartWidget* widget = 0;
 
-	CandlestickSeries* series = new CandlestickSeries(dataSource);
-
 	if(widgetNum >= mChartWidgets.size())
 	{
-		for(ChartWidget* w : mChartWidgets)
-		{
-			w->timeAxis()->setLineVisible(false);
-			w->timeAxis()->setLabelsVisible(false);
-		}
+
 		widgetNum = mChartWidgets.size();
 		widget = new ChartWidget;
-		widget->timeAxis()->setLabelsVisible(true);
 		mSceneLayout->addItem(widget, widgetNum, 0);
 		mChartWidgets << widget;
 	}
 	else
 	{	widget = mChartWidgets[widgetNum];	}
 
-	connect(dataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppend(int)));
-	widget->addSeries(series);
+	connect(widget, SIGNAL(candlesAppended(const BDataSource*,int)), SLOT(onCandlesAppend(const BDataSource*, int)));
+	widget->addDataSource(dataSource);
 }
 
 qint64 ChartWindow::timeFrame() const
@@ -176,7 +168,7 @@ TimeRange ChartWindow::seriesTimeRange() const
 	TimeRange rv;
 	for(ChartWidget *w : mChartWidgets)
 	{
-		TimeRange wRange = w->seriesTimeRange();
+		TimeRange wRange = w->timeRange();
 		if(rv.first.isNull() || rv.first > wRange.first)
 		{	rv.first = wRange.first;	}
 		if(rv.second.isNull() || rv.second < wRange.second)
@@ -216,21 +208,14 @@ void ChartWindow::adjustScroll()
 	}
 }
 
-void ChartWindow::adjustValueAxises()
-{
-	for(ChartWidget *w : mChartWidgets)
-	{	w->adjustValueAxis();	}
-}
-
 void ChartWindow::setScrollValue(int value)
 {
 	QDateTime max = QDateTime::fromSecsSinceEpoch(value);
 	QDateTime min = QDateTime::fromSecsSinceEpoch(value - timeFrame());
 	setViewTimeRange({min, max});
-	adjustValueAxises();
 }
 
-void ChartWindow::onCandlesAppend(int)
+void ChartWindow::onCandlesAppend(const BDataSource*, int)
 {
 	bool need2Last = false;
 	if(mScrollBar->sliderPosition() == mScrollBar->maximum())

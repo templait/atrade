@@ -2,13 +2,12 @@
 
 #include <math.h>
 
-#include <series/bseriesex.h>
+#include "series/datasourceseries.h"
 
 #include <QChart>
 #include <QDateTimeAxis>
 #include <QGraphicsLinearLayout>
 #include <QValueAxis>
-
 
 using namespace QtCharts;
 
@@ -28,7 +27,7 @@ ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
 	mChart->addAxis(mValueAxis, Qt::AlignLeft);
 	mChart->addAxis(mTimeAxis, Qt::AlignBottom);
 }
-
+/*
 void ChartWidget::addSeries(BSeriesEx *series)
 {
 	QAbstractSeries* s = series->abstractSeries();
@@ -41,15 +40,22 @@ void ChartWidget::addSeries(BSeriesEx *series)
 	//mChart->legend()->setVisible(true);
 	mChart->legend()->setAlignment(Qt::AlignBottom);
 }
+*/
+
+void ChartWidget::addDataSource(BDataSource *dataSource)
+{
+	DataSourceSeries *dss = new DataSourceSeries(mChart, dataSource, this);
+	connect(dss, SIGNAL(candlesAdppended(int)), SLOT(onCandlesAppended(int)));
+	mSeries << dss;
+}
 
 void ChartWidget::adjustValueAxis()
 {
 	qreal min = NAN;
 	qreal max = NAN;
-	for(const QAbstractSeries* s : mChart->series())
+	for(const DataSourceSeries* series  : mSeries)
 	{
-		const BSeriesEx* ex = BSeriesEx::interface(s);
-		auto seriesRange = ex->valueRange(viewTimeRange().first, viewTimeRange().second);
+		ValueRange seriesRange = series->valueRange();
 		if(qIsNaN(min) || min > seriesRange.first)
 		{	min = seriesRange.first;	}
 		if(qIsNaN(max) || max < seriesRange.second)
@@ -69,6 +75,14 @@ QDateTimeAxis *ChartWidget::timeAxis()
 	return mTimeAxis;
 }
 
+void ChartWidget::onCandlesAppended(int count)
+{
+	adjustValueAxis();
+	DataSourceSeries* series = qobject_cast<DataSourceSeries*>(sender());
+	Q_ASSERT(series);
+	emit candlesAppended(series->dataSource(), count);
+}
+
 TimeRange ChartWidget::viewTimeRange() const
 {
 	return {mTimeAxis->min(), mTimeAxis->max()};
@@ -77,15 +91,15 @@ TimeRange ChartWidget::viewTimeRange() const
 void ChartWidget::setViewTimeRange(const TimeRange & range)
 {
 	mTimeAxis->setRange(range.first.addMSecs(-1), range.second.addMSecs(1)); // Полный бред, но без добавления этих миллисекунд ось не отображается
+	adjustValueAxis();
 }
 
-TimeRange ChartWidget::seriesTimeRange() const
+TimeRange ChartWidget::timeRange() const
 {
 	TimeRange rv;
-	for(const QAbstractSeries* s : mChart->series())
+	for(const DataSourceSeries* series  : mSeries)
 	{
-		const BSeriesEx* ex = BSeriesEx::interface(s);
-		QPair<QDateTime, QDateTime> seriesRange = ex->timeRange();
+		TimeRange seriesRange = series->timeRange();
 		if(rv.first.isNull() || rv.first > seriesRange.first)
 		{	rv.first = seriesRange.first;	}
 		if(rv.second.isNull() || rv.second < seriesRange.second)
@@ -100,16 +114,10 @@ QRectF ChartWidget::plotArea() const
 	return mChart->plotArea();
 }
 
-void ChartWidget::onCountChanged()
-{
-	adjustValueAxis();
-}
-
 void ChartWidget::onTimeRangeChanged(QDateTime min, QDateTime max)
 {
-	for(QAbstractSeries* s : mChart->series())
+	for(DataSourceSeries* series  : mSeries)
 	{
-		BSeriesEx* ex = BSeriesEx::interface(s);
-		ex->setViewTimeRange({min, max});
+		series->setViewTimeRange({min, max});
 	}
 }

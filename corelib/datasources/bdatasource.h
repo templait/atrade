@@ -23,7 +23,7 @@ public:
 	const Candle& last() const;
 	const_iterator begin() const;
 	const_iterator end() const;
-	QList<Candle> getTimeRange(const TimeRange &range) const;
+	QList<const Candle *> getTimeRange(const TimeRange &range) const;
 
 	virtual ~BDataSource(){}
 

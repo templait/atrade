@@ -43,11 +43,10 @@ private:
 	qint64 secsInInterval() const;
 	qint64 timeFrame() const;	//!< Размер временного окна, помещаемого в график.
 	void setViewTimeRange(const TimeRange &range);
-	void adjustValueAxises();
 	void adjustGraphicsScene();
 
 private slots:
-	void onCandlesAppend(int);
+	void onCandlesAppend(const BDataSource *, int);
 
 	// QWidget interface
 protected:
