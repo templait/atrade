@@ -21,7 +21,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
 	setMinimumSize(1000,700);
 
-	mTimeInterval = IntervalD1;
+	mTimeInterval = IntervalM1;
 	mCandleWidth = 6;
 
 	mLayout = new QVBoxLayout;
@@ -29,16 +29,17 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mLayout->setSpacing(1);
 
 	mGraphicsView = new QGraphicsView;
+	//mGraphicsView->setRenderHints(QPainter::Antialiasing);
 	mGraphicsView->setScene(new QGraphicsScene(mGraphicsView));
 	mGraphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	mGraphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	mGraphicsWidget = new QGraphicsWidget;
-
+/*
 	QPalette p;
 	p.setColor(QPalette::Background, Qt::red);
 	mGraphicsWidget->setPalette(p);
 	mGraphicsWidget->setAutoFillBackground(true);
-
+*/
 	mGraphicsView->scene()->addItem(mGraphicsWidget);
 	mSceneLayout = new QGraphicsGridLayout;
 	mSceneLayout->setSpacing(-15);
@@ -48,16 +49,16 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mLayout->addWidget(mGraphicsView);
 
 	BDataSource *ds;
-/*
+
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.156", 5000, this);
 	addDataSource(ds, 0);
 
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.156", 5000, this);
 	ChartWidget* cw = addDataSource(ds, 1);
-*/
+/*
 	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
 	ChartWidget* cw = addDataSource(ds);
-
+*/
 	BIndicator *indicator;
 	indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
 	cw->addIndicator(indicator);

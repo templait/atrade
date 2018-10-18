@@ -10,6 +10,7 @@ class QLineSeries;
 }
 
 class BIndicator;
+class Point;
 
 class IndicatorSeries : public QObject, public BSeries
 {
@@ -18,6 +19,8 @@ public:
 	IndicatorSeries(QtCharts::QChart *chart, BIndicator *indicator, QObject * parent=0);
 	virtual ~IndicatorSeries(){}
 private:
+	void appendPoints(const QList<const Point *> points);
+
 	QtCharts::QChart *mChart;
 	BIndicator* mIndicator;
 	TimeRange mViewTimeRange;

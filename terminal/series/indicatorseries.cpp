@@ -18,22 +18,8 @@ IndicatorSeries::IndicatorSeries(QChart *chart, BIndicator *indicator, QObject *
 	connect(mIndicator, SIGNAL(pointUpdated(int)), SLOT(onPointUpdated(int)));
 }
 
-void IndicatorSeries::onPointsAppended(int count)
+void IndicatorSeries::appendPoints(const QList<const Point *> points)
 {
-
-}
-
-void IndicatorSeries::onPointUpdated(int index)
-{
-
-}
-
-void IndicatorSeries::setViewTimeRange(const TimeRange &range)
-{
-	mViewTimeRange = range;
-	qDeleteAll(mSeries);
-	mSeries.clear();
-
 	auto addSeries = [this](const QList<QPointF> & list)
 	{
 		QLineSeries* series = new QLineSeries;
@@ -45,7 +31,6 @@ void IndicatorSeries::setViewTimeRange(const TimeRange &range)
 		mSeries << series;
 	};
 
-	auto points = mIndicator->getTimeRange(mViewTimeRange);
 	if(points.size())
 	{
 		QList<QPointF> list;
@@ -65,6 +50,29 @@ void IndicatorSeries::setViewTimeRange(const TimeRange &range)
 		}
 		addSeries(list);
 	}
+}
+
+void IndicatorSeries::onPointsAppended(int count)
+{
+	/*
+	QList<const Point *> points;
+	std::transform(mIndicator->end()-count, mIndicator->end(), std::back_insert_iterator<QList<const Point *> >(points), [](const Point& p){return &p;});
+	*/
+	setViewTimeRange(mViewTimeRange);
+}
+
+void IndicatorSeries::onPointUpdated(int index)
+{
+	setViewTimeRange(mViewTimeRange);
+}
+
+void IndicatorSeries::setViewTimeRange(const TimeRange &range)
+{
+	mViewTimeRange = range;
+	qDeleteAll(mSeries);
+	mSeries.clear();
+
+	appendPoints(mIndicator->getTimeRange(mViewTimeRange));
 }
 
 ValueRange IndicatorSeries::valueRange() const
