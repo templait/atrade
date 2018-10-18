@@ -21,9 +21,8 @@ class ChartWindow : public QWidget
 	Q_OBJECT
 public:
 	ChartWindow(QWidget* parent=0);
-	~ChartWindow();
 
-	void addDataSource(BDataSource *dataSource, int widgetNum=0);
+	ChartWidget *addDataSource(BDataSource *dataSource, int widgetNum=0);
 
 private:
 	QVBoxLayout *mLayout;
@@ -34,13 +33,11 @@ private:
 	ETimeInterval mTimeInterval;
 	qreal mCandleWidth;
 
-	QList<BDataSource*> mDataSources;
 	QList<ChartWidget*> mChartWidgets;
 
 	void adjustScroll();
 	void setScrollValue(int value);
 	TimeRange seriesTimeRange() const;
-	qint64 secsInInterval() const;
 	qint64 timeFrame() const;	//!< Размер временного окна, помещаемого в график.
 	void setViewTimeRange(const TimeRange &range);
 	void adjustGraphicsScene();

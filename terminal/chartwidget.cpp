@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "series/datasourceseries.h"
+#include "series/indicatorseries.h"
 
 #include <QChart>
 #include <QDateTimeAxis>
@@ -22,25 +23,11 @@ ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
 
 	mValueAxis = new QValueAxis;
 	mTimeAxis = new QDateTimeAxis;
-	//mTimeAxis->setFormat("dd");
 	connect(mTimeAxis, SIGNAL(rangeChanged(QDateTime,QDateTime)), SLOT(onTimeRangeChanged(QDateTime,QDateTime)));
 	mChart->addAxis(mValueAxis, Qt::AlignLeft);
 	mChart->addAxis(mTimeAxis, Qt::AlignBottom);
+	mChart->legend()->hide();
 }
-/*
-void ChartWidget::addSeries(BSeriesEx *series)
-{
-	QAbstractSeries* s = series->abstractSeries();
-	mChart->addSeries(s);
-	s->attachAxis(mValueAxis);
-	s->attachAxis(mTimeAxis);
-	adjustValueAxis();
-	connect(s, SIGNAL(countChanged()), SLOT(onCountChanged()));
-
-	//mChart->legend()->setVisible(true);
-	mChart->legend()->setAlignment(Qt::AlignBottom);
-}
-*/
 
 void ChartWidget::addDataSource(BDataSource *dataSource)
 {
@@ -49,11 +36,17 @@ void ChartWidget::addDataSource(BDataSource *dataSource)
 	mSeries << dss;
 }
 
+void ChartWidget::addIndicator(BIndicator *indicator)
+{
+	IndicatorSeries *is = new IndicatorSeries(mChart, indicator, this);
+	mSeries << is;
+}
+
 void ChartWidget::adjustValueAxis()
 {
 	qreal min = NAN;
 	qreal max = NAN;
-	for(const DataSourceSeries* series  : mSeries)
+	for(const BSeries* series  : mSeries)
 	{
 		ValueRange seriesRange = series->valueRange();
 		if(qIsNaN(min) || min > seriesRange.first)
@@ -97,13 +90,16 @@ void ChartWidget::setViewTimeRange(const TimeRange & range)
 TimeRange ChartWidget::timeRange() const
 {
 	TimeRange rv;
-	for(const DataSourceSeries* series  : mSeries)
+	for(const BSeries* series  : mSeries)
 	{
 		TimeRange seriesRange = series->timeRange();
-		if(rv.first.isNull() || rv.first > seriesRange.first)
-		{	rv.first = seriesRange.first;	}
-		if(rv.second.isNull() || rv.second < seriesRange.second)
-		{	rv.second = seriesRange.second;	}
+		if(seriesRange.first.isValid())
+		{
+			if(rv.first.isNull() || rv.first > seriesRange.first)
+			{	rv.first = seriesRange.first;	}
+			if(rv.second.isNull() || rv.second < seriesRange.second)
+			{	rv.second = seriesRange.second;	}
+		}
 	}
 
 	return rv;
@@ -116,7 +112,7 @@ QRectF ChartWidget::plotArea() const
 
 void ChartWidget::onTimeRangeChanged(QDateTime min, QDateTime max)
 {
-	for(DataSourceSeries* series  : mSeries)
+	for(BSeries* series  : mSeries)
 	{
 		series->setViewTimeRange({min, max});
 	}

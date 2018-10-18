@@ -4,7 +4,8 @@
 #include <QChart>
 #include <QObject>
 #include <QPointer>
-#include <types.h>
+
+#include "bseries.h"
 
 namespace QtCharts
 {
@@ -16,14 +17,16 @@ class QCandlestickSet;
 class BDataSource;
 class Candle;
 
-class DataSourceSeries : public QObject
+class DataSourceSeries : public QObject, public BSeries
 {
 	Q_OBJECT
 public:
 	DataSourceSeries(QtCharts::QChart* chart, BDataSource* dataSource, QObject* parent=0);
-	void setViewTimeRange(const TimeRange& range);
-	ValueRange valueRange() const;	//!< return value range for currenr view timerange
-	TimeRange timeRange() const;	//!< return whole timerange
+
+	virtual void setViewTimeRange(const TimeRange& range) override;
+	virtual ValueRange valueRange() const override;	//!< return value range for currenr view timerange
+	virtual TimeRange timeRange() const override;	//!< return whole timerange
+
 	const BDataSource* dataSource() const;
 
 private:

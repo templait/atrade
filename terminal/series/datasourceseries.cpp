@@ -20,6 +20,7 @@ DataSourceSeries::DataSourceSeries(QtCharts::QChart *chart, BDataSource *dataSou
 	mCandleStickSeries->attachAxis(mChart->axisX());
 	mCandleStickSeries->attachAxis(mChart->axisY());
 	mCandleStickSeries->setPen({Qt::black, 1});
+	mCandleStickSeries->setBodyOutlineVisible(false);
 	connect(mDataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
 	connect(mDataSource, SIGNAL(candleUpdated(int)), SLOT(onCandleUpdated(int)));
 }
@@ -99,11 +100,14 @@ void DataSourceSeries::onCandleUpdated(int index)
 		{
 			if(mDataSource->at(index)->time().toMSecsSinceEpoch() == set->timestamp())
 			{
+
 				set->setOpen(mDataSource->at(index)->open());
 				set->setClose(mDataSource->at(index)->close());
 				set->setHigh(mDataSource->at(index)->high());
 				set->setLow(mDataSource->at(index)->low());
 				set->setTimestamp(mDataSource->at(index)->time().toMSecsSinceEpoch());
+
+				//*set = createSet(mDataSource->at(index));
 			}
 		}
 	}

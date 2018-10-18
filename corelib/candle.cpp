@@ -2,13 +2,16 @@
 
 #include "math.h"
 
-Candle::Candle(double high, double low, double open, double close, double volume, const QDateTime &time) :
+#include <tools.h>
+
+Candle::Candle(double high, double low, double open, double close, double volume, const QDateTime &time, ETimeInterval interval) :
 	mHigh(high),
 	mLow(low),
 	mOpen(open),
 	mClose(close),
 	mVolume(volume),
-	mTime(time)
+	mTime(time),
+	mInterval(interval)
 {
 
 }
@@ -48,4 +51,14 @@ double Candle::volume() const
 const QDateTime &Candle::time() const
 {
 	return mTime;
+}
+
+ETimeInterval Candle::interval() const
+{
+	return mInterval;
+}
+
+qint64 Candle::secsInterval() const
+{
+	return secsInInterval(mInterval);
 }

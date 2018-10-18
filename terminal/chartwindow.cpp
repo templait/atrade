@@ -9,11 +9,11 @@
 #include <QScrollBar>
 #include <QDateTimeAxis>
 
+#include <tools.h>
+
 #include <datasources/datasourcefile.h>  // killme
 #include <datasources/datasourcequik.h>  // killme
-
-#include <series/candlestickseries.h>
-
+#include <indicators/candleadapterindicator.h>  // killme
 
 using namespace QtCharts;
 
@@ -21,7 +21,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
 	setMinimumSize(1000,700);
 
-	mTimeInterval = IntervalM1;
+	mTimeInterval = IntervalD1;
 	mCandleWidth = 6;
 
 	mLayout = new QVBoxLayout;
@@ -48,19 +48,19 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mLayout->addWidget(mGraphicsView);
 
 	BDataSource *ds;
-
+/*
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.156", 5000, this);
 	addDataSource(ds, 0);
-	mDataSources << ds;
 
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.156", 5000, this);
-	addDataSource(ds, 1);
-	mDataSources << ds;
-/*
-	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
-	addDataSource(ds);
-	mDataSources << ds;
+	ChartWidget* cw = addDataSource(ds, 1);
 */
+	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
+	ChartWidget* cw = addDataSource(ds);
+
+	BIndicator *indicator;
+	indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
+	cw->addIndicator(indicator);
 
 	mScrollBar = new QScrollBar(Qt::Horizontal);
 	mScrollBar->setEnabled(false);
@@ -72,12 +72,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	adjustScroll();
 }
 
-ChartWindow::~ChartWindow()
-{
-	qDeleteAll(mDataSources);
-}
-
-void ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
+ChartWidget* ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
 {
 	ChartWidget* widget = 0;
 
@@ -94,6 +89,8 @@ void ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
 
 	connect(widget, SIGNAL(candlesAppended(const BDataSource*,int)), SLOT(onCandlesAppend(const BDataSource*, int)));
 	widget->addDataSource(dataSource);
+
+	return widget;
 }
 
 qint64 ChartWindow::timeFrame() const
@@ -103,54 +100,7 @@ qint64 ChartWindow::timeFrame() const
 	{
 		qreal width = mChartWidgets[0]->plotArea().width();
 		qreal candleCount = width/(mCandleWidth+1);
-		rv = secsInInterval()*candleCount;
-	}
-	return rv;
-}
-
-qint64 ChartWindow::secsInInterval() const
-{
-	qint64 rv = -1;
-	switch(mTimeInterval)
-	{
-	case IntervalM1:
-		rv = 60;
-		break;
-	case IntervalM5:
-		rv = 60*5;
-		break;
-	case IntervalM10:
-		rv = 60*10;
-		break;
-	case IntervalM15:
-		rv = 60*15;
-		break;
-	case IntervalM20:
-		rv = 60*20;
-		break;
-	case IntervalM30:
-		rv = 60*30;
-		break;
-	case IntervalH1:
-		rv = 60*60;
-		break;
-	case IntervalH2:
-		rv = 60*60*2;
-		break;
-	case IntervalH4:
-		rv = 60*60*4;
-		break;
-	case IntervalD1:
-		rv = 60*60*24;
-		break;
-	case IntervalW1:
-		rv = 60*60*24*7;
-		break;
-	case IntervalMN1:
-		rv = 60*60*24*DAYS_IN_YEAR/12;
-		break;
-	default:
-		rv = -2;
+		rv = secsInInterval(mTimeInterval)*candleCount;
 	}
 	return rv;
 }
@@ -182,9 +132,9 @@ void ChartWindow::adjustScroll()
 	TimeRange range = seriesTimeRange();
 	if(! (range.first.isNull() || range.second.isNull()))
 	{
-		qint64 max = range.second.toSecsSinceEpoch()+secsInInterval();
-		qint64 min = range.first.toSecsSinceEpoch()+timeFrame()-secsInInterval();
-		qint64 step = secsInInterval();
+		qint64 max = range.second.toSecsSinceEpoch()+secsInInterval(mTimeInterval);
+		qint64 min = range.first.toSecsSinceEpoch()+timeFrame()-secsInInterval(mTimeInterval);
+		qint64 step = secsInInterval(mTimeInterval);
 
 		// нужно выровнять разницу между минимумом и максимумом по минимальному шагу
 		qint64 rem = (max-min+1)%step;

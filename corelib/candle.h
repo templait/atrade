@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QDateTime>
+#include "types.h"
 
 class Candle
 {
 public:
-	Candle(double high, double low, double open, double close, double volume, const QDateTime & time);
+	Candle(double high, double low, double open, double close, double volume, const QDateTime & time, ETimeInterval interval);
 	Candle();
 
 	bool isNull() const;
@@ -16,6 +16,8 @@ public:
 	double close() const;
 	double volume() const;
 	const QDateTime& time() const;
+	ETimeInterval interval() const;
+	qint64 secsInterval() const;
 private:
 	double mHigh;
 	double mLow;
@@ -23,4 +25,5 @@ private:
 	double mClose;
 	double mVolume;
 	QDateTime mTime;
+	ETimeInterval mInterval;
 };

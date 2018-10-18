@@ -2,6 +2,8 @@
 
 #include <datasources/bdatasource.h>
 
+#include <math.h>
+
 CandleAdapterIndicator::CandleAdapterIndicator(const BDataSource *dataSource, TOtputType type, QObject *parent)
 	: BIndicator(parent)
 	, mDataSource(dataSource)
@@ -9,23 +11,37 @@ CandleAdapterIndicator::CandleAdapterIndicator(const BDataSource *dataSource, TO
 {
 	connect(dataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
 	connect(dataSource, SIGNAL(candleUpdated(int)), SLOT(onCandleUpdated(int)));
+	populate();
 }
 
 int CandleAdapterIndicator::size() const
 {
-	return mDataSource->size();
+	return mPoints.size();
 }
 
 const Point *CandleAdapterIndicator::at(int index) const
 {
-	Q_ASSERT(index<mPoints.size());
-	return &mPoints[index];
+	const Point * rv(0);
+	if(index<mPoints.size())
+	{	rv = &mPoints[index]; }
+	return rv;
 }
 
 void CandleAdapterIndicator::populate()
 {
 	mPoints.clear();
-	std::transform(mDataSource->begin(), mDataSource->end(), std::back_insert_iterator<QList<Point> >(mPoints), [this](const Candle& candle){return candle2point(candle);});
+	//std::transform(mDataSource->begin(), mDataSource->end(), std::back_insert_iterator<QList<Point> >(mPoints), [this](const Candle& candle){return candle2point(candle);});
+	for(auto  candleIt = mDataSource->begin(); candleIt<mDataSource->end(); ++candleIt)
+	{
+		if(mPoints.size())
+		{
+			if(candleIt->time().toSecsSinceEpoch() - mPoints.last().time().toSecsSinceEpoch() > candleIt->secsInterval())
+			{
+				mPoints << Point(candleIt->time());
+			}
+		}
+		mPoints << candle2point(*candleIt);
+	}
 }
 
 Point CandleAdapterIndicator::candle2point(const Candle &candle) const

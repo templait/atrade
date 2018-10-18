@@ -52,7 +52,8 @@ void DataSourceFile::readData()
 							obj.value("O").toDouble(),
 							obj.value("C").toDouble(),
 							obj.value("V").toDouble(),
-							time
+							time,
+							mSettings.interval
 						);
 			}
 

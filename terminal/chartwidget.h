@@ -11,8 +11,9 @@ class QDateTimeAxis;
 }
 
 class BSeriesEx; //kill
-class DataSourceSeries;
+class BSeries;
 class BDataSource;
+class BIndicator;
 
 class ChartWidget : public QGraphicsWidget
 {
@@ -20,6 +21,7 @@ class ChartWidget : public QGraphicsWidget
 public:
 	ChartWidget(QGraphicsItem* parent=0);
 	void addDataSource(BDataSource* dataSource);
+	void addIndicator(BIndicator* indicator);
 	TimeRange viewTimeRange() const;
 	void setViewTimeRange(const TimeRange &range);
 	TimeRange timeRange() const;	// return whole timerange
@@ -32,7 +34,7 @@ private:
 	void adjustValueAxis();
 
 	QtCharts::QChart *mChart;
-	QList<DataSourceSeries*> mSeries;
+	QList<BSeries*> mSeries;
 	QtCharts::QValueAxis *mValueAxis;
 	QtCharts::QDateTimeAxis *mTimeAxis;
 

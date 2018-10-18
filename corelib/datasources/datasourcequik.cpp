@@ -151,7 +151,8 @@ void DataSourceQUIK::onReadyRead()
 							obj.value("O").toDouble(),
 							obj.value("C").toDouble(),
 							obj.value("V").toDouble(),
-							time
+							time,
+							mSettings.interval
 						);
 				if(mCandles.size()==index) // Добавим свечку в конец
 				{	mCandles << c;			}
