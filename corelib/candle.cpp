@@ -1,5 +1,7 @@
 #include "candle.h"
 
+#include "math.h"
+
 Candle::Candle(double high, double low, double open, double close, double volume, const QDateTime &time) :
 	mHigh(high),
 	mLow(low),
@@ -11,7 +13,7 @@ Candle::Candle(double high, double low, double open, double close, double volume
 
 }
 
-Candle::Candle(){}
+Candle::Candle() : mHigh(NAN), mLow(NAN), mOpen(NAN), mClose(NAN), mVolume(NAN) {}
 
 bool Candle::isNull() const
 {

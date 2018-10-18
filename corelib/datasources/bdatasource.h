@@ -19,6 +19,6 @@ public:
 	virtual ~BDataSource(){}
 
 signals:
-	void candlesAppended(int);
-	void candleUpdated(int);
+	void candlesAppended(int count);
+	void candleUpdated(int index);
 };

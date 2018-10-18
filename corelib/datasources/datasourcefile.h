@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "bdatasource.h"
+#include <datasources/bdatasource.h>
 #include <candle.h>
 
 class QHostAddress;

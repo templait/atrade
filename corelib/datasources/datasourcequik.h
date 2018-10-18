@@ -14,7 +14,7 @@ class DataSourceQUIK : public BDataSource
 	Q_OBJECT
 public:
 	DataSourceQUIK(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent=0);
-	~DataSourceQUIK();
+	virtual ~DataSourceQUIK();
 private:
 	void connectToTerminal();
 	int quikInterval() const;
