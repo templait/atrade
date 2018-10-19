@@ -1,12 +1,12 @@
 #pragma once
 
-#include <indicators/bindicator.h>
+#include <indicators/blineindicator.h>
 
 #include <candle.h>
 
 class BDataSource;
 
-class CandleAdapterIndicator : public BIndicator
+class CandleAdapterIndicator : public BLineIndicator
 {
 	Q_OBJECT
 public:
@@ -14,19 +14,8 @@ public:
 
 	CandleAdapterIndicator(const BDataSource* dataSource, TOtputType type=MOpenClose, QObject* parent=0);
 	virtual ~CandleAdapterIndicator(){}
-
-	// Serial interface
-	int size() const override;
-	const Point *at(int index) const override;
-private:
-	void append(int start=0);
+protected:
 	Point candle2point(const Candle& candle) const;	// эту функцию нужно сделать виртуальной
-
-	const BDataSource* mDataSource;
+private:
 	TOtputType mOutputType;
-	QList<Point> mPoints;
-	QList<int> mIndexMap;
-private slots:
-	void onCandlesAppended(int count);
-	void onCandleUpdated(int index);
 };
