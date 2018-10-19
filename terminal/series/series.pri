@@ -2,5 +2,5 @@ VPATH += $$PWD
 
 HEADERS += bseries.h
 
-HEADERS += datasourceseries.h   indicatorseries.h
-SOURCES += datasourceseries.cpp indicatorseries.cpp
+HEADERS += datasourceseries.h   lineindicatorseries.h
+SOURCES += datasourceseries.cpp lineindicatorseries.cpp

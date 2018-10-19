@@ -1,4 +1,4 @@
-#include "indicatorseries.h"
+#include "lineindicatorseries.h"
 
 #include <QChart>
 
@@ -9,7 +9,7 @@
 
 using namespace QtCharts;
 
-IndicatorSeries::IndicatorSeries(QChart *chart, BIndicator *indicator, QObject *parent)
+LineIndicatorSeries::LineIndicatorSeries(QChart *chart, BIndicator *indicator, QObject *parent)
 	: QObject(parent)
 	, mChart(chart)
 	, mIndicator(indicator)
@@ -18,7 +18,7 @@ IndicatorSeries::IndicatorSeries(QChart *chart, BIndicator *indicator, QObject *
 	connect(mIndicator, SIGNAL(pointUpdated(int)), SLOT(onPointUpdated(int)));
 }
 
-void IndicatorSeries::appendPoints(const QList<const Point *> points)
+void LineIndicatorSeries::appendPoints(const QList<const Point *> points)
 {
 	auto addSeries = [this](const QList<QPointF> & list)
 	{
@@ -52,7 +52,7 @@ void IndicatorSeries::appendPoints(const QList<const Point *> points)
 	}
 }
 
-void IndicatorSeries::onPointsAppended(int count)
+void LineIndicatorSeries::onPointsAppended(int count)
 {
 	/*
 	QList<const Point *> points;
@@ -61,12 +61,12 @@ void IndicatorSeries::onPointsAppended(int count)
 	setViewTimeRange(mViewTimeRange);
 }
 
-void IndicatorSeries::onPointUpdated(int index)
+void LineIndicatorSeries::onPointUpdated(int index)
 {
 	setViewTimeRange(mViewTimeRange);
 }
 
-void IndicatorSeries::setViewTimeRange(const TimeRange &range)
+void LineIndicatorSeries::setViewTimeRange(const TimeRange &range)
 {
 	mViewTimeRange = range;
 	qDeleteAll(mSeries);
@@ -75,7 +75,7 @@ void IndicatorSeries::setViewTimeRange(const TimeRange &range)
 	appendPoints(mIndicator->getTimeRange(mViewTimeRange));
 }
 
-ValueRange IndicatorSeries::valueRange() const
+ValueRange LineIndicatorSeries::valueRange() const
 {
 	ValueRange rv(NAN, NAN);
 
@@ -90,7 +90,7 @@ ValueRange IndicatorSeries::valueRange() const
 	return rv;
 }
 
-TimeRange IndicatorSeries::timeRange() const
+TimeRange LineIndicatorSeries::timeRange() const
 {
 	TimeRange rv;
 	if(mIndicator->size()>0)

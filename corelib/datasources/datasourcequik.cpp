@@ -133,6 +133,7 @@ void DataSourceQUIK::onReadyRead()
 {
 	QString line;
 	int candles = mCandles.size();
+	QSet<int> needUpdate;
 	while(mSocket->canReadLine())
 	{
 		line = mStream.readLine();
@@ -159,13 +160,14 @@ void DataSourceQUIK::onReadyRead()
 				else if(mCandles.size() > index)	// Обнови свечку
 				{
 					mCandles[index] = c;
-					emit candleUpdated(index);
+					needUpdate << index;
 				}
 			}
 		}
 	}
 	if(candles<mCandles.size())
 	{	emit candlesAppended(mCandles.size()-candles);	}
+	for(int index : needUpdate) emit candleUpdated(index);
 }
 
 void DataSourceQUIK::onError(QAbstractSocket::SocketError)

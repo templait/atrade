@@ -3,7 +3,7 @@
 #include <math.h>
 
 #include "series/datasourceseries.h"
-#include "series/indicatorseries.h"
+#include "series/lineindicatorseries.h"
 
 #include <QChart>
 #include <QDateTimeAxis>
@@ -38,7 +38,7 @@ void ChartWidget::addDataSource(BDataSource *dataSource)
 
 void ChartWidget::addIndicator(BIndicator *indicator)
 {
-	IndicatorSeries *is = new IndicatorSeries(mChart, indicator, this);
+	LineIndicatorSeries *is = new LineIndicatorSeries(mChart, indicator, this);
 	mSeries << is;
 }
 

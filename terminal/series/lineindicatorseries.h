@@ -12,12 +12,12 @@ class QLineSeries;
 class BIndicator;
 class Point;
 
-class IndicatorSeries : public QObject, public BSeries
+class LineIndicatorSeries : public QObject, public BSeries
 {
 	Q_OBJECT
 public:
-	IndicatorSeries(QtCharts::QChart *chart, BIndicator *indicator, QObject * parent=0);
-	virtual ~IndicatorSeries(){}
+	LineIndicatorSeries(QtCharts::QChart *chart, BIndicator *indicator, QObject * parent=0);
+	virtual ~LineIndicatorSeries(){}
 private:
 	void appendPoints(const QList<const Point *> points);
 
