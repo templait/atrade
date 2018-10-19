@@ -11,7 +11,7 @@ CandleAdapterIndicator::CandleAdapterIndicator(const BDataSource *dataSource, TO
 {
 	connect(dataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
 	connect(dataSource, SIGNAL(candleUpdated(int)), SLOT(onCandleUpdated(int)));
-	populate();
+	append();
 }
 
 int CandleAdapterIndicator::size() const
@@ -27,20 +27,18 @@ const Point *CandleAdapterIndicator::at(int index) const
 	return rv;
 }
 
-void CandleAdapterIndicator::populate()
+void CandleAdapterIndicator::append(int start)
 {
-	mPoints.clear();
-	//std::transform(mDataSource->begin(), mDataSource->end(), std::back_insert_iterator<QList<Point> >(mPoints), [this](const Candle& candle){return candle2point(candle);});
-	for(auto  candleIt = mDataSource->begin(); candleIt<mDataSource->end(); ++candleIt)
+	for(int i = start; i<mDataSource->size(); ++i)
 	{
-		if(mPoints.size())
+		const Candle* candle = mDataSource->at(i);
+		if(mPoints.size() && (candle->time().toSecsSinceEpoch() - mPoints.last().time().toSecsSinceEpoch() > candle->secsInterval()))
 		{
-			if(candleIt->time().toSecsSinceEpoch() - mPoints.last().time().toSecsSinceEpoch() > candleIt->secsInterval())
-			{
-				mPoints << Point(candleIt->time());
-			}
+			mPoints << Point(candle->time());
 		}
-		mPoints << candle2point(*candleIt);
+		Q_ASSERT(mIndexMap.size()==i);
+		mIndexMap << mPoints.size();
+		mPoints << candle2point(*candle);
 	}
 }
 
@@ -77,14 +75,16 @@ Point CandleAdapterIndicator::candle2point(const Candle &candle) const
 
 void CandleAdapterIndicator::onCandlesAppended(int count)
 {
-	std::transform(mDataSource->end()-count, mDataSource->end(), std::back_insert_iterator<QList<Point> >(mPoints), [this](const Candle& candle){return candle2point(candle);});
+	//std::transform(mDataSource->end()-count, mDataSource->end(), std::back_insert_iterator<QList<Point> >(mPoints), [this](const Candle& candle){return candle2point(candle);});
+	append(mDataSource->size()-count);
 	emit pointsAppended(count);
 }
 
 void CandleAdapterIndicator::onCandleUpdated(int index)
 {
-	Q_ASSERT(index<mPoints.size());
+	int i = mIndexMap[index];
+	Q_ASSERT(i<mPoints.size());
 	Q_ASSERT(index<mDataSource->size());
-	mPoints[index] = candle2point(*(mDataSource->at(index)));
-	emit pointUpdated(index);
+	mPoints[i] = candle2point(*(mDataSource->at(index)));
+	emit pointUpdated(i);
 }

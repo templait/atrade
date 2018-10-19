@@ -19,12 +19,13 @@ public:
 	int size() const override;
 	const Point *at(int index) const override;
 private:
-	void populate();
-	Point candle2point(const Candle& candle) const;
+	void append(int start=0);
+	Point candle2point(const Candle& candle) const;	// эту функцию нужно сделать виртуальной
 
 	const BDataSource* mDataSource;
 	TOtputType mOutputType;
 	QList<Point> mPoints;
+	QList<int> mIndexMap;
 private slots:
 	void onCandlesAppended(int count);
 	void onCandleUpdated(int index);

@@ -54,16 +54,36 @@ void LineIndicatorSeries::appendPoints(const QList<const Point *> points)
 
 void LineIndicatorSeries::onPointsAppended(int count)
 {
-	/*
-	QList<const Point *> points;
-	std::transform(mIndicator->end()-count, mIndicator->end(), std::back_insert_iterator<QList<const Point *> >(points), [](const Point& p){return &p;});
-	*/
-	setViewTimeRange(mViewTimeRange);
+	for(auto point = mIndicator->end()-count; point < mIndicator->end(); ++point)
+	{
+		if(mViewTimeRange.isInRange(point->time()))
+		{
+			setViewTimeRange(mViewTimeRange);
+			break;
+		}
+	}
 }
 
 void LineIndicatorSeries::onPointUpdated(int index)
 {
-	setViewTimeRange(mViewTimeRange);
+	const Point * pt = mIndicator->at(index);
+	if(mViewTimeRange.isInRange(pt->time()))
+	{
+		// Будем заходить с хвоста т.к. обычно меняется последняя свечка
+		for(auto series = mSeries.crbegin(); series<mSeries.crend(); series++)
+		{
+			QList<QPointF> points = (*series)->points();
+			for(int i = points.size()-1; i>=0; i++)
+			{
+				if(pt->time().toMSecsSinceEpoch() == qint64(points[i].x()))
+				{
+					(*series)->replace(i, pt->time().toMSecsSinceEpoch(), pt->value());
+					setViewTimeRange(mViewTimeRange);
+					return;
+				}
+			}
+		}
+	}
 }
 
 void LineIndicatorSeries::setViewTimeRange(const TimeRange &range)

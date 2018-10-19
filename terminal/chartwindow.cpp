@@ -21,7 +21,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
 	setMinimumSize(1000,700);
 
-	mTimeInterval = IntervalM1;
+	mTimeInterval = IntervalD1;
 	mCandleWidth = 6;
 
 	mLayout = new QVBoxLayout;

@@ -13,7 +13,22 @@ enum ETimeInterval
 	IntervalMN1
 };
 
-typedef QPair<QDateTime, QDateTime> TimeRange;
-typedef QPair<qreal, qreal> ValueRange;
+template <class T>
+struct Range : public QPair<T, T>
+{
+	using QPair<T, T>::QPair;
+	bool isInRange(const T& value) const
+	{	return value >= this->first && value <= this->second;	}
+};
+
+struct TimeRange : public Range<QDateTime>
+{
+	using Range<QDateTime>::Range;
+};
+
+struct ValueRange : public Range<qreal>
+{
+	using Range<qreal>::Range;
+};
 
 #define DAYS_IN_YEAR 365.259641

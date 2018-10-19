@@ -31,7 +31,6 @@ public:
 
 private:
 	QtCharts::QCandlestickSet* createSet(const Candle *candle) const;
-	bool isCandleInTimeRange(const Candle *candle) const;
 
 	QPointer<QtCharts::QChart> mChart;
 	BDataSource* mDataSource;

@@ -73,18 +73,13 @@ QCandlestickSet *DataSourceSeries::createSet(const Candle *candle) const
 	return new QCandlestickSet(candle->open(), candle->high(), candle->low(), candle->close(), candle->time().toMSecsSinceEpoch());
 }
 
-bool DataSourceSeries::isCandleInTimeRange(const Candle *candle) const
-{
-	return candle->time() >= mViewTimeRange.first && candle->time() <= mViewTimeRange.second;
-}
-
 void DataSourceSeries::onCandlesAppended(int count)
 {
 	Q_ASSERT(mCandleStickSeries);
 	QList<QCandlestickSet*> sets;
 	for(int i=mDataSource->size()-count; i<mDataSource->size(); i++)
 	{
-		if(isCandleInTimeRange(mDataSource->at(i)))
+		if(mViewTimeRange.isInRange(mDataSource->at(i)->time()))
 		sets << createSet(mDataSource->at(i));
 	}
 	mCandleStickSeries->append(sets);
@@ -94,18 +89,19 @@ void DataSourceSeries::onCandlesAppended(int count)
 void DataSourceSeries::onCandleUpdated(int index)
 {
 	Q_ASSERT(mCandleStickSeries);
-	if(index < mDataSource->size() && isCandleInTimeRange(mDataSource->at(index)))
+	if(index < mDataSource->size() && mViewTimeRange.isInRange(mDataSource->at(index)->time()))
 	{
-		for(QCandlestickSet* set : mCandleStickSeries->sets())
+		// Перебираем в обратную сторону т.к. почти всегда обновляется последняя свечка
+		for(auto set = mCandleStickSeries->sets().crbegin(); set<mCandleStickSeries->sets().crend(); ++set)
 		{
-			if(mDataSource->at(index)->time().toMSecsSinceEpoch() == set->timestamp())
+			if(mDataSource->at(index)->time().toMSecsSinceEpoch() == (*set)->timestamp())
 			{
 
-				set->setOpen(mDataSource->at(index)->open());
-				set->setClose(mDataSource->at(index)->close());
-				set->setHigh(mDataSource->at(index)->high());
-				set->setLow(mDataSource->at(index)->low());
-				set->setTimestamp(mDataSource->at(index)->time().toMSecsSinceEpoch());
+				(*set)->setOpen(mDataSource->at(index)->open());
+				(*set)->setClose(mDataSource->at(index)->close());
+				(*set)->setHigh(mDataSource->at(index)->high());
+				(*set)->setLow(mDataSource->at(index)->low());
+				(*set)->setTimestamp(mDataSource->at(index)->time().toMSecsSinceEpoch());
 
 				//*set = createSet(mDataSource->at(index));
 			}
