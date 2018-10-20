@@ -1,8 +1,13 @@
 #include "maindicator.h"
 
-MAIndicator::MAIndicator(const BDataSource *dataSource, MAIndicator::TMAType type, CandleAdapterIndicator::TOtputType outputType, QObject *parent)
-    : BLineIndicator(dataSource, parent)
+MAIndicator::MAIndicator(const BDataSource *dataSource, MAIndicator::TMAType type, TOtputType outputType, QObject *parent)
+    : CandleAdapterIndicator(dataSource,outputType, parent)
     , mMAType(type)
+{
+
+}
+
+Point MAIndicator::candle2point(const Candle &candle) const
 {
 
 }
