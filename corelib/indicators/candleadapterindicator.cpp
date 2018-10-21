@@ -4,7 +4,7 @@
 
 #include <math.h>
 
-CandleAdapterIndicator::CandleAdapterIndicator(const BDataSource *dataSource, TOtputType type, QObject *parent)
+CandleAdapterIndicator::CandleAdapterIndicator(DataSource dataSource, TOtputType type, QObject *parent)
 	: BLineIndicator(dataSource, parent)
 	, mOutputType(type)
 {

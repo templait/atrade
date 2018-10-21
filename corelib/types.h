@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDateTime>
+#include <sharedpointer.hpp>
 
 enum ETimeInterval
 {

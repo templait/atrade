@@ -10,7 +10,7 @@
 
 using namespace QtCharts;
 
-DataSourceSeries::DataSourceSeries(QtCharts::QChart *chart, BDataSource *dataSource, QObject *parent)
+DataSourceSeries::DataSourceSeries(QtCharts::QChart *chart, DataSource dataSource, QObject *parent)
 	: QObject(parent)
 	, mChart(chart)
 	, mDataSource(dataSource)
@@ -21,8 +21,8 @@ DataSourceSeries::DataSourceSeries(QtCharts::QChart *chart, BDataSource *dataSou
 	mCandleStickSeries->attachAxis(mChart->axisY());
 	mCandleStickSeries->setPen({Qt::black, 1});
 	mCandleStickSeries->setBodyOutlineVisible(false);
-	connect(mDataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
-	connect(mDataSource, SIGNAL(candleUpdated(int)), SLOT(onCandleUpdated(int)));
+	connect(&mDataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
+	connect(&mDataSource, SIGNAL(candleUpdated(int)), SLOT(onCandleUpdated(int)));
 }
 
 void DataSourceSeries::setViewTimeRange(const TimeRange &range)
@@ -63,7 +63,7 @@ TimeRange DataSourceSeries::timeRange() const
 	return rv;
 }
 
-const BDataSource *DataSourceSeries::dataSource() const
+DataSource DataSourceSeries::dataSource() const
 {
 	return mDataSource;
 }

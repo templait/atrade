@@ -1,16 +1,14 @@
 #pragma once
 
 #include <indicators/bindicator.h>
-
+#include <datasources/datasource.h>
 #include <candle.h>
-
-class BDataSource;
 
 class BLineIndicator : public BIndicator
 {
 	Q_OBJECT
 public:
-	BLineIndicator(const BDataSource* dataSource, QObject* parent=0);
+	BLineIndicator(DataSource dataSource, QObject* parent=0);
 	virtual ~BLineIndicator(){}
 
 	// Serial interface
@@ -21,7 +19,7 @@ protected:
 private:
 	void append(int start=0);
 
-	const BDataSource* mDataSource;
+	DataSource mDataSource;
 	QList<Point> mPoints;
 	QList<int> mIndexMap;
 private slots:

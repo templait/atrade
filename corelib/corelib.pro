@@ -4,7 +4,7 @@ include(../project.pri)
 
 QT = core network charts
 
-HEADERS = types.h serial.hpp pointer.hpp
+HEADERS = types.h serial.hpp sharedpointer.hpp factory.hpp
 
 HEADERS += log.h   tools.h   candle.h   point.h
 SOURCES += log.cpp tools.cpp candle.cpp point.cpp

@@ -4,12 +4,12 @@
 
 #include <math.h>
 
-BLineIndicator::BLineIndicator(const BDataSource *dataSource, QObject *parent)
+BLineIndicator::BLineIndicator(DataSource dataSource, QObject *parent)
 	: BIndicator(parent)
 	, mDataSource(dataSource)
 {
-	connect(dataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
-	connect(dataSource, SIGNAL(candleUpdated(int)), SLOT(onCandleUpdated(int)));
+	connect(&dataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
+	connect(&dataSource, SIGNAL(candleUpdated(int)), SLOT(onCandleUpdated(int)));
 	append();
 }
 

@@ -14,6 +14,7 @@
 #include <datasources/datasourcefile.h>  // killme
 #include <datasources/datasourcequik.h>  // killme
 #include <indicators/candleadapterindicator.h>  // killme
+#include <datasources/datasourcefactory.h>	// killme
 
 using namespace QtCharts;
 
@@ -47,7 +48,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mGraphicsWidget->setLayout(mSceneLayout);
 
 	mLayout->addWidget(mGraphicsView);
-
+/*
 	BDataSource *ds;
 
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.156", 5000, this);
@@ -55,10 +56,14 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 
 	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.156", 5000, this);
 	ChartWidget* cw = addDataSource(ds, 1);
-/*
+
 	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
 	ChartWidget* cw = addDataSource(ds);
 */
+
+	DataSource ds = DataSourceFactory::instance().get(QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"));
+	ChartWidget* cw = addDataSource(ds);
+
 	BIndicator *indicator;
 	indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
 	cw->addIndicator(indicator);
@@ -73,7 +78,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	adjustScroll();
 }
 
-ChartWidget* ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
+ChartWidget* ChartWindow::addDataSource(DataSource dataSource, int widgetNum)
 {
 	ChartWidget* widget = 0;
 
@@ -88,7 +93,7 @@ ChartWidget* ChartWindow::addDataSource(BDataSource *dataSource, int widgetNum)
 	else
 	{	widget = mChartWidgets[widgetNum];	}
 
-	connect(widget, SIGNAL(candlesAppended(const BDataSource*,int)), SLOT(onCandlesAppend(const BDataSource*, int)));
+	connect(widget, SIGNAL(candlesAppended(DataSource,int)), SLOT(onCandlesAppend(DataSource, int)));
 	widget->addDataSource(dataSource);
 
 	return widget;
@@ -166,7 +171,7 @@ void ChartWindow::setScrollValue(int value)
 	setViewTimeRange({min, max});
 }
 
-void ChartWindow::onCandlesAppend(const BDataSource*, int)
+void ChartWindow::onCandlesAppend(DataSource, int)
 {
 	bool need2Last = false;
 	if(mScrollBar->sliderPosition() == mScrollBar->maximum())

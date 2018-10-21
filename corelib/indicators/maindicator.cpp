@@ -1,6 +1,6 @@
 #include "maindicator.h"
 
-MAIndicator::MAIndicator(const BDataSource *dataSource, MAIndicator::TMAType type, TOtputType outputType, QObject *parent)
+MAIndicator::MAIndicator(DataSource dataSource, MAIndicator::TMAType type, TOtputType outputType, QObject *parent)
     : CandleAdapterIndicator(dataSource,outputType, parent)
     , mMAType(type)
 {

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <QGraphicsWidget>
-#include "types.h"
+#include <types.h>
+#include <datasources/datasource.h>
 
 namespace QtCharts
 {
@@ -10,9 +11,7 @@ class QValueAxis;
 class QDateTimeAxis;
 }
 
-class BSeriesEx; //kill
 class BSeries;
-class BDataSource;
 class BIndicator;
 
 class ChartWidget : public QGraphicsWidget
@@ -20,7 +19,7 @@ class ChartWidget : public QGraphicsWidget
 	Q_OBJECT
 public:
 	ChartWidget(QGraphicsItem* parent=0);
-	void addDataSource(BDataSource* dataSource);
+	void addDataSource(DataSource dataSource);
 	void addIndicator(BIndicator* indicator);
 	TimeRange viewTimeRange() const;
 	void setViewTimeRange(const TimeRange &range);
@@ -42,5 +41,5 @@ private slots:
 	void onCandlesAppended(int count);
 	void onTimeRangeChanged(QDateTime min, QDateTime max);
 signals:
-	void candlesAppended(const BDataSource* dataSource, int count);
+	void candlesAppended(DataSource dataSource, int count);
 };

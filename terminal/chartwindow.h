@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QWidget>
-#include "types.h"
+#include <types.h>
+#include <datasources/datasource.h>
 
-class BDataSource;
 class ChartWidget;
 class QVBoxLayout;
 class QGraphicsView;
@@ -22,7 +22,7 @@ class ChartWindow : public QWidget
 public:
 	ChartWindow(QWidget* parent=0);
 
-	ChartWidget *addDataSource(BDataSource *dataSource, int widgetNum=0);
+	ChartWidget *addDataSource(DataSource dataSource, int widgetNum=0);
 
 private:
 	QVBoxLayout *mLayout;
@@ -43,7 +43,7 @@ private:
 	void adjustGraphicsScene();
 
 private slots:
-	void onCandlesAppend(const BDataSource *, int);
+	void onCandlesAppend(DataSource, int);
 
 	// QWidget interface
 protected:

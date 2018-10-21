@@ -29,7 +29,7 @@ ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
 	mChart->legend()->hide();
 }
 
-void ChartWidget::addDataSource(BDataSource *dataSource)
+void ChartWidget::addDataSource(DataSource dataSource)
 {
 	DataSourceSeries *dss = new DataSourceSeries(mChart, dataSource, this);
 	connect(dss, SIGNAL(candlesAdppended(int)), SLOT(onCandlesAppended(int)));
