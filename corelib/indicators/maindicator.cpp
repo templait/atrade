@@ -9,5 +9,5 @@ MAIndicator::MAIndicator(DataSource dataSource, MAIndicator::TMAType type, TOtpu
 
 Point MAIndicator::candle2point(const Candle &candle) const
 {
-
+	return CandleAdapterIndicator::candle2point(candle);
 }

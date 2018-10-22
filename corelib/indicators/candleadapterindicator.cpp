@@ -8,6 +8,7 @@ CandleAdapterIndicator::CandleAdapterIndicator(DataSource dataSource, TOtputType
 	: BLineIndicator(dataSource, parent)
 	, mOutputType(type)
 {
+
 }
 
 Point CandleAdapterIndicator::candle2point(const Candle &candle) const

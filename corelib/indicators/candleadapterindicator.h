@@ -13,7 +13,7 @@ public:
 	CandleAdapterIndicator(DataSource dataSource, TOtputType type=MOpenClose, QObject* parent=0);
 	virtual ~CandleAdapterIndicator(){}
 protected:
-	Point candle2point(const Candle& candle) const;	// эту функцию нужно сделать виртуальной
+	virtual Point candle2point(const Candle& candle) const override;
 private:
 	TOtputType mOutputType;
 };
