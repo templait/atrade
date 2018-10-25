@@ -141,7 +141,7 @@ void ChartWindow::adjustScroll()
 	if(! (range.first.isNull() || range.second.isNull()))
 	{
 		qint64 max = range.second.toSecsSinceEpoch()+secsInInterval(mTimeInterval);
-		qint64 min = range.first.toSecsSinceEpoch()+timeFrame()-secsInInterval(mTimeInterval);
+		qint64 min = range.first.toSecsSinceEpoch()+timeFrame()/2-secsInInterval(mTimeInterval);
 		qint64 step = secsInInterval(mTimeInterval);
 
 		// нужно выровнять разницу между минимумом и максимумом по минимальному шагу
@@ -197,6 +197,7 @@ void ChartWindow::adjustGraphicsScene()
 void ChartWindow::resizeEvent(QResizeEvent *event)
 {
 	adjustGraphicsScene();
+	adjustScroll();
 	mScrollBar->setPageStep(timeFrame());
 	setScrollValue(mScrollBar->sliderPosition());
 	QWidget::resizeEvent(event);
@@ -205,6 +206,7 @@ void ChartWindow::resizeEvent(QResizeEvent *event)
 void ChartWindow::showEvent(QShowEvent *event)
 {
 	adjustGraphicsScene();
+	adjustScroll();
 	mScrollBar->setPageStep(timeFrame());
 	setScrollValue(mScrollBar->sliderPosition());
 	QWidget::showEvent(event);
