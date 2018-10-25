@@ -14,6 +14,10 @@ private:
 	int mLineCount;
 
 	static int candleC(lua_State* L);
+	static int candleO(lua_State* L);
+	static int candleL(lua_State* L);
+	static int candleH(lua_State* L);
+	static int candleV(lua_State* L);
 
 	// BLineIndicator interface
 protected:

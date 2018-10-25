@@ -17,9 +17,27 @@ LuaLineIndicator::LuaLineIndicator(const QString &fileName, DataSource dataSourc
 	else
 	{
 		luaL_openlibs(mState);
+
 		lua_pushlightuserdata(mState, this);
 		lua_pushcclosure(mState, candleC, 1);
 		lua_setglobal(mState, "C");
+
+		lua_pushlightuserdata(mState, this);
+		lua_pushcclosure(mState, candleO, 1);
+		lua_setglobal(mState, "O");
+
+		lua_pushlightuserdata(mState, this);
+		lua_pushcclosure(mState, candleL, 1);
+		lua_setglobal(mState, "L");
+
+		lua_pushlightuserdata(mState, this);
+		lua_pushcclosure(mState, candleH, 1);
+		lua_setglobal(mState, "H");
+
+		lua_pushlightuserdata(mState, this);
+		lua_pushcclosure(mState, candleV, 1);
+		lua_setglobal(mState, "V");
+
 		if(lua_pcall(mState, 0, 0, 0) != 0)
 		{
 			Log::error(QString("Failed to run script: %1\n").arg(lua_tostring(mState, -1)));
@@ -56,6 +74,46 @@ int LuaLineIndicator::candleC(lua_State *L)
 	double index = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_pushnumber(L, indicator->dataSource()->at(index)->close());
+	return 1;
+}
+
+int LuaLineIndicator::candleO(lua_State *L)
+{
+	const void* pt = lua_topointer(L, lua_upvalueindex(1));
+	const LuaLineIndicator* indicator = reinterpret_cast<const LuaLineIndicator*>(pt);
+	double index = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pushnumber(L, indicator->dataSource()->at(index)->open());
+	return 1;
+}
+
+int LuaLineIndicator::candleL(lua_State *L)
+{
+	const void* pt = lua_topointer(L, lua_upvalueindex(1));
+	const LuaLineIndicator* indicator = reinterpret_cast<const LuaLineIndicator*>(pt);
+	double index = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pushnumber(L, indicator->dataSource()->at(index)->low());
+	return 1;
+}
+
+int LuaLineIndicator::candleH(lua_State *L)
+{
+	const void* pt = lua_topointer(L, lua_upvalueindex(1));
+	const LuaLineIndicator* indicator = reinterpret_cast<const LuaLineIndicator*>(pt);
+	double index = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pushnumber(L, indicator->dataSource()->at(index)->high());
+	return 1;
+}
+
+int LuaLineIndicator::candleV(lua_State *L)
+{
+	const void* pt = lua_topointer(L, lua_upvalueindex(1));
+	const LuaLineIndicator* indicator = reinterpret_cast<const LuaLineIndicator*>(pt);
+	double index = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	lua_pushnumber(L, indicator->dataSource()->at(index)->volume());
 	return 1;
 }
 
