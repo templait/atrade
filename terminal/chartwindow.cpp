@@ -14,6 +14,7 @@
 #include <datasources/datasourcefile.h>  // killme
 #include <datasources/datasourcequik.h>  // killme
 #include <indicators/candleadapterindicator.h>  // killme
+#include <indicators/lualineindicator.h>  // killme
 #include <datasources/datasourcefactory.h>	// killme
 
 using namespace QtCharts;
@@ -65,7 +66,8 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	ChartWidget* cw = addDataSource(ds);
 
 	BIndicator *indicator;
-	indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
+	//indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
+	indicator = new LuaLineIndicator("/home/abramov/Projects/atrade/lua/indicators/MA.lua", ds, this);
 	cw->addIndicator(indicator);
 
 	mScrollBar = new QScrollBar(Qt::Horizontal);

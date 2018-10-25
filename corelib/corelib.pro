@@ -11,3 +11,5 @@ SOURCES += log.cpp tools.cpp candle.cpp point.cpp
 
 include(datasources/datasources.pri)
 include(indicators/indicators.pri)
+
+LIBS += -llua

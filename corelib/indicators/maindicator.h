@@ -13,7 +13,7 @@ public:
 	MAIndicator(DataSource dataSource, TMAType type=SMA, TOtputType outputType=CandleAdapterIndicator::Close, QObject* parent=0);
 	virtual ~MAIndicator(){}
 protected:
-	Point candle2point(const Candle& candle) const;
+	virtual Point candle2point(int index) const override;
 private:
 	TMAType mMAType;
 	CandleAdapterIndicator * mCandleAdapterIndicator;

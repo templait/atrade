@@ -15,7 +15,8 @@ public:
 	int size() const override;
 	const Point *at(int index) const override;
 protected:
-	virtual Point candle2point(const Candle& candle) const = 0;
+	virtual Point candle2point(int index) const = 0;
+	DataSource dataSource() const;
 private:
 	void append(int start=0);
 

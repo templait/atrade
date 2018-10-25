@@ -28,6 +28,11 @@ const Point *BLineIndicator::at(int index) const
 	return rv;
 }
 
+DataSource BLineIndicator::dataSource() const
+{
+	return mDataSource;
+}
+
 void BLineIndicator::append(int start)
 {
 	int count=0;
@@ -41,7 +46,7 @@ void BLineIndicator::append(int start)
 		}
 		Q_ASSERT(mIndexMap.size()==i);
 		mIndexMap << mPoints.size();
-		mPoints << candle2point(*candle);
+		mPoints << candle2point(i);
 		count++;
 	}
 	if(count>0)
@@ -50,7 +55,6 @@ void BLineIndicator::append(int start)
 
 void BLineIndicator::onCandlesAppended(int count)
 {
-	//std::transform(mDataSource->end()-count, mDataSource->end(), std::back_insert_iterator<QList<Point> >(mPoints), [this](const Candle& candle){return candle2point(candle);});
 	append(mDataSource->size()-count);
 }
 
@@ -59,6 +63,6 @@ void BLineIndicator::onCandleUpdated(int index)
 	int i = mIndexMap[index];
 	Q_ASSERT(i<mPoints.size());
 	Q_ASSERT(index<mDataSource->size());
-	mPoints[i] = candle2point(*(mDataSource->at(index)));
+	mPoints[i] = candle2point(index);
 	emit pointUpdated(i);
 }
