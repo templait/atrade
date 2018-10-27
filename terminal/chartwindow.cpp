@@ -8,6 +8,7 @@
 #include <QDir> // killme
 #include <QScrollBar>
 #include <QDateTimeAxis>
+#include <QSettings> //  killme
 
 #include <tools.h>
 
@@ -63,12 +64,16 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 */
 
 	DataSource ds = DataSourceFactory::instance().get(QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"));
-	ChartWidget* cw = addDataSource(ds);
+	if(ds)
+	{
+		ChartWidget* cw = addDataSource(ds);
 
-	BIndicator *indicator;
-	//indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
-	indicator = new LuaLineIndicator("/home/abramov/Projects/atrade/lua/indicators/MA.lua", ds, this);
-	cw->addIndicator(indicator);
+		QSettings settings;
+		BIndicator *indicator;
+		//indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
+		indicator = new LuaLineIndicator(settings.value("LuaDir", "../lua").toString() + "/indicators/MA.lua", ds, this);
+		cw->addIndicator(indicator);
+	}
 
 	mScrollBar = new QScrollBar(Qt::Horizontal);
 	mScrollBar->setEnabled(false);

@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTextStream>
+#include <tools.h>
 #include "log.h"
 
 
@@ -13,7 +14,7 @@ DataSourceFile::DataSourceFile(const QString &fileName, QObject* parent) : BData
 	if(mFile->open(QIODevice::ReadOnly))
 	{	readData();	}
 	else
-	{	Log::warning(sourceName() + ": \"" + errorString() + '"');	}
+	{	Log::error(QString("%1.%2:%3").arg(__CLASS_NAME__).arg(sourceName()).arg(errorString()));	}
 }
 
 DataSourceFile::~DataSourceFile()
@@ -23,7 +24,7 @@ DataSourceFile::~DataSourceFile()
 
 QString DataSourceFile::sourceName() const
 {
-	return QString("FILE DS: %1").arg(mFile->fileName());
+	return QString("File(%1)").arg(mFile->fileName());
 }
 
 void DataSourceFile::readData()

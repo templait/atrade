@@ -9,5 +9,5 @@ public:
 
 	// Unit interface
 public:
-	BDataSource *create(const DataSourceFactory::ProductID &, const QVariantMap &) const;
+	BDataSource *create(const DataSourceFactory::ProductID &id, const QVariantMap &settings) const;
 };

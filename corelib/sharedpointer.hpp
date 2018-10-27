@@ -23,6 +23,8 @@ public:
 
 	bool operator==(const SharedPointer& other) const;
 	SharedPointer& operator=(const SharedPointer& other);
+
+	operator bool() const;
 private:
 	void increment();
 	void decrement();
@@ -87,6 +89,12 @@ inline SharedPointer<T> &SharedPointer<T>::operator=(const SharedPointer<T> &oth
 	mOnDelete = other.mOnDelete;
 	increment();
 	return *this;
+}
+
+template<class T>
+inline SharedPointer<T>::operator bool() const
+{
+	return !isNull();
 }
 
 template<class T>

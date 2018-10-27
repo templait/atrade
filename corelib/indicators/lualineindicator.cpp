@@ -1,5 +1,6 @@
 #include "lualineindicator.h"
 #include <log.h>
+#include <tools.h>
 
 extern "C" {
 #include "lua.h"
@@ -12,7 +13,7 @@ LuaLineIndicator::LuaLineIndicator(const QString &fileName, DataSource dataSourc
 	mState = luaL_newstate();
 	if(luaL_loadfile(mState, fileName.toLocal8Bit()))
 	{
-		Log::error(lua_tostring(mState,-1));
+		Log::error(QString("%1:%2").arg(__CLASS_NAME__).arg(lua_tostring(mState,-1)));
 	}
 	else
 	{
@@ -40,7 +41,7 @@ LuaLineIndicator::LuaLineIndicator(const QString &fileName, DataSource dataSourc
 
 		if(lua_pcall(mState, 0, 0, 0) != 0)
 		{
-			Log::error(QString("Failed to run script: %1\n").arg(lua_tostring(mState, -1)));
+			Log::error(QString("%1.Failed to run script: %1\n").arg(__CLASS_NAME__).arg(lua_tostring(mState, -1)));
 		}
 		else
 		{
