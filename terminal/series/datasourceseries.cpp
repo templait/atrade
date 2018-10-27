@@ -40,7 +40,7 @@ void DataSourceSeries::setViewTimeRange(const TimeRange &range)
 
 ValueRange DataSourceSeries::valueRange() const
 {
-	ValueRange rv(NAN, NAN);
+	ValueRange rv(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN());
 
 	for(const Candle* candle : mDataSource->getTimeRange(mViewTimeRange))
 	{
@@ -94,7 +94,7 @@ void DataSourceSeries::onCandleUpdated(int index)
 		// Перебираем в обратную сторону т.к. почти всегда обновляется последняя свечка
 		for(auto set = mCandleStickSeries->sets().crbegin(); set<mCandleStickSeries->sets().crend(); ++set)
 		{
-			if(mDataSource->at(index)->time().toMSecsSinceEpoch() == (*set)->timestamp())
+			if(mDataSource->at(index)->time().toMSecsSinceEpoch() == static_cast<qint64>((*set)->timestamp()))
 			{
 
 				(*set)->setOpen(mDataSource->at(index)->open());

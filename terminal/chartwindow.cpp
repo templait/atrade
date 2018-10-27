@@ -87,7 +87,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 
 ChartWidget* ChartWindow::addDataSource(DataSource dataSource, int widgetNum)
 {
-	ChartWidget* widget = 0;
+	ChartWidget* widget = nullptr;
 
 	if(widgetNum >= mChartWidgets.size())
 	{
@@ -154,10 +154,10 @@ void ChartWindow::adjustScroll()
 		if(rem>0)
 		{	max+=step-rem;	}
 
-		mScrollBar->setRange(min, max);
+		mScrollBar->setRange(rescaleInt64(min), rescaleInt64(max));
 
-		mScrollBar->setSingleStep(step);
-		mScrollBar->setPageStep(timeFrame());
+		mScrollBar->setSingleStep(rescaleInt64(step));
+		mScrollBar->setPageStep(rescaleInt64(timeFrame()));
 		if(! mScrollBar->isEnabled())
 		{
 			mScrollBar->setEnabled(true);
@@ -199,11 +199,17 @@ void ChartWindow::adjustGraphicsScene()
 	mGraphicsView->scene()->setSceneRect(mGraphicsView->childrenRect());
 }
 
+int ChartWindow::rescaleInt64(qint64 value) const
+{
+	//static_cast<int>(value * std::numeric_limits<int>::max() / std::numeric_limits<qint64>::max());
+	return static_cast<int>(value);
+}
+
 void ChartWindow::resizeEvent(QResizeEvent *event)
 {
 	adjustGraphicsScene();
 	adjustScroll();
-	mScrollBar->setPageStep(timeFrame());
+	mScrollBar->setPageStep(rescaleInt64(timeFrame()));
 	setScrollValue(mScrollBar->sliderPosition());
 	QWidget::resizeEvent(event);
 }
@@ -212,7 +218,7 @@ void ChartWindow::showEvent(QShowEvent *event)
 {
 	adjustGraphicsScene();
 	adjustScroll();
-	mScrollBar->setPageStep(timeFrame());
+	mScrollBar->setPageStep(rescaleInt64(timeFrame()));
 	setScrollValue(mScrollBar->sliderPosition());
 	QWidget::showEvent(event);
 }

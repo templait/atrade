@@ -97,7 +97,7 @@ void LineIndicatorSeries::setViewTimeRange(const TimeRange &range)
 
 ValueRange LineIndicatorSeries::valueRange() const
 {
-	ValueRange rv(NAN, NAN);
+	ValueRange rv(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN());
 
 	for(const Point* point : mIndicator->getTimeRange(mViewTimeRange))
 	{

@@ -20,7 +20,7 @@ class ChartWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	ChartWindow(QWidget* parent=0);
+	ChartWindow(QWidget* parent=nullptr);
 
 	ChartWidget *addDataSource(DataSource dataSource, int widgetNum=0);
 
@@ -41,6 +41,7 @@ private:
 	qint64 timeFrame() const;	//!< Размер временного окна, помещаемого в график.
 	void setViewTimeRange(const TimeRange &range);
 	void adjustGraphicsScene();
+	int rescaleInt64(qint64 value) const;
 
 private slots:
 	void onCandlesAppend(DataSource, int);
