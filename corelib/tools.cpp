@@ -46,3 +46,54 @@ qint64 secsInInterval(ETimeInterval interval)
 	}
 	return rv;
 }
+
+QString intervalToString(ETimeInterval interval)
+{
+	QString rv;
+	switch(interval)
+	{
+	case IntervalM1:
+		rv = "M1";
+		break;
+	case IntervalM5:
+		rv = "M5";
+		break;
+	case IntervalM10:
+		rv = "M10";
+		break;
+	case IntervalM15:
+		rv = "M15";
+		break;
+	case IntervalM20:
+		rv = "M20";
+		break;
+	case IntervalM30:
+		rv = "M30";
+		break;
+	case IntervalH1:
+		rv = "H1";
+		break;
+	case IntervalH2:
+		rv = "H2";
+		break;
+	case IntervalH4:
+		rv = "H4";
+		break;
+	case IntervalD1:
+		rv = "D1";
+		break;
+	case IntervalW1:
+		rv = "W1";
+		break;
+	case IntervalMN1:
+		rv = "MN1";
+		break;
+	case IntervalTICK:
+		rv = "TICK";
+		break;
+	case IntervalUnknown:
+		rv = "Unknown:";
+		break;
+	}
+	return rv;
+}

@@ -3,6 +3,7 @@
 #include <types.h>
 
 qint64 secsInInterval(ETimeInterval interval);
+QString intervalToString(ETimeInterval interval);
 
 inline QString className(const QString& prettyFunction)
 {

@@ -26,8 +26,13 @@ BDataSource *DataSourceFileFactory::create(const DataSourceFactory::ProductID & 
 	if(id == "ab38fe10-d502-11e8-b568-0800200c9a66")
 	{
 		QSettings appSettings;
-		QString path = appSettings.value("DataSourceFileDir", "../DataSourceFile").toString();
-		rv = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt");
+		QString path = QString("%1/%2/%3/%4.txt")
+		        .arg(appSettings.value("DataSourceFileDir", "../DataSourceFile").toString())
+		        .arg(settings["class"].toString())
+		        .arg(settings["code"].toString())
+		        .arg(intervalToString(static_cast<ETimeInterval>(settings["interval"].toInt())));
+		//rv = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt");
+		rv = new DataSourceFile(path);
 	}
 	else
 	{
