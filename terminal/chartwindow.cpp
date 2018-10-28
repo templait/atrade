@@ -1,15 +1,13 @@
 #include "chartwidget.h"
 #include "chartwindow.h"
 
-#include <QGraphicsGridLayout>
-#include <QGraphicsView>
-#include <QGraphicsWidget>
-#include <QVBoxLayout>
+#include <ui_chartwindow.h>
 #include <QDir> // killme
 #include <QScrollBar>
 #include <QDateTimeAxis>
 #include <QSettings> //  killme
 
+#include <QGraphicsGridLayout>
 #include <tools.h>
 
 #include <datasources/datasourcefile.h>  // killme
@@ -27,29 +25,27 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mTimeInterval = IntervalD1;
 	mCandleWidth = 6;
 
-	mLayout = new QVBoxLayout;
-	setLayout(mLayout);
-	mLayout->setSpacing(1);
+	ui = new Ui::ChartWindow;
+	ui->setupUi(this);
+	//ui->graphicsView->setRenderHints(QPainter::Antialiasing);
+	ui->graphicsView->setScene(new QGraphicsScene(ui->graphicsView));
 
-	mGraphicsView = new QGraphicsView;
-	//mGraphicsView->setRenderHints(QPainter::Antialiasing);
-	mGraphicsView->setScene(new QGraphicsScene(mGraphicsView));
-	mGraphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	mGraphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	mGraphicsWidget = new QGraphicsWidget;
 /*
 	QPalette p;
 	p.setColor(QPalette::Background, Qt::red);
 	mGraphicsWidget->setPalette(p);
 	mGraphicsWidget->setAutoFillBackground(true);
 */
-	mGraphicsView->scene()->addItem(mGraphicsWidget);
+	mGraphicsWidget = new QGraphicsWidget;
+	ui->graphicsView->scene()->addItem(mGraphicsWidget);
 	mSceneLayout = new QGraphicsGridLayout;
 	mSceneLayout->setSpacing(-15);
 	mSceneLayout->setContentsMargins(0,0,0,0);
 	mGraphicsWidget->setLayout(mSceneLayout);
 
-	mLayout->addWidget(mGraphicsView);
+	for(int i = IntervalM1; i!=IntervalMN1; i++)
+	{	ui->cbTimeInterval->addItem(intervalToString(static_cast<ETimeInterval>(i)), i);	}
+
 /*
 	BDataSource *ds;
 
@@ -75,14 +71,17 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 		cw->addIndicator(indicator);
 	}
 
-	mScrollBar = new QScrollBar(Qt::Horizontal);
-	mScrollBar->setEnabled(false);
-	connect(mScrollBar, &QAbstractSlider::actionTriggered, [this](int){
-		setScrollValue(mScrollBar->sliderPosition());
+	ui->scrollBar->setEnabled(false);
+	connect(ui->scrollBar, &QAbstractSlider::actionTriggered, [this](int){
+		setScrollValue(ui->scrollBar->sliderPosition());
 	});
-	mLayout->addWidget(mScrollBar);
 
 	adjustScroll();
+}
+
+ChartWindow::~ChartWindow()
+{
+	delete ui;
 }
 
 ChartWidget* ChartWindow::addDataSource(DataSource dataSource, int widgetNum)
@@ -112,7 +111,7 @@ qint64 ChartWindow::timeFrame() const
 	if(mChartWidgets.size()>0)
 	{
 		qreal width = mChartWidgets[0]->plotArea().width();
-		qreal candleCount = width/(mCandleWidth+1);
+		qint64 candleCount = static_cast<qint64>(width/(mCandleWidth+1));
 		rv = secsInInterval(mTimeInterval)*candleCount;
 	}
 	return rv;
@@ -154,20 +153,20 @@ void ChartWindow::adjustScroll()
 		if(rem>0)
 		{	max+=step-rem;	}
 
-		mScrollBar->setRange(rescaleInt64(min), rescaleInt64(max));
+		ui->scrollBar->setRange(rescaleInt64(min), rescaleInt64(max));
 
-		mScrollBar->setSingleStep(rescaleInt64(step));
-		mScrollBar->setPageStep(rescaleInt64(timeFrame()));
-		if(! mScrollBar->isEnabled())
+		ui->scrollBar->setSingleStep(rescaleInt64(step));
+		ui->scrollBar->setPageStep(rescaleInt64(timeFrame()));
+		if(! ui->scrollBar->isEnabled())
 		{
-			mScrollBar->setEnabled(true);
-			mScrollBar->setSliderPosition(mScrollBar->maximum());
+			ui->scrollBar->setEnabled(true);
+			ui->scrollBar->setSliderPosition(ui->scrollBar->maximum());
 		}
 	}
 	else
 	{
-		mScrollBar->setRange(0,0);
-		mScrollBar->setEnabled(false);
+		ui->scrollBar->setRange(0,0);
+		ui->scrollBar->setEnabled(false);
 	}
 }
 
@@ -181,22 +180,27 @@ void ChartWindow::setScrollValue(int value)
 void ChartWindow::onCandlesAppend(DataSource, int)
 {
 	bool need2Last = false;
-	if(mScrollBar->sliderPosition() == mScrollBar->maximum())
+	if(ui->scrollBar->sliderPosition() == ui->scrollBar->maximum())
 	{	need2Last = true;	}
 	adjustScroll();
 	if(need2Last)
 	{
-		mScrollBar->blockSignals(true);
-		setScrollValue(mScrollBar->maximum());
-		mScrollBar->setSliderPosition(mScrollBar->maximum());
-		mScrollBar->blockSignals(false);
+		ui->scrollBar->blockSignals(true);
+		setScrollValue(ui->scrollBar->maximum());
+		ui->scrollBar->setSliderPosition(ui->scrollBar->maximum());
+		ui->scrollBar->blockSignals(false);
 	}
 }
 
 void ChartWindow::adjustGraphicsScene()
 {
-	mGraphicsWidget->setGeometry(mGraphicsView->childrenRect());
-	mGraphicsView->scene()->setSceneRect(mGraphicsView->childrenRect());
+	mGraphicsWidget->setGeometry(ui->graphicsView->childrenRect());
+	ui->graphicsView->scene()->setSceneRect(ui->graphicsView->childrenRect());
+}
+
+void ChartWindow::setTimeInterval(ETimeInterval interval)
+{
+
 }
 
 int ChartWindow::rescaleInt64(qint64 value) const
@@ -209,8 +213,8 @@ void ChartWindow::resizeEvent(QResizeEvent *event)
 {
 	adjustGraphicsScene();
 	adjustScroll();
-	mScrollBar->setPageStep(rescaleInt64(timeFrame()));
-	setScrollValue(mScrollBar->sliderPosition());
+	ui->scrollBar->setPageStep(rescaleInt64(timeFrame()));
+	setScrollValue(ui->scrollBar->sliderPosition());
 	QWidget::resizeEvent(event);
 }
 
@@ -218,7 +222,7 @@ void ChartWindow::showEvent(QShowEvent *event)
 {
 	adjustGraphicsScene();
 	adjustScroll();
-	mScrollBar->setPageStep(rescaleInt64(timeFrame()));
-	setScrollValue(mScrollBar->sliderPosition());
+	ui->scrollBar->setPageStep(rescaleInt64(timeFrame()));
+	setScrollValue(ui->scrollBar->sliderPosition());
 	QWidget::showEvent(event);
 }
