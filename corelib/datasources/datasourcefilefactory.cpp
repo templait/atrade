@@ -8,18 +8,12 @@
 #include <QSettings>
 
 DataSourceFileFactory::DataSourceFileFactory()
-    : DataSourceFactory::Unit(
-            QString("File datasources"),
-            QUuid("cbc78f17-d904-48b3-b31b-ab010bf4dd20"),
-            {
-                {QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"), QString("File datasoure")}
-            }
-                              )
+	: DataSourceFactory::Unit(QString("File datasoure"), QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"))
 {
 
 }
 
-BDataSource *DataSourceFileFactory::create(const DataSourceFactory::ProductID & id, const QVariantMap & settings) const
+BDataSource *DataSourceFileFactory::create(const DataSourceFactory::ProductID & id, const Configuration &settings) const
 {
 	BDataSource* rv=nullptr;
 
@@ -28,9 +22,9 @@ BDataSource *DataSourceFileFactory::create(const DataSourceFactory::ProductID & 
 		QSettings appSettings;
 		QString path = QString("%1/%2/%3/%4.txt")
 		        .arg(appSettings.value("DataSourceFileDir", "../DataSourceFile").toString())
-		        .arg(settings["class"].toString())
-		        .arg(settings["code"].toString())
-		        .arg(intervalToString(static_cast<ETimeInterval>(settings["interval"].toInt())));
+				.arg(settings["class"].value().toString())
+				.arg(settings["code"].value().toString())
+				.arg(intervalToString(static_cast<ETimeInterval>(settings["interval"].value().toInt())));
 		//rv = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt");
 		rv = new DataSourceFile(path);
 	}

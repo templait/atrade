@@ -3,7 +3,7 @@
 #include <QSet>
 #include <QSharedPointer>
 #include <QUuid>
-#include <QVariantMap>
+#include <configuration.h>
 #include <sharedpointer.hpp>
 #include <log.h>
 #include <tools.h>
@@ -13,22 +13,17 @@ class Factory
 {
 public:
 	typedef SharedPointer<T> Product;
-	typedef QUuid UnitID;
 	typedef QUuid ProductID;
 private:
 	Factory(Factory const&) = delete;
 	Factory& operator= (Factory const&) = delete;
 	Factory(){}
 	~Factory(){}
-	struct ProductDescr
-	{
-		ProductID id;
-		QString name;
-	};
+
 	struct ProductKey
 	{
 		ProductID productID;
-		QVariantMap settings;
+		Configuration settings;
 	};
 	class ProductMap
 	{
@@ -36,13 +31,13 @@ private:
 		class ProductList
 		{
 		public:
-			bool contains(const QVariantMap& key) const;
-			bool remove(const QVariantMap& key);
-			Product  operator [](const QVariantMap& key) const;
-			Product& operator [](const QVariantMap& key);
+			bool contains(const Configuration& key) const;
+			bool remove(const Configuration& key);
+			Product  operator [](const Configuration& key) const;
+			Product& operator [](const Configuration& key);
 		private:
-			int find(const QVariantMap& key) const;
-			QList<QPair<QVariantMap, Product> > mList;
+			int find(const Configuration& key) const;
+			QList<QPair<Configuration, Product> > mList;
 		};
 		QMap<ProductID,  ProductList> mMap;
 
@@ -58,34 +53,24 @@ public:
 	class Unit
 	{
 	public:
-		Unit(const QString& unitName, const UnitID& id, const QList<ProductDescr> & productList)
-		    : mUnitName(unitName)
-		    , mID(id)
+		Unit(const QString& productName, const ProductID& productID)
+			: mProductName(productName)
+			, mProductID(productID)
 		{
-			for(const ProductDescr& descr : productList)
-			{	mProductsDescr[descr.id] = descr; }
 		}
 		virtual ~Unit(){}
-		virtual T* create(const ProductID& id, const QVariantMap& setiings) const = 0;
-		const QString& unitName() const					{return mUnitName;}
-		UnitID unitID() const							{return mID;}
-		QList<ProductDescr> productList() const			{return mProductsDescr.values();}
-		QString productName(const ProductID& productID) const
-		{
-			QString rv;
-			if(mProductsDescr.contains(productID))
-			{	rv = mProductsDescr[productID].name;	}
-			return rv;
-		}
+		virtual T* create(const ProductID& id, const Configuration& setiings) const = 0;
+		//virtual Configuration defaultConfiguration(const ProductID& id) const = 0;
+		const QString& productName() const					{return mProductName;}
+		const ProductID& productID() const					{return mProductID;}
 	private:
-		QString mUnitName;
-		UnitID mID;
-		QMap<ProductID, ProductDescr> mProductsDescr;
+		QString mProductName;
+		ProductID mProductID;
 	};
 
 
 	static Factory& instance();
-	Product get(const ProductID &id, const QVariantMap& settings = QVariantMap());
+	Product get(const ProductID &id, const Configuration& settings = Configuration());
 	bool registerUnit(Unit *unit);
 private:
 
@@ -102,7 +87,7 @@ Factory<T> &Factory<T>::instance()
 }
 
 template<class T>
-typename Factory<T>::Product Factory<T>::get(const Factory<T>::ProductID &id, const QVariantMap &settings)
+typename Factory<T>::Product Factory<T>::get(const Factory<T>::ProductID &id, const Configuration &settings)
 {
 	Product rv;
 	ProductKey productKey = {id, settings};
@@ -134,22 +119,19 @@ bool Factory<T>::registerUnit(Unit* unit)
 	{
 		mUnits << unitPtr;
 		rv = true;
-		for(const ProductDescr& productDescr : unitPtr->productList())
-		{
-			mUnitMap[productDescr.id] = unitPtr;
-		}
+		mUnitMap[unit->productID()] = unitPtr;
 	}
 	return rv;
 }
 
 template<class T>
-bool Factory<T>::ProductMap::ProductList::contains(const QVariantMap &key) const
+bool Factory<T>::ProductMap::ProductList::contains(const Configuration &key) const
 {
 	return find(key)>=0;
 }
 
 template<class T>
-bool Factory<T>::ProductMap::ProductList::remove(const QVariantMap &key)
+bool Factory<T>::ProductMap::ProductList::remove(const Configuration &key)
 {
 	bool rv = false;
 	int i = find(key);
@@ -162,7 +144,7 @@ bool Factory<T>::ProductMap::ProductList::remove(const QVariantMap &key)
 }
 
 template<class T>
-int Factory<T>::ProductMap::ProductList::find(const QVariantMap &key) const
+int Factory<T>::ProductMap::ProductList::find(const Configuration &key) const
 {
 	int rv = -1;
 	for(int i=0; i<mList.size(); i++)
@@ -178,13 +160,13 @@ int Factory<T>::ProductMap::ProductList::find(const QVariantMap &key) const
 }
 
 template<class T>
-typename Factory<T>::Product Factory<T>::ProductMap::ProductList::operator [](const QVariantMap &key) const
+typename Factory<T>::Product Factory<T>::ProductMap::ProductList::operator [](const Configuration &key) const
 {
 	return mList[find(key)].second;
 }
 
 template<class T>
-typename Factory<T>::Product &Factory<T>::ProductMap::ProductList::operator [](const QVariantMap &key)
+typename Factory<T>::Product &Factory<T>::ProductMap::ProductList::operator [](const Configuration &key)
 {
 	int i = find(key);
 	if(i>=0)
