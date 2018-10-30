@@ -109,14 +109,14 @@ QString DataSourceQUIK::sourceName() const
 	return QString("QUIK DS: %1:%2, %3:%4").arg(mSettings.hostName).arg(mSettings.port).arg(mSettings.className).arg(mSettings.code);
 }
 // telnet command
-// (echo '{"command":"GetDataSource", "Class":"TQBR", "Code":"SBER", "TimeFrame":1440}'; sleep 1) | telnet 192.168.9.63 5000
+// (echo '{"Command":"GetDataSource", "Continue":1, "Class":"TQBR", "Code":"SBER", "TimeFrame":1440}'; sleep 1) | telnet 192.168.9.63 5000
 void DataSourceQUIK::onStateChanged(QAbstractSocket::SocketState socketState)
 {
 	switch(socketState)
 	{
 	case QAbstractSocket::ConnectedState:
 	{
-		QString cmd = QString("{\"command\":\"GetDataSource\", \"Class\":\"%1\", \"Code\":\"%2\", \"TimeFrame\":%3}\n").arg(mSettings.className).arg(mSettings.code).arg(quikInterval());
+		QString cmd = QString("{\"Command\":\"GetDataSource\", \"Continue\":1, \"Class\":\"%1\", \"Code\":\"%2\", \"TimeFrame\":%3}\n").arg(mSettings.className).arg(mSettings.code).arg(quikInterval());
 		mStream << cmd;
 		mStream.flush();
 	}

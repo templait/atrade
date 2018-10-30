@@ -15,3 +15,9 @@ int main(int argc, char** argv)
 	w.show();
 	return app.exec();
 }
+
+
+// Параметры конфига
+
+// DataSourceFileDir - каталог с дампами катироваок
+// LuaDir - каталог со скриптами

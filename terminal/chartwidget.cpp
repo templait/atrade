@@ -19,6 +19,7 @@ ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
 	setLayout(layout);
 
 	mChart = new QChart;
+	//mChart->setAnimationOptions(QChart::SeriesAnimations);
 	layout->addItem(mChart);
 
 	mValueAxis = new QValueAxis;

@@ -122,7 +122,7 @@ int DataSourceFile::size() const
 
 const Candle *DataSourceFile::at(int index) const
 {
-	const Candle * rv = 0;
+	const Candle * rv = nullptr;
 	if(index < size())
 	{	rv = &(mCandles.at(index));	}
 	return rv;

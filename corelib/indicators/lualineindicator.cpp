@@ -72,7 +72,7 @@ int LuaLineIndicator::candleC(lua_State *L)
 {
 	const void* pt = lua_topointer(L, lua_upvalueindex(1));
 	const LuaLineIndicator* indicator = reinterpret_cast<const LuaLineIndicator*>(pt);
-	double index = lua_tonumber(L, -1);
+	qint64 index = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 	lua_pushnumber(L, indicator->dataSource()->at(index)->close());
 	return 1;
@@ -92,7 +92,7 @@ int LuaLineIndicator::candleL(lua_State *L)
 {
 	const void* pt = lua_topointer(L, lua_upvalueindex(1));
 	const LuaLineIndicator* indicator = reinterpret_cast<const LuaLineIndicator*>(pt);
-	double index = lua_tonumber(L, -1);
+	qint64 index = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 	lua_pushnumber(L, indicator->dataSource()->at(index)->low());
 	return 1;
@@ -102,7 +102,7 @@ int LuaLineIndicator::candleH(lua_State *L)
 {
 	const void* pt = lua_topointer(L, lua_upvalueindex(1));
 	const LuaLineIndicator* indicator = reinterpret_cast<const LuaLineIndicator*>(pt);
-	double index = lua_tonumber(L, -1);
+	qint64 index = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 	lua_pushnumber(L, indicator->dataSource()->at(index)->high());
 	return 1;
@@ -112,7 +112,7 @@ int LuaLineIndicator::candleV(lua_State *L)
 {
 	const void* pt = lua_topointer(L, lua_upvalueindex(1));
 	const LuaLineIndicator* indicator = reinterpret_cast<const LuaLineIndicator*>(pt);
-	double index = lua_tonumber(L, -1);
+	qint64 index = lua_tointeger(L, -1);
 	lua_pop(L, 1);
 	lua_pushnumber(L, indicator->dataSource()->at(index)->volume());
 	return 1;

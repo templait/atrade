@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
-SUBDIRS	 = corelib terminal tests
+SUBDIRS	 = corelib terminal dsdump tests
 

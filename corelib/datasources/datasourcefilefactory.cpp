@@ -21,7 +21,7 @@ DataSourceFileFactory::DataSourceFileFactory()
 
 BDataSource *DataSourceFileFactory::create(const DataSourceFactory::ProductID & id, const QVariantMap & settings) const
 {
-	BDataSource* rv=0;
+	BDataSource* rv=nullptr;
 
 	if(id == "ab38fe10-d502-11e8-b568-0800200c9a66")
 	{
