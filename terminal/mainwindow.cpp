@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "logdoc/logdoc.h"
 #include "chartwindow.h"
+#include "configurationeditor.h"
+
 #include <ui_mainwindow.h>
 
 #include <QMdiArea>
@@ -22,6 +24,8 @@ MainWindow::MainWindow()
 	QSettings settings;
 	restoreGeometry(settings.value("geometry").toByteArray());
 	restoreState(settings.value("windowState").toByteArray());
+
+	connect(ui->actionCreate_chart, SIGNAL(triggered(bool)), SLOT(createChart()));
 }
 
 MainWindow::~MainWindow()
@@ -35,6 +39,13 @@ void MainWindow::initDocks()
 	addDockWidget(Qt::BottomDockWidgetArea, mLogDoc);
 	mLogDoc->hide();// hide by default
 	ui->menuView->addAction(mLogDoc->toggleViewAction());
+}
+
+void MainWindow::createChart()
+{
+	Configuration config;
+	ConfigurationEditor editor(config, this);
+	editor.exec();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

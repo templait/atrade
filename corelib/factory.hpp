@@ -8,12 +8,14 @@
 #include <log.h>
 #include <tools.h>
 
+typedef QUuid ProductID;
+typedef QList<QPair<QString, ProductID> > ProductList;
+
 template <class T>
 class Factory
 {
 public:
 	typedef SharedPointer<T> Product;
-	typedef QUuid ProductID;
 private:
 	Factory(Factory const&) = delete;
 	Factory& operator= (Factory const&) = delete;
@@ -28,7 +30,7 @@ private:
 	class ProductMap
 	{
 	private:
-		class ProductList
+		class ProductSet
 		{
 		public:
 			bool contains(const Configuration& key) const;
@@ -39,7 +41,7 @@ private:
 			int find(const Configuration& key) const;
 			QList<QPair<Configuration, Product> > mList;
 		};
-		QMap<ProductID,  ProductList> mMap;
+		QMap<ProductID,  ProductSet> mMap;
 
 	public:
 		bool contains(const ProductKey& key) const;
@@ -72,11 +74,11 @@ public:
 	static Factory& instance();
 	Product get(const ProductID &id, const Configuration& settings = Configuration());
 	bool registerUnit(Unit *unit);
+	ProductList productList() const;
 private:
 
 	QMap<ProductID, QSharedPointer<Unit> > mUnitMap;
 	ProductMap mProductMap;
-	QSet<QSharedPointer<Unit> > mUnits;
 };
 
 template<class T>
@@ -87,7 +89,7 @@ Factory<T> &Factory<T>::instance()
 }
 
 template<class T>
-typename Factory<T>::Product Factory<T>::get(const Factory<T>::ProductID &id, const Configuration &settings)
+typename Factory<T>::Product Factory<T>::get(const ProductID &id, const Configuration &settings)
 {
 	Product rv;
 	ProductKey productKey = {id, settings};
@@ -115,9 +117,8 @@ bool Factory<T>::registerUnit(Unit* unit)
 {
 	bool rv = false;
 	QSharedPointer<Unit> unitPtr(unit);
-	if(! mUnits.contains(unitPtr))
+	if(! mUnitMap.contains(unit->productID()))
 	{
-		mUnits << unitPtr;
 		rv = true;
 		mUnitMap[unit->productID()] = unitPtr;
 	}
@@ -125,13 +126,24 @@ bool Factory<T>::registerUnit(Unit* unit)
 }
 
 template<class T>
-bool Factory<T>::ProductMap::ProductList::contains(const Configuration &key) const
+ProductList Factory<T>::productList() const
+{
+	ProductList rv;
+	for(auto unit : mUnitMap.values())
+	{
+		rv << QPair<QString, ProductID>(unit->productName(), unit->productID());
+	}
+	return rv;
+}
+
+template<class T>
+bool Factory<T>::ProductMap::ProductSet::contains(const Configuration &key) const
 {
 	return find(key)>=0;
 }
 
 template<class T>
-bool Factory<T>::ProductMap::ProductList::remove(const Configuration &key)
+bool Factory<T>::ProductMap::ProductSet::remove(const Configuration &key)
 {
 	bool rv = false;
 	int i = find(key);
@@ -144,7 +156,7 @@ bool Factory<T>::ProductMap::ProductList::remove(const Configuration &key)
 }
 
 template<class T>
-int Factory<T>::ProductMap::ProductList::find(const Configuration &key) const
+int Factory<T>::ProductMap::ProductSet::find(const Configuration &key) const
 {
 	int rv = -1;
 	for(int i=0; i<mList.size(); i++)
@@ -160,13 +172,13 @@ int Factory<T>::ProductMap::ProductList::find(const Configuration &key) const
 }
 
 template<class T>
-typename Factory<T>::Product Factory<T>::ProductMap::ProductList::operator [](const Configuration &key) const
+typename Factory<T>::Product Factory<T>::ProductMap::ProductSet::operator [](const Configuration &key) const
 {
 	return mList[find(key)].second;
 }
 
 template<class T>
-typename Factory<T>::Product &Factory<T>::ProductMap::ProductList::operator [](const Configuration &key)
+typename Factory<T>::Product &Factory<T>::ProductMap::ProductSet::operator [](const Configuration &key)
 {
 	int i = find(key);
 	if(i>=0)

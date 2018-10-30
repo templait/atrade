@@ -12,6 +12,7 @@ class QMdiArea;
 
 class MainWindow : public QMainWindow
 {
+	Q_OBJECT
 public:
 	MainWindow();
 	~MainWindow();
@@ -21,6 +22,8 @@ private:
 	QMdiArea *mMdiArea;
 
 	void initDocks();
+private slots:
+	void createChart();
 
 	// QWidget interface
 protected:

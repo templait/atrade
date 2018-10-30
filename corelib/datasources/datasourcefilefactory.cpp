@@ -13,7 +13,7 @@ DataSourceFileFactory::DataSourceFileFactory()
 
 }
 
-BDataSource *DataSourceFileFactory::create(const DataSourceFactory::ProductID & id, const Configuration &settings) const
+BDataSource *DataSourceFileFactory::create(const ProductID & id, const Configuration &settings) const
 {
 	BDataSource* rv=nullptr;
 

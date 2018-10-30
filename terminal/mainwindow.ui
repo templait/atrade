@@ -28,9 +28,24 @@
      <string>View</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuChart">
+    <property name="title">
+     <string>Chart</string>
+    </property>
+    <addaction name="actionCreate_chart"/>
+   </widget>
+   <addaction name="menuChart"/>
    <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionCreate_chart">
+   <property name="text">
+    <string>Create chart</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -6,9 +6,9 @@ class DataSourceFileFactory : public DataSourceFactory::Unit
 {
 public:
 	DataSourceFileFactory();
-	virtual ~DataSourceFileFactory(){}
+	virtual ~DataSourceFileFactory() override{}
 
 	// Unit interface
 public:
-	virtual BDataSource *create(const DataSourceFactory::ProductID &id, const Configuration &settings) const override;
+	virtual BDataSource *create(const ProductID &id, const Configuration &settings) const override;
 };
