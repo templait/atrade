@@ -10,5 +10,6 @@ public:
 
 	// Unit interface
 public:
-	virtual BDataSource *create(const ProductID &id, const Configuration &settings) const override;
+	virtual BDataSource *create(const Configuration &configuration) const override;
+	virtual Configuration defaultConfiguration() const override;
 };

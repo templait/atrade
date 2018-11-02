@@ -1,5 +1,9 @@
 #include "productlistmodel.h"
 
+#include <QApplication>
+#include <QDataStream>
+#include <QMimeData>
+
 ProductListModel::ProductListModel(QObject *parent)
 	: QAbstractItemModel(parent)
 	, mSections{
@@ -98,5 +102,33 @@ QVariant ProductListModel::data(const QModelIndex &index, int role) const
 			rv = sectionNumToName(sectionNum);
 		}
 	}
+	return rv;
+}
+
+QStringList ProductListModel::mimeTypes() const
+{
+	QStringList types;
+	types << "application/datasource.code";
+	return types;
+}
+
+QMimeData *ProductListModel::mimeData(const QModelIndexList &indexes) const
+{
+	QByteArray encodedData;
+	QDataStream stream(&encodedData, QIODevice::WriteOnly);
+	for(const QModelIndex& index : indexes)
+	{
+		stream << DataSourceFactory::instance().defaultConfiguration(index.sibling(index.row(), 1).data().toUuid());
+	}
+	QMimeData *rv = new QMimeData();
+	rv->setData("application/datasource.code", 	encodedData);
+	return rv;
+}
+
+Qt::ItemFlags ProductListModel::flags(const QModelIndex &index) const
+{
+	Qt::ItemFlags rv = QAbstractItemModel::flags(index);
+	if(index.isValid() && index.parent().isValid())
+	{	rv |= Qt::ItemIsDragEnabled;	}
 	return rv;
 }

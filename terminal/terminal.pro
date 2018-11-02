@@ -9,8 +9,8 @@ INCLUDEPATH += ../corelib
 
 SOURCES = main.cpp
 
-HEADERS += mainwindow.h   chartwindow.h   configurationeditor.h   chartwidget.h   productlistmodel.h
-SOURCES += mainwindow.cpp chartwindow.cpp configurationeditor.cpp chartwidget.cpp productlistmodel.cpp
+HEADERS += mainwindow.h   chartwindow.h   configurationeditor.h   chartwidget.h   productlistmodel.h   configurationmodel.h
+SOURCES += mainwindow.cpp chartwindow.cpp configurationeditor.cpp chartwidget.cpp productlistmodel.cpp configurationmodel.cpp
 FORMS	=  mainwindow.ui  chartwindow.ui  configurationeditor.ui
 
 include(logdoc/logdoc.pri)

@@ -59,7 +59,11 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	ChartWidget* cw = addDataSource(ds);
 */
 
-	DataSource ds = DataSourceFactory::instance().get(QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"), {{"class",{"TQBR"}}, {"code",{"SBER"}}, {"interval", {IntervalD1}} });
+	Configuration conf = DataSourceFactory::instance().defaultConfiguration(QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"));
+	conf["class"].setValue("TQBR");
+	conf["code"].setValue("SBER");
+	conf["interval"].setValue(IntervalD1);
+	DataSource ds = DataSourceFactory::instance().get(conf);
 	if(ds)
 	{
 		ChartWidget* cw = addDataSource(ds);

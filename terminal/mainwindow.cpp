@@ -56,8 +56,3 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	QMainWindow::closeEvent(event);
 }
 
-void MainWindow::showEvent(QShowEvent *event)
-{
-	QMainWindow::showEvent(event);
-
-}

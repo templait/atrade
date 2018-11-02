@@ -7,7 +7,7 @@ QString intervalToString(ETimeInterval interval);
 
 inline QString className(const QString& prettyFunction)
 {
-	return prettyFunction.split("::").first();
+	return prettyFunction.split("::").first().split(' ').last();
 }
 
 #define __CLASS_NAME__ className(__PRETTY_FUNCTION__)

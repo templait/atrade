@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 public:
 	MainWindow();
-	~MainWindow();
+	~MainWindow() override;
 private:
 	Ui::MainWindow *ui;
 	LogDoc *mLogDoc;
@@ -27,6 +27,5 @@ private slots:
 
 	// QWidget interface
 protected:
-	void closeEvent(QCloseEvent *event);
-	void showEvent(QShowEvent *event);
+	void closeEvent(QCloseEvent *event) override;
 };

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>536</width>
+    <width>1048</width>
     <height>427</height>
    </rect>
   </property>
@@ -15,10 +15,26 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTreeView" name="tvProductList">
-     <attribute name="headerVisible">
-      <bool>false</bool>
-     </attribute>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QTreeView" name="tvProductList">
+      <property name="dragEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="animated">
+       <bool>true</bool>
+      </property>
+      <attribute name="headerVisible">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+     <widget class="QTreeView" name="tvConfiguration">
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
    </item>
    <item>
@@ -33,6 +49,10 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tvProductList</tabstop>
+  <tabstop>tvConfiguration</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

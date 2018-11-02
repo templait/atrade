@@ -61,7 +61,8 @@ public:
 		{
 		}
 		virtual ~Unit(){}
-		virtual T* create(const ProductID& id, const Configuration& setiings) const = 0;
+		virtual T* create(const Configuration& configuration) const = 0;
+		virtual Configuration defaultConfiguration() const = 0;
 		//virtual Configuration defaultConfiguration(const ProductID& id) const = 0;
 		const QString& productName() const					{return mProductName;}
 		const ProductID& productID() const					{return mProductID;}
@@ -72,7 +73,8 @@ public:
 
 
 	static Factory& instance();
-	Product get(const ProductID &id, const Configuration& settings = Configuration());
+	Product get(const Configuration& settings = Configuration());
+	Configuration defaultConfiguration(const ProductID &id) const;
 	bool registerUnit(Unit *unit);
 	ProductList productList() const;
 private:
@@ -89,15 +91,16 @@ Factory<T> &Factory<T>::instance()
 }
 
 template<class T>
-typename Factory<T>::Product Factory<T>::get(const ProductID &id, const Configuration &settings)
+typename Factory<T>::Product Factory<T>::get(const Configuration &settings)
 {
 	Product rv;
+	ProductID id = settings.value().toUuid();
 	ProductKey productKey = {id, settings};
 	if(!mProductMap.contains(productKey))
 	{
 		if(mUnitMap.contains(id))
 		{
-			rv = Product(mUnitMap[id]->create(id, settings), [this, productKey](int count){
+			rv = Product(mUnitMap[id]->create(settings), [this, productKey](int count){
 				if(count == 1)
 				{	mProductMap.remove(productKey);	}
 			});
@@ -109,6 +112,17 @@ typename Factory<T>::Product Factory<T>::get(const ProductID &id, const Configur
 
 	if(!rv)
 	{	Log::error(QString("%1.invalid ProductID: \"%2\"").arg(__CLASS_NAME__).arg(id.toString()));	}
+	return rv;
+}
+
+template<class T>
+Configuration Factory<T>::defaultConfiguration(const ProductID &id) const
+{
+	Configuration rv;
+	if(mUnitMap.contains(id))
+	{
+		rv = mUnitMap[id]->defaultConfiguration();
+	}
 	return rv;
 }
 
