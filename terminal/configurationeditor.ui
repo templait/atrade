@@ -23,6 +23,9 @@
       <property name="dragEnabled">
        <bool>true</bool>
       </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::DragOnly</enum>
+      </property>
       <property name="animated">
        <bool>true</bool>
       </property>
@@ -33,6 +36,9 @@
      <widget class="QTreeView" name="tvConfiguration">
       <property name="acceptDrops">
        <bool>true</bool>
+      </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::DragDrop</enum>
       </property>
      </widget>
     </widget>

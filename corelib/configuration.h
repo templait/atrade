@@ -2,33 +2,16 @@
 
 #include <QVariant>
 
-class Parameter
-{
-public:
-	Parameter(){}
-	Parameter(const QVariant& value, const QString& title = QString());
-
-	void setTitle(const QString& title);
-	const QString& title() const;
-
-	void setValue(const QVariant& value);
-	const QVariant& value() const;
-
-	bool operator==(const Parameter& other) const;
-private:
-	QVariant mValue;
-	QString mTitle;
-};
-
-//typedef QMap<QString, Parameter> Configuration;
-
 class Configuration
 {
 public:
+	enum EParam {Name=0x01, Value=0x02, Title=0x04, WriteAll=0xFFFF, ReadOnly=0x0};
+
 	Configuration();
 	Configuration(const Configuration &other);
 	Configuration(std::initializer_list<Configuration> list);
 	Configuration(const QString& name, const QVariant& value, const QString& title = QString());
+	Configuration( int userEditableMap, const QString& name, const QVariant& value, const QString& title = QString());
 
 	Configuration operator[](const QString& childName) const;
 	Configuration& operator[](const QString& childName);
@@ -45,9 +28,11 @@ public:
 	void setTitle(const QString& title);
 
 	bool appendChild(Configuration child);
-	Configuration *childAt(int index);
+	const Configuration *childAt(int index) const;
 	int childrenCount() const;
 
+	bool userEditabe(EParam param) const;
+	void setUserEditableMap(int map);
 	Configuration * parent();
 private:
 	QString mName;
@@ -55,6 +40,7 @@ private:
 	QString mTitle;
 	QMap<QString, Configuration> mChildren;
 	Configuration *mParent;
+	int mUserEditableMap;
 };
 
 QDataStream& operator<<(QDataStream& out, const Configuration& configuration);

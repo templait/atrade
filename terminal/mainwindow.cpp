@@ -18,9 +18,6 @@ MainWindow::MainWindow()
 
 	initDocks();
 
-	ChartWindow* w = new ChartWindow;
-	mMdiArea->addSubWindow(w);
-
 	QSettings settings;
 	restoreGeometry(settings.value("geometry").toByteArray());
 	restoreState(settings.value("windowState").toByteArray());
@@ -43,9 +40,14 @@ void MainWindow::initDocks()
 
 void MainWindow::createChart()
 {
-	Configuration config;
-	ConfigurationEditor editor(config, this);
-	editor.exec();
+	Configuration conf;
+	ConfigurationEditor editor(conf, this);
+	if(editor.exec())
+	{
+		ChartWindow* w = new ChartWindow(editor.configuration());
+		mMdiArea->addSubWindow(w);
+		w->show();
+	}
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

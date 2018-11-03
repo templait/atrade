@@ -17,6 +17,7 @@ class ConfigurationEditor : public QDialog
 public:
 	ConfigurationEditor(const Configuration& configuration, QWidget* parent=nullptr);
 	~ConfigurationEditor() override;
+	const Configuration& configuration() const;
 private:
 	Ui::ConfigurationEditor *ui;
 	Configuration mConfiguration;

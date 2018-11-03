@@ -1,18 +1,19 @@
 #include "configurationmodel.h"
 
+#include <QDataStream>
+#include <QMimeData>
+
 #define COL_COUNT 3
 
-ConfigurationModel::ConfigurationModel(QObject *parent)
+ConfigurationModel::ConfigurationModel(const Configuration& configuration, QObject *parent)
 	: QAbstractItemModel(parent)
-	, mRoot("root", QVariant(), tr("Конфигурация"))
+    , mRoot(configuration)
 {
-	addNewDataSource(ProductID("ab38fe10-d502-11e8-b568-0800200c9a66"));
 }
 
-void ConfigurationModel::addNewDataSource(const ProductID &productID)
+const Configuration &ConfigurationModel::configuration() const
 {
-	Configuration conf = DataSourceFactory::instance().defaultConfiguration(productID);
-	mRoot.appendChild(conf);
+	return mRoot;
 }
 
 Configuration *ConfigurationModel::index2configuration(const QModelIndex &index) const
@@ -34,9 +35,9 @@ QModelIndex ConfigurationModel::index(int row, int column, const QModelIndex &pa
 		if(parent.isValid())
 		{
 			Configuration* parentConf = index2configuration(parent);
-			if(Configuration* conf = parentConf->childAt(row))
+			if(const Configuration* conf = parentConf->childAt(row))
 			{
-				QModelIndex idx = createIndex(row, column, conf);
+				QModelIndex idx = createIndex(row, column, const_cast<Configuration*>(conf));
 				if(column <= columnCount(idx))
 				{	rv = idx;	}
 			}
@@ -118,6 +119,35 @@ QVariant ConfigurationModel::data(const QModelIndex &index, int role) const
 	return rv;
 }
 
+bool ConfigurationModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+	bool rv = false;
+	Configuration* conf = index2configuration(index);
+	if(index.column()==0)
+	{
+		switch(role)
+		{
+		case Qt::EditRole:
+			conf->setTitle(value.toString());
+			rv = true;
+			break;
+
+		}
+	}
+	else if(index.column()==1)
+	{
+		switch(role)
+		{
+		case Qt::EditRole:
+			conf->setValue(value);
+			rv = true;
+			break;
+
+		}
+	}
+	return rv;
+}
+
 QVariant ConfigurationModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	QVariant rv;
@@ -136,18 +166,51 @@ QVariant ConfigurationModel::headerData(int section, Qt::Orientation orientation
 Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 {
 	Qt::ItemFlags rv = QAbstractItemModel::flags(index);
-	if(index.isValid() && index.parent().isValid())
-	{	rv |= Qt::ItemIsDropEnabled;	}
+
+	if(index.isValid())
+	{
+		Configuration* conf = index2configuration(index);
+		if(conf->name() == "chart")
+		{	rv |= Qt::ItemIsDropEnabled;	}
+
+		if(index.column()==0  && conf->userEditabe(Configuration::Title))
+		{	rv |= Qt::ItemIsEditable;	}
+		else if(index.column()==1  && conf->userEditabe(Configuration::Value))
+		{	rv |= Qt::ItemIsEditable;	}
+		else if(index.column()==2  && conf->userEditabe(Configuration::Name))
+		{	rv |= Qt::ItemIsEditable;	}
+	}
 	return rv;
 }
 
-bool ConfigurationModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
+bool ConfigurationModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex &/*parent*/) const
 {
 	bool rv=false;
-	//if(!parent.isValid())
-	{
-		rv = true;
-	}
+	if(action & (Qt::MoveAction|Qt::CopyAction) && data->hasFormat("configuration/datasource"))
+	{	rv = true;	}
 	return rv;
+}
+
+bool ConfigurationModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int /*column*/, const QModelIndex &parent)
+{
+	QByteArray encodedData = data->data("configuration/datasource");
+	QDataStream stream(&encodedData, QIODevice::ReadOnly);
+
+	QList<Configuration> configs;
+	while (!stream.atEnd()) {
+		Configuration conf;
+		stream >> conf;
+		configs << conf;
+	}
+	if(action==Qt::CopyAction)
+	{
+		beginInsertRows(parent, row, row+configs.size()-1);
+		for(const Configuration& conf : configs)
+		{
+			index2configuration(parent)->appendChild(conf);
+		}
+		endInsertRows();
+	}
+	return true;
 }
 

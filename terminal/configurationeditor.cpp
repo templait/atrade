@@ -23,15 +23,22 @@ ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWi
 	ui->tvProductList->setModel(mProductListModel);
 	ui->tvProductList->expandAll();
 
-	mConfigurationModel = new ConfigurationModel(this);
+	Configuration conf("ChartWindow", QVariant(), tr("Oкно графиков"));
+	conf.appendChild({"chart", QVariant(), tr("График")});
+	mConfigurationModel = new ConfigurationModel(conf);
 	ui->tvConfiguration->setModel(mConfigurationModel);
-	//ui->tvConfiguration->setRootIndex(mConfigurationModel->index(0,0, QModelIndex()));
+	ui->tvConfiguration->setRootIndex(mConfigurationModel->index(0,0, QModelIndex()));
 	ui->tvConfiguration->expandAll();
 }
 
 ConfigurationEditor::~ConfigurationEditor()
 {
 	delete ui;
+}
+
+const Configuration &ConfigurationEditor::configuration() const
+{
+	return mConfigurationModel->configuration();
 }
 
 void ConfigurationEditor::closeEvent(QCloseEvent *event)

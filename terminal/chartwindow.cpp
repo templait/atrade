@@ -58,22 +58,21 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
 	ChartWidget* cw = addDataSource(ds);
 */
-
+/*
 	Configuration conf = DataSourceFactory::instance().defaultConfiguration(QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"));
 	conf["class"].setValue("TQBR");
 	conf["code"].setValue("SBER");
 	conf["interval"].setValue(IntervalD1);
-	DataSource ds = DataSourceFactory::instance().get(conf);
-	if(ds)
+	*/
+	//ChartWidget* cw =*/ addDataSource(DataSourceFactory::instance().product(conf));
+	/*if(cw)
 	{
-		ChartWidget* cw = addDataSource(ds);
-
 		QSettings settings;
 		BIndicator *indicator;
 		//indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
 		indicator = new LuaLineIndicator(settings.value("LuaDir", "../lua").toString() + "/indicators/MA.lua", ds, this);
-		cw->addIndicator(indicator);
-	}
+		//cw->addIndicator(indicator);
+	}*/
 
 	ui->scrollBar->setEnabled(false);
 	connect(ui->scrollBar, &QAbstractSlider::actionTriggered, [this](int){
@@ -83,30 +82,15 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	adjustScroll();
 }
 
+ChartWindow::ChartWindow(const Configuration &configuration, QWidget *parent)
+    : ChartWindow(parent)
+{
+	loadConfiguration(configuration);
+}
+
 ChartWindow::~ChartWindow()
 {
 	delete ui;
-}
-
-ChartWidget* ChartWindow::addDataSource(DataSource dataSource, int widgetNum)
-{
-	ChartWidget* widget = nullptr;
-
-	if(widgetNum >= mChartWidgets.size())
-	{
-
-		widgetNum = mChartWidgets.size();
-		widget = new ChartWidget;
-		mSceneLayout->addItem(widget, widgetNum, 0);
-		mChartWidgets << widget;
-	}
-	else
-	{	widget = mChartWidgets[widgetNum];	}
-
-	connect(widget, SIGNAL(candlesAppended(DataSource,int)), SLOT(onCandlesAppend(DataSource, int)));
-	widget->addDataSource(dataSource);
-
-	return widget;
 }
 
 qint64 ChartWindow::timeFrame() const
@@ -211,6 +195,42 @@ int ChartWindow::rescaleInt64(qint64 value) const
 {
 	//static_cast<int>(value * std::numeric_limits<int>::max() / std::numeric_limits<qint64>::max());
 	return static_cast<int>(value);
+}
+
+void ChartWindow::loadConfiguration(const Configuration& configuration)
+{
+	clear();
+	for(int i=0; i<configuration.childrenCount(); i++)
+	{
+		const Configuration* conf = configuration.childAt(i);
+		if(conf->name() == "chart")
+		{
+			cregetChartWidget(*conf, i);
+		}
+	}
+}
+
+void ChartWindow::clear()
+{
+	qDeleteAll(mChartWidgets);
+	mChartWidgets.clear();
+}
+
+ChartWidget *ChartWindow::cregetChartWidget(const Configuration& configuration, int widgetNum)
+{
+	ChartWidget * rv = nullptr;
+
+	if(widgetNum >= mChartWidgets.size())
+	{
+		widgetNum = mChartWidgets.size();
+		rv = new ChartWidget(configuration);
+		mSceneLayout->addItem(rv, widgetNum, 0);
+		mChartWidgets << rv;
+		connect(rv, SIGNAL(candlesAppended(DataSource,int)), SLOT(onCandlesAppend(DataSource, int)));
+	}
+	else
+	{	rv = mChartWidgets[widgetNum];	}
+	return rv;
 }
 
 void ChartWindow::resizeEvent(QResizeEvent *event)

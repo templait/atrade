@@ -73,14 +73,15 @@ public:
 
 
 	static Factory& instance();
-	Product get(const Configuration& settings = Configuration());
+	Product product(const Configuration& settings = Configuration());
+	bool hasProduct(const ProductID &id) const;
 	Configuration defaultConfiguration(const ProductID &id) const;
 	bool registerUnit(Unit *unit);
 	ProductList productList() const;
 private:
 
-	QMap<ProductID, QSharedPointer<Unit> > mUnitMap;
-	ProductMap mProductMap;
+	QMap<ProductID, QSharedPointer<Unit> > mUnitMap; //
+	ProductMap mProductMap;	// список созданных продуктов
 };
 
 template<class T>
@@ -91,7 +92,7 @@ Factory<T> &Factory<T>::instance()
 }
 
 template<class T>
-typename Factory<T>::Product Factory<T>::get(const Configuration &settings)
+typename Factory<T>::Product Factory<T>::product(const Configuration &settings)
 {
 	Product rv;
 	ProductID id = settings.value().toUuid();
@@ -113,6 +114,12 @@ typename Factory<T>::Product Factory<T>::get(const Configuration &settings)
 	if(!rv)
 	{	Log::error(QString("%1.invalid ProductID: \"%2\"").arg(__CLASS_NAME__).arg(id.toString()));	}
 	return rv;
+}
+
+template<class T>
+bool Factory<T>::hasProduct(const ProductID &id) const
+{
+	return mUnitMap.contains(id);
 }
 
 template<class T>

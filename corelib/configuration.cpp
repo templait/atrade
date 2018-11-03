@@ -2,40 +2,9 @@
 
 #include <QDataStream>
 
-Parameter::Parameter(const QVariant &value, const QString &title)
-	: mValue(value)
-	, mTitle(title)
-{
-
-}
-
-void Parameter::setTitle(const QString &title)
-{
-	mTitle = title;
-}
-
-const QString &Parameter::title() const
-{
-	return mTitle;
-}
-
-void Parameter::setValue(const QVariant &value)
-{
-	mValue = value;
-}
-
-const QVariant &Parameter::value() const
-{
-	return mValue;
-}
-
-bool Parameter::operator==(const Parameter &other) const
-{
-	return mTitle==other.mTitle && mValue==other.mValue;
-}
-
 Configuration::Configuration()
 	: mParent(nullptr)
+    , mUserEditableMap(ReadOnly)
 {
 
 }
@@ -46,6 +15,7 @@ Configuration::Configuration(const Configuration &other)
 	mName = other.mName;
 	mValue = other.mValue;
 	mTitle = other.mTitle;
+	mUserEditableMap = other.mUserEditableMap;
 
 	for(const Configuration& child : other.mChildren)
 	{	appendChild(child);	}
@@ -67,6 +37,12 @@ Configuration::Configuration(const QString &name, const QVariant &value, const Q
 
 }
 
+Configuration::Configuration(int userEditableMap, const QString &name, const QVariant &value, const QString &title)
+    : Configuration(name, value, title)
+{
+	mUserEditableMap = userEditableMap;
+}
+
 Configuration Configuration::operator[](const QString &childName) const
 {
 	return mChildren[childName];
@@ -80,7 +56,10 @@ Configuration &Configuration::operator[](const QString &childName)
 bool Configuration::operator==(const Configuration &other) const
 {
 	bool rv = false;
-	if(childrenCount()==other.childrenCount() && mName==other.mName && mValue==other.mValue && mTitle==other.mTitle)
+	// название не учавствует в сравнении т.к. это приведёт к некорректной рабте фабрик.
+	// дело в том что конфигурация является ключом определяющим необходимость создания нового продукта.
+	// учитывая то, что одни и те же продукты могут иметь разные названия, фабрика будет создавать всё новые продукты.
+	if(childrenCount()==other.childrenCount() && mName==other.mName && mValue==other.mValue /*&& mTitle==other.mTitle*/)
 	{
 		rv=true;
 		if(childrenCount()>0)
@@ -94,6 +73,7 @@ Configuration &Configuration::operator=(const Configuration &other)
 	mName = other.mName;
 	mValue = other.mValue;
 	mTitle = other.mTitle;
+	mUserEditableMap = other.mUserEditableMap;
 	mChildren.clear();
 	for(const Configuration& child : other.mChildren)
 	{	appendChild(child);	}
@@ -133,21 +113,22 @@ void Configuration::setTitle(const QString &title)
 bool Configuration::appendChild(Configuration child)
 {
 	bool rv = false;
-	if(! mChildren.contains(child.name()))
+	/*if(! mChildren.contains(child.name())) // Убрано т.к. необходимо держать в конфигурации несколько источников с одним именем
 	{
 		mChildren[child.name()] = child;
 		mChildren[child.name()].mParent = this;
 		rv = true;
-	}
+	}*/
+	(mChildren.insertMulti(child.name(), child))->mParent = this;
 	return rv;
 }
 
-Configuration* Configuration::childAt(int index)
+const Configuration *Configuration::childAt(int index) const
 {
-	Configuration* rv = nullptr;
+	const Configuration* rv = nullptr;
 	if(index<mChildren.size())
 	{
-		rv = (mChildren.begin()+index).operator->();
+		rv = (mChildren.cbegin()+index).operator->();
 	}
 	return rv;
 }
@@ -155,6 +136,16 @@ Configuration* Configuration::childAt(int index)
 int Configuration::childrenCount() const
 {
 	return mChildren.size();
+}
+
+bool Configuration::userEditabe(Configuration::EParam param) const
+{
+	return mUserEditableMap & param;
+}
+
+void Configuration::setUserEditableMap(int map)
+{
+	mUserEditableMap = map;
 }
 
 Configuration *Configuration::parent()
@@ -165,16 +156,16 @@ Configuration *Configuration::parent()
 QDataStream &operator<<(QDataStream &out, const Configuration &configuration)
 {
 	int childCount = configuration.mChildren.size();
-	out << configuration.mName << configuration.mValue << configuration.mTitle << childCount;
+	out << configuration.mName << configuration.mValue << configuration.mTitle << configuration.mUserEditableMap << childCount;
 	for(int i=0; i<childCount; i++)
-	{	out << const_cast<Configuration&>(configuration).childAt(i);	}
+	{	out << *(const_cast<Configuration&>(configuration).childAt(i));	}
 	return out;
 }
 
 QDataStream &operator>>(QDataStream &in, Configuration &configuration)
 {
 	int childCount;
-	in >> configuration.mName >> configuration.mValue >> configuration.mTitle >> childCount;
+	in >> configuration.mName >> configuration.mValue >> configuration.mTitle >> configuration.mUserEditableMap >> childCount;
 	for(int i=0; i<childCount; i++)
 	{
 		Configuration child;

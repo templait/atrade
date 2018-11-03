@@ -9,6 +9,8 @@
 #include <QDateTimeAxis>
 #include <QGraphicsLinearLayout>
 #include <QValueAxis>
+#include <configuration.h>
+#include <datasources/datasourcefactory.h>
 
 using namespace QtCharts;
 
@@ -30,11 +32,28 @@ ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
 	mChart->legend()->hide();
 }
 
-void ChartWidget::addDataSource(DataSource dataSource)
+ChartWidget::ChartWidget(const Configuration &configuration, QGraphicsItem *parent)
+    : ChartWidget(parent)
 {
-	DataSourceSeries *dss = new DataSourceSeries(mChart, dataSource, this);
-	connect(dss, SIGNAL(candlesAdppended(int)), SLOT(onCandlesAppended(int)));
-	mSeries << dss;
+	for(int i=0; i<configuration.childrenCount(); i++)
+	{
+		const Configuration* conf = configuration.childAt(i);
+		if(DataSourceFactory::instance().hasProduct(conf->value().toUuid()))
+		{
+			addDataSource(*conf);
+		}
+	}
+}
+
+void ChartWidget::addDataSource(const Configuration &dataSource)
+{
+	DataSource ds = DataSourceFactory::instance().product(dataSource);
+	if(!ds.isNull())
+	{
+		DataSourceSeries *dss = new DataSourceSeries(mChart, ds, this);
+		connect(dss, SIGNAL(candlesAdppended(int)), SLOT(onCandlesAppended(int)));
+		mSeries << dss;
+	}
 }
 
 void ChartWidget::addIndicator(BIndicator *indicator)

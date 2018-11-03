@@ -105,13 +105,6 @@ QVariant ProductListModel::data(const QModelIndex &index, int role) const
 	return rv;
 }
 
-QStringList ProductListModel::mimeTypes() const
-{
-	QStringList types;
-	types << "application/datasource.code";
-	return types;
-}
-
 QMimeData *ProductListModel::mimeData(const QModelIndexList &indexes) const
 {
 	QByteArray encodedData;
@@ -121,14 +114,14 @@ QMimeData *ProductListModel::mimeData(const QModelIndexList &indexes) const
 		stream << DataSourceFactory::instance().defaultConfiguration(index.sibling(index.row(), 1).data().toUuid());
 	}
 	QMimeData *rv = new QMimeData();
-	rv->setData("application/datasource.code", 	encodedData);
+	rv->setData("configuration/datasource", 	encodedData);
 	return rv;
 }
 
 Qt::ItemFlags ProductListModel::flags(const QModelIndex &index) const
 {
 	Qt::ItemFlags rv = QAbstractItemModel::flags(index);
-	if(index.isValid() && index.parent().isValid())
+	if(index.isValid() && index.parent().isValid() && index.column()==0)
 	{	rv |= Qt::ItemIsDragEnabled;	}
 	return rv;
 }
