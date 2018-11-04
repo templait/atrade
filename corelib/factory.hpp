@@ -63,7 +63,6 @@ public:
 		virtual ~Unit(){}
 		virtual T* create(const Configuration& configuration) const = 0;
 		virtual Configuration defaultConfiguration() const = 0;
-		//virtual Configuration defaultConfiguration(const ProductID& id) const = 0;
 		const QString& productName() const					{return mProductName;}
 		const ProductID& productID() const					{return mProductID;}
 	private:

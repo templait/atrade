@@ -29,15 +29,16 @@ public:
 	~ChartWindow();
 
 	void loadConfiguration(const Configuration &configuration);
+	const Configuration& configuration() const;
+	static Configuration defaultConfiguration();
 
 private:
 	Ui::ChartWindow *ui;
 	QGraphicsWidget* mGraphicsWidget;
 	QGraphicsGridLayout* mSceneLayout;
-	ETimeInterval mTimeInterval;
 	qreal mCandleWidth;
-
 	QList<ChartWidget*> mChartWidgets;
+	Configuration mConfiguration;
 
 	void adjustScroll();
 	void setScrollValue(int value);
@@ -46,12 +47,13 @@ private:
 	void setViewTimeRange(const TimeRange &range);
 	void adjustGraphicsScene();
 	void setTimeInterval(ETimeInterval interval);
+	ETimeInterval timeInterval() const;
 	int rescaleInt64(qint64 value) const;
 	void clear();
 	ChartWidget* cregetChartWidget(const Configuration &configuration, int widgetNum=0);
 
-private slots:
 	void onCandlesAppend(DataSource, int);
+
 
 	// QWidget interface
 protected:

@@ -19,8 +19,8 @@ class ChartWidget : public QGraphicsWidget
 {
 	Q_OBJECT
 public:
-	ChartWidget(QGraphicsItem* parent=nullptr);
-	ChartWidget(const Configuration& configuration, QGraphicsItem* parent=nullptr);
+	ChartWidget(ETimeInterval interval, QGraphicsItem* parent=nullptr);
+	ChartWidget(ETimeInterval interval, const Configuration& configuration, QGraphicsItem* parent=nullptr);
 	void addDataSource(const Configuration& dataSource);
 	void addIndicator(BIndicator* indicator);
 	TimeRange viewTimeRange() const;
@@ -38,6 +38,7 @@ private:
 	QList<BSeries*> mSeries;
 	QtCharts::QValueAxis *mValueAxis;
 	QtCharts::QDateTimeAxis *mTimeAxis;
+	ETimeInterval mTimeInterval;
 
 private slots:
 	void onCandlesAppended(int count);

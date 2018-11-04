@@ -30,6 +30,7 @@ public:
 	bool appendChild(Configuration child);
 	const Configuration *childAt(int index) const;
 	int childrenCount() const;
+	bool containsChild(const QString& childName) const;
 
 	bool userEditabe(EParam param) const;
 	void setUserEditableMap(int map);

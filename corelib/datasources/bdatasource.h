@@ -8,10 +8,8 @@
 class BDataSource : public QObject, public Serial<Candle>
 {
 	Q_OBJECT
-private:
-	class const_iterator;
 public:
-	BDataSource(QObject* parent=0) : QObject(parent) {}
+	BDataSource(QObject* parent=nullptr) : QObject(parent) {}
 
 	virtual bool isActive() const = 0;
 	virtual QString errorString() const = 0;

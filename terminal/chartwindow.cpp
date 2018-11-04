@@ -22,8 +22,8 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
 	setMinimumSize(1000,700);
 
-	mTimeInterval = IntervalD1;
 	mCandleWidth = 6;
+	mConfiguration = defaultConfiguration();
 
 	ui = new Ui::ChartWindow;
 	ui->setupUi(this);
@@ -79,7 +79,9 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 		setScrollValue(ui->scrollBar->sliderPosition());
 	});
 
-	adjustScroll();
+	connect(ui->cbTimeInterval, QOverload<int>::of(&QComboBox::activated), [this](int index){
+		setTimeInterval(static_cast<ETimeInterval>(ui->cbTimeInterval->itemData(index).toInt()));
+	});
 }
 
 ChartWindow::ChartWindow(const Configuration &configuration, QWidget *parent)
@@ -100,7 +102,7 @@ qint64 ChartWindow::timeFrame() const
 	{
 		qreal width = mChartWidgets[0]->plotArea().width();
 		qint64 candleCount = static_cast<qint64>(width/(mCandleWidth+1));
-		rv = secsInInterval(mTimeInterval)*candleCount;
+		rv = secsInInterval(timeInterval())*candleCount;
 	}
 	return rv;
 }
@@ -132,9 +134,9 @@ void ChartWindow::adjustScroll()
 	TimeRange range = seriesTimeRange();
 	if(! (range.first.isNull() || range.second.isNull()))
 	{
-		qint64 max = range.second.toSecsSinceEpoch()+secsInInterval(mTimeInterval);
-		qint64 min = range.first.toSecsSinceEpoch()+timeFrame()/2-secsInInterval(mTimeInterval);
-		qint64 step = secsInInterval(mTimeInterval);
+		qint64 max = range.second.toSecsSinceEpoch()+secsInInterval(timeInterval());
+		qint64 min = range.first.toSecsSinceEpoch()+timeFrame()/2-secsInInterval(timeInterval());
+		qint64 step = secsInInterval(timeInterval());
 
 		// нужно выровнять разницу между минимумом и максимумом по минимальному шагу
 		qint64 rem = (max-min+1)%step;
@@ -188,7 +190,15 @@ void ChartWindow::adjustGraphicsScene()
 
 void ChartWindow::setTimeInterval(ETimeInterval interval)
 {
+	Configuration newConf(mConfiguration);
+	newConf["TimeInterval"].setValue(interval);
+	loadConfiguration(newConf);
+}
 
+ETimeInterval ChartWindow::timeInterval() const
+{
+	Q_ASSERT(mConfiguration.containsChild("TimeInterval"));
+	return static_cast<ETimeInterval>(mConfiguration["TimeInterval"].value().toInt());
 }
 
 int ChartWindow::rescaleInt64(qint64 value) const
@@ -200,20 +210,48 @@ int ChartWindow::rescaleInt64(qint64 value) const
 void ChartWindow::loadConfiguration(const Configuration& configuration)
 {
 	clear();
-	for(int i=0; i<configuration.childrenCount(); i++)
+	mConfiguration = configuration;
+	for(int i=0; i<mConfiguration.childrenCount(); i++)
 	{
-		const Configuration* conf = configuration.childAt(i);
+		const Configuration* conf = mConfiguration.childAt(i);
 		if(conf->name() == "chart")
-		{
+		{	
 			cregetChartWidget(*conf, i);
 		}
 	}
+	ui->cbTimeInterval->blockSignals(true);
+	for(int i=0; i<ui->cbTimeInterval->count(); i++)
+	{
+		if(ui->cbTimeInterval->itemData(i) == timeInterval())
+		{
+			ui->cbTimeInterval->setCurrentIndex(i);
+			break;
+		}
+	}
+	ui->cbTimeInterval->blockSignals(false);
+	QApplication::processEvents(); // нужно подождать пока все виджеты примут должный размер
+	adjustScroll();
+}
+
+const Configuration &ChartWindow::configuration() const
+{
+	return mConfiguration;
+}
+
+Configuration ChartWindow::defaultConfiguration()
+{
+	Configuration chartWindow("ChartWindow", QVariant(), tr("Oкно графиков"));
+	chartWindow.appendChild({Configuration::Value, "TimeInterval", ETimeInterval::IntervalD1, tr("Интервал")});
+	chartWindow.appendChild({Configuration::Title, "chart", QVariant(), tr("График")});
+
+	return chartWindow;
 }
 
 void ChartWindow::clear()
 {
 	qDeleteAll(mChartWidgets);
 	mChartWidgets.clear();
+	adjustScroll();
 }
 
 ChartWidget *ChartWindow::cregetChartWidget(const Configuration& configuration, int widgetNum)
@@ -223,10 +261,10 @@ ChartWidget *ChartWindow::cregetChartWidget(const Configuration& configuration, 
 	if(widgetNum >= mChartWidgets.size())
 	{
 		widgetNum = mChartWidgets.size();
-		rv = new ChartWidget(configuration);
+		rv = new ChartWidget(timeInterval(), configuration);
 		mSceneLayout->addItem(rv, widgetNum, 0);
 		mChartWidgets << rv;
-		connect(rv, SIGNAL(candlesAppended(DataSource,int)), SLOT(onCandlesAppend(DataSource, int)));
+		connect(rv, &ChartWidget::candlesAppended, this, &ChartWindow::onCandlesAppend);
 	}
 	else
 	{	rv = mChartWidgets[widgetNum];	}

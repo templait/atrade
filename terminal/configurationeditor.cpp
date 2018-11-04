@@ -23,9 +23,7 @@ ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWi
 	ui->tvProductList->setModel(mProductListModel);
 	ui->tvProductList->expandAll();
 
-	Configuration conf("ChartWindow", QVariant(), tr("Oкно графиков"));
-	conf.appendChild({"chart", QVariant(), tr("График")});
-	mConfigurationModel = new ConfigurationModel(conf);
+	mConfigurationModel = new ConfigurationModel(configuration);
 	ui->tvConfiguration->setModel(mConfigurationModel);
 	ui->tvConfiguration->setRootIndex(mConfigurationModel->index(0,0, QModelIndex()));
 	ui->tvConfiguration->expandAll();

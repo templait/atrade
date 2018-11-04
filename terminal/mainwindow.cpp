@@ -40,8 +40,7 @@ void MainWindow::initDocks()
 
 void MainWindow::createChart()
 {
-	Configuration conf;
-	ConfigurationEditor editor(conf, this);
+	ConfigurationEditor editor(ChartWindow::defaultConfiguration(), this);
 	if(editor.exec())
 	{
 		ChartWindow* w = new ChartWindow(editor.configuration());

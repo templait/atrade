@@ -12,8 +12,8 @@ class DataSourceFile : public BDataSource
 {
 	Q_OBJECT
 public:
-	DataSourceFile(const QString &fileName, QObject* parent=0);
-	virtual ~DataSourceFile();
+	DataSourceFile(const QString &fileName, QObject* parent=nullptr);
+	virtual ~DataSourceFile() override;
 private:
 	struct
 	{

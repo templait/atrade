@@ -39,7 +39,7 @@ qint64 secsInInterval(ETimeInterval interval)
 		rv = 60*60*24*7;
 		break;
 	case IntervalMN1:
-		rv = 60*60*24*DAYS_IN_YEAR/12;
+		rv = 60*60*24*static_cast<qint64>(DAYS_IN_YEAR/12);
 		break;
 	default:
 		rv = -2;

@@ -14,8 +14,9 @@
 
 using namespace QtCharts;
 
-ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
+ChartWidget::ChartWidget(ETimeInterval interval, QGraphicsItem *parent) : QGraphicsWidget(parent)
 {
+	mTimeInterval = interval;
 	QGraphicsLinearLayout* layout = new QGraphicsLinearLayout;
 	layout->setContentsMargins(0,0,0,0);
 	setLayout(layout);
@@ -32,15 +33,17 @@ ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
 	mChart->legend()->hide();
 }
 
-ChartWidget::ChartWidget(const Configuration &configuration, QGraphicsItem *parent)
-    : ChartWidget(parent)
+ChartWidget::ChartWidget(ETimeInterval interval, const Configuration &configuration, QGraphicsItem *parent)
+    : ChartWidget(interval, parent)
 {
 	for(int i=0; i<configuration.childrenCount(); i++)
 	{
 		const Configuration* conf = configuration.childAt(i);
 		if(DataSourceFactory::instance().hasProduct(conf->value().toUuid()))
 		{
-			addDataSource(*conf);
+			Configuration dsConf(*conf);
+			dsConf.appendChild({"interval",	interval,		tr("Интервал")});
+			addDataSource(dsConf);
 		}
 	}
 }
@@ -64,8 +67,8 @@ void ChartWidget::addIndicator(BIndicator *indicator)
 
 void ChartWidget::adjustValueAxis()
 {
-	qreal min = NAN;
-	qreal max = NAN;
+	qreal min = std::numeric_limits<double>::quiet_NaN();
+	qreal max = std::numeric_limits<double>::quiet_NaN();
 	for(const BSeries* series  : mSeries)
 	{
 		ValueRange seriesRange = series->valueRange();

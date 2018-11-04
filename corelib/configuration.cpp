@@ -138,6 +138,11 @@ int Configuration::childrenCount() const
 	return mChildren.size();
 }
 
+bool Configuration::containsChild(const QString &childName) const
+{
+	return mChildren.contains(childName);
+}
+
 bool Configuration::userEditabe(Configuration::EParam param) const
 {
 	return mUserEditableMap & param;

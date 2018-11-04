@@ -39,12 +39,12 @@ BDataSource *DataSourceFileFactory::create(const Configuration &configuration) c
 
 Configuration DataSourceFileFactory::defaultConfiguration() const
 {
-	QString name = __CLASS_NAME__;
+	QString name = productName();
 	Configuration rv
 	{
 		{Configuration::Value, "class",		"TQBR",			QObject::tr("Класс",		name.toLocal8Bit())},
 		{Configuration::Value, "code",		"SBER",			QObject::tr("Код символла",	name.toLocal8Bit())},
-		{Configuration::Value, "interval",	IntervalD1,		QObject::tr("Интервал",		name.toLocal8Bit())}
+		//{Configuration::Value, "interval",	IntervalD1,		QObject::tr("Интервал",		name.toLocal8Bit())}
 	};
 	rv.setName(name);
 	rv.setValue(ProductID(PRODUCT_ID));
