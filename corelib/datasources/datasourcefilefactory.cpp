@@ -4,7 +4,6 @@
 #include <log.h>
 #include <tools.h>
 
-#include <QDir>	// killme
 #include <QSettings>
 
 #define PRODUCT_ID "ab38fe10-d502-11e8-b568-0800200c9a66"
@@ -19,7 +18,7 @@ BDataSource *DataSourceFileFactory::create(const Configuration &configuration) c
 {
 	BDataSource* rv=nullptr;
 
-	if(configuration.value().toUuid() == QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"))
+	if(configuration.value().toUuid() == QUuid(PRODUCT_ID))
 	{
 		QSettings appSettings;
 		QString path = QString("%1/%2/%3/%4.txt")
@@ -43,7 +42,7 @@ Configuration DataSourceFileFactory::defaultConfiguration() const
 	Configuration rv
 	{
 		{Configuration::Value, "class",		"TQBR",			QObject::tr("Класс",		name.toLocal8Bit())},
-		{Configuration::Value, "code",		"SBER",			QObject::tr("Код символла",	name.toLocal8Bit())},
+		{Configuration::Value, "code",		"SBER",			QObject::tr("Символ",	name.toLocal8Bit())},
 		//{Configuration::Value, "interval",	IntervalD1,		QObject::tr("Интервал",		name.toLocal8Bit())}
 	};
 	rv.setName(name);

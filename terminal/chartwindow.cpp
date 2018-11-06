@@ -20,7 +20,7 @@ using namespace QtCharts;
 
 ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
-	setMinimumSize(1000,700);
+	//setMinimumSize(1000,700);
 
 	mCandleWidth = 6;
 	mConfiguration = defaultConfiguration();
@@ -167,7 +167,7 @@ void ChartWindow::setScrollValue(int value)
 	setViewTimeRange({min, max});
 }
 
-void ChartWindow::onCandlesAppend(DataSource, int)
+void ChartWindow::onCandlesAppend(const DataSource &dataSource, int)
 {
 	bool need2Last = false;
 	if(ui->scrollBar->sliderPosition() == ui->scrollBar->maximum())
@@ -245,6 +245,23 @@ Configuration ChartWindow::defaultConfiguration()
 	chartWindow.appendChild({Configuration::Title, "chart", QVariant(), tr("График")});
 
 	return chartWindow;
+}
+
+void ChartWindow::saveConfiguration(QSettings &settings) const
+{
+	QByteArray array;
+	QDataStream stream(&array, QIODevice::WriteOnly);
+	stream << mConfiguration;
+	settings.setValue("configuration", array);
+}
+
+void ChartWindow::loadConfiguration(QSettings &settings)
+{
+	QByteArray array = settings.value("configuration").toByteArray();
+	QDataStream stream(&array, QIODevice::ReadOnly);
+	Configuration conf;
+	stream >> conf;
+	loadConfiguration(conf);
 }
 
 void ChartWindow::clear()

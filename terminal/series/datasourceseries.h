@@ -22,7 +22,7 @@ class DataSourceSeries : public QObject, public BSeries
 {
 	Q_OBJECT
 public:
-	DataSourceSeries(QtCharts::QChart* chart, DataSource dataSource, QObject* parent=0);
+	DataSourceSeries(QtCharts::QChart* chart, DataSource dataSource, QObject* parent=nullptr);
 
 	virtual void setViewTimeRange(const TimeRange& range) override;
 	virtual ValueRange valueRange() const override;	//!< return value range for currenr view timerange

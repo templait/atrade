@@ -22,8 +22,9 @@ private:
 	QMdiArea *mMdiArea;
 
 	void initDocks();
-private slots:
 	void createChart();
+	void saveWindowState() const;
+	void loadWindowState();
 
 	// QWidget interface
 protected:

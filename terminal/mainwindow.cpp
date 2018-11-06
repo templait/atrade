@@ -6,6 +6,7 @@
 #include <ui_mainwindow.h>
 
 #include <QMdiArea>
+#include <QMdiSubWindow>
 #include <QSettings>
 
 MainWindow::MainWindow()
@@ -17,12 +18,9 @@ MainWindow::MainWindow()
 	setCentralWidget(mMdiArea);
 
 	initDocks();
+	loadWindowState();
 
-	QSettings settings;
-	restoreGeometry(settings.value("geometry").toByteArray());
-	restoreState(settings.value("windowState").toByteArray());
-
-	connect(ui->actionCreate_chart, SIGNAL(triggered(bool)), SLOT(createChart()));
+	connect(ui->actionCreate_chart, &QAction::triggered, this, &MainWindow::createChart);
 }
 
 MainWindow::~MainWindow()
@@ -43,17 +41,63 @@ void MainWindow::createChart()
 	ConfigurationEditor editor(ChartWindow::defaultConfiguration(), this);
 	if(editor.exec())
 	{
-		ChartWindow* w = new ChartWindow(editor.configuration());
-		mMdiArea->addSubWindow(w);
-		w->show();
+		ChartWindow* cw = new ChartWindow(editor.configuration());
+		mMdiArea->addSubWindow(cw);
+		cw->show();
 	}
+}
+
+void MainWindow::saveWindowState() const
+{
+	QSettings settings;
+	settings.beginGroup(objectName());
+	settings.setValue("geometry", saveGeometry());
+	settings.setValue("windowState", saveState());
+
+	settings.beginWriteArray("SubWindows");
+	QList<QMdiSubWindow *> subs = mMdiArea->subWindowList();
+	int i=0;
+	for(const QMdiSubWindow * sub : subs)
+	{
+		settings.setArrayIndex(i++);
+		if(const ChartWindow* cw = qobject_cast<const ChartWindow*>(sub->widget()))
+		{
+			settings.setValue("WindowType", "ChartWindow");
+			settings.setValue("geometry", sub->saveGeometry());
+			cw->saveConfiguration(settings);
+		}
+	}
+	settings.endArray();
+	settings.endGroup();
+}
+
+void MainWindow::loadWindowState()
+{
+	QSettings settings;
+	settings.beginGroup(objectName());
+	restoreGeometry(settings.value("geometry").toByteArray());
+	restoreState(settings.value("windowState").toByteArray());
+	int chartWinCount = settings.beginReadArray("SubWindows");
+	for(int i=0; i<chartWinCount; i++)
+	{
+		settings.setArrayIndex(i);
+		QString windowType = settings.value("WindowType").toString();
+		if(windowType == "ChartWindow")
+		{
+			ChartWindow* cw = new ChartWindow;
+			QMdiSubWindow* sub = mMdiArea->addSubWindow(cw);
+			sub->restoreGeometry(settings.value("geometry").toByteArray());
+			cw->show();
+			cw->loadConfiguration(settings);
+		}
+	}
+	settings.endArray();
+	settings.endGroup();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	QSettings settings;
-	settings.setValue("geometry", saveGeometry());
-	settings.setValue("windowState", saveState());
+	saveWindowState();
 	QMainWindow::closeEvent(event);
 }
 

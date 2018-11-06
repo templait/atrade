@@ -44,5 +44,5 @@ private slots:
 	void onCandlesAppended(int count);
 	void onTimeRangeChanged(QDateTime min, QDateTime max);
 signals:
-	void candlesAppended(DataSource dataSource, int count);
+	void candlesAppended(const DataSource& dataSource, int count);
 };

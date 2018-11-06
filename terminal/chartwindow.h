@@ -8,7 +8,7 @@
 class ChartWidget;
 class QGraphicsWidget;
 class QGraphicsGridLayout;
-class QScrollBar;
+class QSettings;
 
 namespace QtCharts
 {
@@ -32,6 +32,9 @@ public:
 	const Configuration& configuration() const;
 	static Configuration defaultConfiguration();
 
+	void saveConfiguration(QSettings& settings) const;
+	void loadConfiguration(QSettings& settings);
+
 private:
 	Ui::ChartWindow *ui;
 	QGraphicsWidget* mGraphicsWidget;
@@ -52,7 +55,7 @@ private:
 	void clear();
 	ChartWidget* cregetChartWidget(const Configuration &configuration, int widgetNum=0);
 
-	void onCandlesAppend(DataSource, int);
+	void onCandlesAppend(const DataSource& dataSource, int);
 
 
 	// QWidget interface

@@ -42,13 +42,14 @@ SharedPointer<T>::SharedPointer() : mPointer(0), mOnDelete([](int){}){}
 template<class T>
 SharedPointer<T>::SharedPointer(T *pointer,  DeleteCallback onDelete) :mPointer(pointer), mOnDelete(onDelete)
 {
-	mCounter[mPointer]=1;
+	increment();
 }
 
 template<class T>
-SharedPointer<T>::SharedPointer(const SharedPointer &other) : mPointer(other.mPointer), mOnDelete(other.mOnDelete)
+SharedPointer<T>::SharedPointer(const SharedPointer &other)
+	: SharedPointer<T>::SharedPointer(other.mPointer, other.mOnDelete)
 {
-	increment();
+
 }
 
 template<class T>
@@ -115,18 +116,21 @@ template<class T>
 SharedPointer<T>::~SharedPointer()
 {
 	decrement();
-	if(mCounter[mPointer]==0)
+	if(!isNull())
 	{
-		mCounter.remove(mPointer);
-		delete mPointer;
+		if(mCounter[mPointer]==0)
+		{
+			mCounter.remove(mPointer);
+			delete mPointer;
+		}
+		mOnDelete(mCounter[mPointer]);
 	}
-	mOnDelete(mCounter[mPointer]);
 }
 
 template<class T>
 inline bool SharedPointer<T>::isNull() const
 {
-	return mPointer==0;
+	return mPointer==nullptr;
 }
 
 template<class T>

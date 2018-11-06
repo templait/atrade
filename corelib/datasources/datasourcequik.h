@@ -13,8 +13,8 @@ class DataSourceQUIK : public BDataSource
 {
 	Q_OBJECT
 public:
-	DataSourceQUIK(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent=0);
-	virtual ~DataSourceQUIK();
+	DataSourceQUIK(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent=nullptr);
+	virtual ~DataSourceQUIK() override;
 private:
 	void connectToTerminal();
 	int quikInterval() const;
@@ -40,9 +40,9 @@ private slots:
 
 	// IDataSource interface
 public:
-	ETimeInterval interval() const override;
-	int size() const override;
-	const Candle * at(int index) const override;
-	bool isActive() const override;
-	QString errorString() const override;
+	virtual ETimeInterval interval() const override;
+	virtual int size() const override;
+	virtual const Candle * at(int index) const override;
+	virtual bool isActive() const override;
+	virtual QString errorString() const override;
 };

@@ -22,21 +22,22 @@ QModelIndex ProductListModel::index(int row, int column, const QModelIndex &pare
 	QModelIndex rv;
 	if(row >= 0 && column >= 0)
 	{
-		if(! parent.isValid())
+		int sectionNum = static_cast<int>(parent.internalId());
+		if(sectionNum == -1)
+		{
+			if(sectionNum<=mSections.size() && column<2)
+			{
+				rv = createIndex(row, column, static_cast<quintptr>(parent.row()));
+			}
+		}
+		else if(! parent.isValid())
 		{
 			if(column==0 && row<mSections.size())
 			{
 				rv = createIndex(row, column, quintptr(-1));
 			}
 		}
-		else if(parent.isValid() && !parent.parent().isValid())
-		{
-			int sectionNum = static_cast<int>(parent.internalId());
-			if(sectionNum<=mSections.size() && column<2)
-			{
-				rv = createIndex(row, column, static_cast<quintptr>(row));
-			}
-		}
+
 	}
 	return rv;
 }
@@ -56,13 +57,14 @@ QModelIndex ProductListModel::parent(const QModelIndex &child) const
 int ProductListModel::rowCount(const QModelIndex &parent) const
 {
 	int rv=0;
-	if(parent.isValid() && !parent.parent().isValid())
+	int sectionNum = static_cast<int>(parent.internalId());
+	if(sectionNum==-1)	// родитель - секция
 	{
-		{	rv = mSections[sectionNumToName(parent.row())].size();}
+		rv = mSections[sectionNumToName(parent.row())].size();
 	}
 	else if(!parent.isValid())
 	{
-		rv= mSections.size();
+		rv = mSections.size();
 	}
 	return rv;
 }
@@ -70,7 +72,8 @@ int ProductListModel::rowCount(const QModelIndex &parent) const
 int ProductListModel::columnCount(const QModelIndex &parent) const
 {
 	int rv=0;
-	if(parent.isValid() && !parent.parent().isValid())
+	int sectionNum = static_cast<int>(parent.internalId());
+	if(sectionNum==-1)
 	{	rv = 2;	}
 	else if(!parent.isValid())
 	{	rv = 1;	}
@@ -99,7 +102,7 @@ QVariant ProductListModel::data(const QModelIndex &index, int role) const
 		else
 		{
 			int sectionNum = static_cast<int>(index.row());
-			rv = sectionNumToName(sectionNum);
+			rv = sectionNumToName(sectionNum) + " : " + QString::number(rowCount(index));
 		}
 	}
 	return rv;
