@@ -39,7 +39,7 @@ private:
 	QString mName;
 	QVariant mValue;
 	QString mTitle;
-	QMap<QString, Configuration> mChildren;
+	QList<Configuration> mChildren;
 	Configuration *mParent;
 	int mUserEditableMap;
 };

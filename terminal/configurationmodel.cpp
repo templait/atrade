@@ -11,9 +11,14 @@ ConfigurationModel::ConfigurationModel(const Configuration& configuration, QObje
 {
 }
 
-const Configuration &ConfigurationModel::configuration() const
+const Configuration &ConfigurationModel::configuration(const QModelIndex &index) const
 {
-	return mRoot;
+	const Configuration* rv = &mRoot;
+	if(index.isValid())
+	{
+		rv = index2configuration(index);
+	}
+	return *rv;
 }
 
 Configuration *ConfigurationModel::index2configuration(const QModelIndex &index) const
@@ -62,10 +67,14 @@ QModelIndex ConfigurationModel::parent(const QModelIndex &child) const
 
 int ConfigurationModel::rowCount(const QModelIndex &parent) const
 {
-	int rv = 1;
+	int rv = mRoot.childrenCount();
 	if(parent.isValid())
 	{
-		rv = index2configuration(parent)->childrenCount();
+		Configuration* parentConf = index2configuration(parent);
+		if(! DataSourceFactory::instance().hasProduct(parentConf->value().toUuid()))
+		{	rv = parentConf->childrenCount();	}
+		else
+		{	rv = 0;	}
 	}
 	return rv;
 }
@@ -170,7 +179,7 @@ Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 	if(index.isValid())
 	{
 		Configuration* conf = index2configuration(index);
-		if(conf->name() == "chart")
+		if(conf->name() == "chart" && index.column()==0)
 		{	rv |= Qt::ItemIsDropEnabled;	}
 
 		if(index.column()==0  && conf->userEditabe(Configuration::Title))
@@ -183,16 +192,21 @@ Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 	return rv;
 }
 
-bool ConfigurationModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex &/*parent*/) const
+bool ConfigurationModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex & /*parent*/) const
 {
 	bool rv=false;
-	if(action & (Qt::MoveAction|Qt::CopyAction) && data->hasFormat("configuration/datasource"))
+	if(		action & (Qt::MoveAction|Qt::CopyAction)
+			&& data->hasFormat("configuration/datasource")
+			//&& parent.column()==0
+	  )
 	{	rv = true;	}
 	return rv;
 }
 
 bool ConfigurationModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int /*column*/, const QModelIndex &parent)
 {
+	bool rv=false;
+
 	QByteArray encodedData = data->data("configuration/datasource");
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
@@ -204,13 +218,29 @@ bool ConfigurationModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
 	}
 	if(action==Qt::CopyAction)
 	{
-		beginInsertRows(parent, row, row+configs.size()-1);
+		//qDebug() << row << parent.internalId();
+		const Configuration* pConf = index2configuration(parent);
+		//beginInsertRows(parent.sibling(parent.row(), 0), row, row+configs.size()-1);
+		//beginInsertRows(parent, row, row+configs.size()-1);
+		int _row = qMax(0, pConf->childrenCount()-1);
+		beginInsertRows(parent, _row, _row);
 		for(const Configuration& conf : configs)
 		{
 			index2configuration(parent)->appendChild(conf);
 		}
 		endInsertRows();
+
+		rv = true;
 	}
-	return true;
+	return rv;
 }
+/*
+bool ConfigurationModel::insertRows(int row, int count, const QModelIndex &parent)
+{
+	Configuration* pConf = index2configuration(parent);
+	beginInsertRows(parent, pConf->childrenCount()-1, pConf->childrenCount()-1);
+	pConf->appendChild({"Name", 10, "Title"});
+	endInsertRows();
+	return true;
+}*/
 

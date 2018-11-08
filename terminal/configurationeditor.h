@@ -5,6 +5,7 @@
 
 class ProductListModel;
 class ConfigurationModel;
+class ProductConfigurationEditor;
 
 namespace Ui
 {
@@ -23,6 +24,10 @@ private:
 	Configuration mConfiguration;
 	ProductListModel* mProductListModel;
 	ConfigurationModel* mConfigurationModel;
+	ProductConfigurationEditor* mConfigurationEditor;
+
+	void setConfidurationEditor(ProductConfigurationEditor* configurationEditor);
+	void onItemActivated(const QModelIndex &index);
 
 	// QWidget interface
 protected:

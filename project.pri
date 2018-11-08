@@ -2,6 +2,7 @@ CONFIG+=debug_and_release
 BUILDPATH = $$PWD/build
 CONFIG(debug, debug|release) {
 	DESTDIR=$$BUILDPATH/binDebug
+    QMAKE_CXXFLAGS += -g -O0	# флаги выключающие оптимизацию. без них во время отладки наблюдаются скачки от строчки к строчке.
 } else {
 	DESTDIR=$$BUILDPATH/binRelease
 }

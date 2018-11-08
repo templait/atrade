@@ -11,6 +11,8 @@
 typedef QUuid ProductID;
 typedef QList<QPair<QString, ProductID> > ProductList;
 
+class ProductConfigurationEditor;
+
 template <class T>
 class Factory
 {
@@ -63,6 +65,7 @@ public:
 		virtual ~Unit(){}
 		virtual T* create(const Configuration& configuration) const = 0;
 		virtual Configuration defaultConfiguration() const = 0;
+		virtual ProductConfigurationEditor* createConfigurationEditor(const Configuration&, QWidget*) const {return nullptr;}
 		const QString& productName() const					{return mProductName;}
 		const ProductID& productID() const					{return mProductID;}
 	private:
@@ -77,6 +80,7 @@ public:
 	Configuration defaultConfiguration(const ProductID &id) const;
 	bool registerUnit(Unit *unit);
 	ProductList productList() const;
+	ProductConfigurationEditor* createConfigurationEditor(const ProductID &id, const Configuration&configuration, QWidget*parent=nullptr) const;
 private:
 
 	QMap<ProductID, QSharedPointer<Unit> > mUnitMap; //
@@ -152,6 +156,17 @@ ProductList Factory<T>::productList() const
 	for(auto unit : mUnitMap.values())
 	{
 		rv << QPair<QString, ProductID>(unit->productName(), unit->productID());
+	}
+	return rv;
+}
+
+template<class T>
+ProductConfigurationEditor *Factory<T>::createConfigurationEditor(const ProductID &id, const Configuration &configuration, QWidget *parent) const
+{
+	ProductConfigurationEditor* rv=nullptr;
+	if(hasProduct(id))
+	{
+		rv = mUnitMap[id]->createConfigurationEditor(configuration, parent);
 	}
 	return rv;
 }

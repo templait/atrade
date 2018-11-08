@@ -41,6 +41,12 @@
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QGroupBox" name="gbConfigurationEditor">
+      <property name="title">
+       <string>Конфигурация</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2"/>
+     </widget>
     </widget>
    </item>
    <item>

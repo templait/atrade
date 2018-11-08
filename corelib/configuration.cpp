@@ -1,6 +1,7 @@
 #include "configuration.h"
 
 #include <QDataStream>
+#include <algorithm>
 
 Configuration::Configuration()
 	: mParent(nullptr)
@@ -45,12 +46,17 @@ Configuration::Configuration(int userEditableMap, const QString &name, const QVa
 
 Configuration Configuration::operator[](const QString &childName) const
 {
-	return mChildren[childName];
+	return const_cast<Configuration*>(this)->operator[](childName);
 }
 
 Configuration &Configuration::operator[](const QString &childName)
 {
-	return mChildren[childName];
+	auto rv = std::find_if(mChildren.begin(), mChildren.end(), [childName](const Configuration& conf)
+	{
+		return conf.name() == childName;
+	});
+	Q_ASSERT(rv!=mChildren.end());
+	return *rv;
 }
 
 bool Configuration::operator==(const Configuration &other) const
@@ -113,24 +119,14 @@ void Configuration::setTitle(const QString &title)
 bool Configuration::appendChild(Configuration child)
 {
 	bool rv = false;
-	/*if(! mChildren.contains(child.name())) // Убрано т.к. необходимо держать в конфигурации несколько источников с одним именем
-	{
-		mChildren[child.name()] = child;
-		mChildren[child.name()].mParent = this;
-		rv = true;
-	}*/
-	(mChildren.insertMulti(child.name(), child))->mParent = this;
+	mChildren << child;
+	mChildren.last().mParent = this;
 	return rv;
 }
 
 const Configuration *Configuration::childAt(int index) const
 {
-	const Configuration* rv = nullptr;
-	if(index<mChildren.size())
-	{
-		rv = (mChildren.cbegin()+index).operator->();
-	}
-	return rv;
+	return &(mChildren[index]);
 }
 
 int Configuration::childrenCount() const
@@ -140,7 +136,10 @@ int Configuration::childrenCount() const
 
 bool Configuration::containsChild(const QString &childName) const
 {
-	return mChildren.contains(childName);
+	return std::find_if(mChildren.begin(), mChildren.end(), [childName](const Configuration& conf)
+	{
+		return conf.name() == childName;
+	}) != mChildren.end();
 }
 
 bool Configuration::userEditabe(Configuration::EParam param) const

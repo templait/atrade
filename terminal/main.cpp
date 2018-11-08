@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include <datasources/datasourcefilefactory.h>
 #include <datasources/datasourcequikfactory.h>
+#include <indicators/lualineindicatorfactory.h>
 
 int main(int argc, char** argv)
 {
@@ -13,11 +14,12 @@ int main(int argc, char** argv)
 	DataSourceFactory::instance().registerUnit(new DataSourceFileFactory());
 	DataSourceFactory::instance().registerUnit(new DataSourceQUIKFactory());
 
+	IndicatorFactory::instance().registerUnit(new LuaLineIndicatorFactory(LuaLineIndicatorFactory::IndicatorMA));
+
 	MainWindow w;
 	w.show();
 	return app.exec();
 }
-
 
 // Параметры конфига
 

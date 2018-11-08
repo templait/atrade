@@ -4,17 +4,26 @@
 #include <QDataStream>
 #include <QMimeData>
 
+#include <datasources/datasourcefactory.h>
+#include <indicators/indicatorfactory.h>
+
 ProductListModel::ProductListModel(QObject *parent)
 	: QAbstractItemModel(parent)
 	, mSections{
-			{tr("Источники данных"), DataSourceFactory::instance().productList()}
+			{tr("Источники данных"), DataSourceFactory::instance().productList()},
+			{tr("Индикаторы"), IndicatorFactory::instance().productList()}
 		  }
 {
 }
 
-QString ProductListModel::sectionNumToName(int sectionNumber) const
+QModelIndex ProductListModel::dataSourcesRoot() const
 {
-	return mSections.keys()[sectionNumber];
+	return index(0,0, QModelIndex());
+}
+
+QModelIndex ProductListModel::indicatorsRoot() const
+{
+	return index(1,0, QModelIndex());
 }
 
 QModelIndex ProductListModel::index(int row, int column, const QModelIndex &parent) const
@@ -60,7 +69,7 @@ int ProductListModel::rowCount(const QModelIndex &parent) const
 	int sectionNum = static_cast<int>(parent.internalId());
 	if(sectionNum==-1)	// родитель - секция
 	{
-		rv = mSections[sectionNumToName(parent.row())].size();
+		rv = mSections[parent.row()].second.size();
 	}
 	else if(!parent.isValid())
 	{
@@ -88,7 +97,7 @@ QVariant ProductListModel::data(const QModelIndex &index, int role) const
 		if(index.parent().isValid())
 		{
 			int sectionNum = static_cast<int>(index.internalId());
-			const ProductList& productList = mSections[sectionNumToName(sectionNum)];
+			const ProductList& productList = mSections[sectionNum].second;
 			switch(index.column())
 			{
 			case 0:
@@ -102,7 +111,7 @@ QVariant ProductListModel::data(const QModelIndex &index, int role) const
 		else
 		{
 			int sectionNum = static_cast<int>(index.row());
-			rv = sectionNumToName(sectionNum) + " : " + QString::number(rowCount(index));
+			rv = mSections[sectionNum].first;
 		}
 	}
 	return rv;
@@ -114,7 +123,12 @@ QMimeData *ProductListModel::mimeData(const QModelIndexList &indexes) const
 	QDataStream stream(&encodedData, QIODevice::WriteOnly);
 	for(const QModelIndex& index : indexes)
 	{
-		stream << DataSourceFactory::instance().defaultConfiguration(index.sibling(index.row(), 1).data().toUuid());
+		ProductID id = index.sibling(index.row(), 1).data().toUuid();
+		if(DataSourceFactory::instance().hasProduct(id))
+		{	stream << DataSourceFactory::instance().defaultConfiguration(id);	}
+		else if(IndicatorFactory::instance().hasProduct(id))
+		{	stream << IndicatorFactory::instance().defaultConfiguration(id);	}
+
 	}
 	QMimeData *rv = new QMimeData();
 	rv->setData("configuration/datasource", 	encodedData);

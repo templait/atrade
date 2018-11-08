@@ -9,7 +9,7 @@
 #define PRODUCT_ID "ab38fe10-d502-11e8-b568-0800200c9a66"
 
 DataSourceFileFactory::DataSourceFileFactory()
-	: DataSourceFactory::Unit(QString("File datasoure"), QUuid(PRODUCT_ID))
+	: DataSourceFactory::Unit(QString("File DataSource"), QUuid(PRODUCT_ID))
 {
 
 }

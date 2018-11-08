@@ -1,17 +1,17 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include <datasources/datasourcefactory.h>
+#include <factory.hpp>
 
 class ProductListModel : public QAbstractItemModel
 {
 	Q_OBJECT
 public:
 	ProductListModel(QObject *parent=nullptr);
+	QModelIndex dataSourcesRoot() const;
+	QModelIndex indicatorsRoot() const;
 private:
-	QString sectionNumToName(int sectionNumber) const;
-
-	QMap<QString, ProductList> mSections;
+	QList<QPair<QString, ProductList> > mSections;
 
 	// QAbstractItemModel interface
 public:

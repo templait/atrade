@@ -1,7 +1,5 @@
 #pragma once
 
-#include <sharedpointer.hpp>
-#include <datasources/bdatasource.h>
+#include <datasources/datasourcefactory.h>
 
-class BDataSource;
-typedef SharedPointer<BDataSource> DataSource;
+typedef DataSourceFactory::Product DataSource;

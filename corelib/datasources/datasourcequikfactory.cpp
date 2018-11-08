@@ -9,7 +9,7 @@
 #define PRODUCT_ID "c647314d-d9c0-4e97-9d57-d3c473d727ae"
 
 DataSourceQUIKFactory::DataSourceQUIKFactory()
-	: DataSourceFactory::Unit(QString("QUIK datasoure"), QUuid(PRODUCT_ID))
+	: DataSourceFactory::Unit(QString("QUIK DataSource"), QUuid(PRODUCT_ID))
 {
 
 }
