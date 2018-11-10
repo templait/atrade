@@ -16,5 +16,5 @@ private:
 public:
 	virtual BIndicator *create(const Configuration &configuration) const override;
 	virtual Configuration defaultConfiguration() const override;
-	virtual ProductConfigurationEditor *createConfigurationEditor(const Configuration& configuration, QWidget* parent=nullptr) const override;
+	virtual ProductConfigurationEditor *createConfigurationEditor(Configuration *configuration, QWidget* parent=nullptr) const override;
 };

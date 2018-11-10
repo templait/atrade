@@ -65,7 +65,7 @@ public:
 		virtual ~Unit(){}
 		virtual T* create(const Configuration& configuration) const = 0;
 		virtual Configuration defaultConfiguration() const = 0;
-		virtual ProductConfigurationEditor* createConfigurationEditor(const Configuration&, QWidget*) const {return nullptr;}
+		virtual ProductConfigurationEditor* createConfigurationEditor(Configuration*, QWidget*) const {return nullptr;}
 		const QString& productName() const					{return mProductName;}
 		const ProductID& productID() const					{return mProductID;}
 	private:
@@ -80,7 +80,7 @@ public:
 	Configuration defaultConfiguration(const ProductID &id) const;
 	bool registerUnit(Unit *unit);
 	ProductList productList() const;
-	ProductConfigurationEditor* createConfigurationEditor(const ProductID &id, const Configuration&configuration, QWidget*parent=nullptr) const;
+	ProductConfigurationEditor* createConfigurationEditor(const ProductID &id, Configuration *configuration, QWidget*parent=nullptr) const;
 private:
 
 	QMap<ProductID, QSharedPointer<Unit> > mUnitMap; //
@@ -161,7 +161,7 @@ ProductList Factory<T>::productList() const
 }
 
 template<class T>
-ProductConfigurationEditor *Factory<T>::createConfigurationEditor(const ProductID &id, const Configuration &configuration, QWidget *parent) const
+ProductConfigurationEditor *Factory<T>::createConfigurationEditor(const ProductID &id, Configuration* configuration, QWidget *parent) const
 {
 	ProductConfigurationEditor* rv=nullptr;
 	if(hasProduct(id))

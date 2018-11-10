@@ -54,6 +54,10 @@ void ChartWidget::addDataSource(const Configuration &dataSource)
 	if(!ds.isNull())
 	{
 		DataSourceSeries *dss = new DataSourceSeries(mChart, ds, this);
+		QColor increasingColor = dataSource.containsChild("increasingColor") ? dataSource["increasingColor"].value().value<QColor>() : QColor();
+		QColor decreasingColor = dataSource.containsChild("decreasingColor") ? dataSource["decreasingColor"].value().value<QColor>() : QColor();
+		QColor penColor = dataSource.containsChild("penColor") ? dataSource["penColor"].value().value<QColor>() : QColor();
+		dss->setAppearance(increasingColor, decreasingColor, penColor);
 		connect(dss, SIGNAL(candlesAdppended(int)), SLOT(onCandlesAppended(int)));
 		mSeries << dss;
 	}

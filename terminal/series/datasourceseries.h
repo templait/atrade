@@ -29,6 +29,7 @@ public:
 	virtual TimeRange timeRange() const override;	//!< return whole timerange
 
 	DataSource dataSource() const;
+	void setAppearance(const QColor& increasingColor, const QColor& decreasingColor, const QColor &penColor);
 
 private:
 	QtCharts::QCandlestickSet* createSet(const Candle *candle) const;

@@ -68,6 +68,16 @@ DataSource DataSourceSeries::dataSource() const
 	return mDataSource;
 }
 
+void DataSourceSeries::setAppearance(const QColor &increasingColor, const QColor &decreasingColor, const QColor &penColor)
+{
+	if(increasingColor.isValid())
+	{	mCandleStickSeries->setIncreasingColor(increasingColor);	}
+	if(decreasingColor.isValid())
+	{	mCandleStickSeries->setDecreasingColor(decreasingColor);	}
+	if(penColor.isValid())
+	{	mCandleStickSeries->setPen(penColor);	}
+}
+
 QCandlestickSet *DataSourceSeries::createSet(const Candle *candle) const
 {
 	return new QCandlestickSet(candle->open(), candle->high(), candle->low(), candle->close(), candle->time().toMSecsSinceEpoch());

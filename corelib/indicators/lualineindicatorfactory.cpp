@@ -43,7 +43,7 @@ Configuration LuaLineIndicatorFactory::defaultConfiguration() const
 	return rv;
 }
 
-ProductConfigurationEditor *LuaLineIndicatorFactory::createConfigurationEditor(const Configuration &configuration, QWidget *parent) const
+ProductConfigurationEditor *LuaLineIndicatorFactory::createConfigurationEditor(Configuration *configuration, QWidget *parent) const
 {
 	return new LuaLineConfigurationEditor(configuration, parent);
 }

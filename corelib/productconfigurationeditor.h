@@ -8,10 +8,11 @@ class ProductConfigurationEditor : public QWidget
 {
 	Q_OBJECT
 public:
-	ProductConfigurationEditor(const Configuration& configuration, QWidget *parent=nullptr);
+	ProductConfigurationEditor(Configuration* configuration, QWidget *parent=nullptr);
 	virtual ~ProductConfigurationEditor(){}
-	const Configuration& configuration() const;
+protected:
+	Configuration* configuration() const;
 private:
-	Configuration mConfiguration;
+	Configuration* mConfiguration;
 
 };

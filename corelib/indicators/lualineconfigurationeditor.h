@@ -4,15 +4,15 @@
 
 namespace Ui
 {
-class ConfigurationEditor;
+class LuaLineConfigurationEditor;
 }
 
 class LuaLineConfigurationEditor : public ProductConfigurationEditor
 {
 	Q_OBJECT
 public:
-	LuaLineConfigurationEditor(const Configuration& configuration, QWidget* parent=nullptr);
+	LuaLineConfigurationEditor(Configuration *configuration, QWidget* parent=nullptr);
 	~LuaLineConfigurationEditor();
 private:
-	Ui::ConfigurationEditor* ui;
+	Ui::LuaLineConfigurationEditor* ui;
 };

@@ -25,8 +25,11 @@ private:
 	ProductListModel* mProductListModel;
 	ConfigurationModel* mConfigurationModel;
 	ProductConfigurationEditor* mConfigurationEditor;
+	ProductConfigurationEditor* mAppearanceEditor;
 
 	void setConfidurationEditor(ProductConfigurationEditor* configurationEditor);
+	void setAppearanceEditor(ProductConfigurationEditor* configurationEditor);
+	void setProductEditor(ProductConfigurationEditor* newEditor, ProductConfigurationEditor **dstEditor);
 	void onItemActivated(const QModelIndex &index);
 
 	// QWidget interface
