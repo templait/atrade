@@ -14,13 +14,14 @@ MainWindow::MainWindow()
 	ui = new Ui::MainWindow;
 	ui->setupUi(this);
 
-	mMdiArea = new QMdiArea(this);
-	setCentralWidget(mMdiArea);
-
 	initDocks();
 	loadWindowState();
 
-	connect(ui->actionCreate_chart, &QAction::triggered, this, &MainWindow::createChart);
+	connect(ui->actionNew_chart_window, &QAction::triggered, this, &MainWindow::onNewChartWindow);
+	connect(ui->actionChart_window_configuration, &QAction::triggered, this, &MainWindow::onChartWindowConfiguration);
+	connect(ui->mdiArea, &QMdiArea::subWindowActivated, this, [this](QMdiSubWindow *window){
+		ui->actionChart_window_configuration->setEnabled(window);
+	});
 }
 
 MainWindow::~MainWindow()
@@ -36,16 +37,6 @@ void MainWindow::initDocks()
 	ui->menuView->addAction(mLogDoc->toggleViewAction());
 }
 
-void MainWindow::createChart()
-{
-	ConfigurationEditor editor(ChartWindow::defaultConfiguration(), this);
-	if(editor.exec())
-	{
-		ChartWindow* cw = new ChartWindow(editor.configuration());
-		mMdiArea->addSubWindow(cw);
-		cw->show();
-	}
-}
 
 void MainWindow::saveWindowState() const
 {
@@ -55,7 +46,7 @@ void MainWindow::saveWindowState() const
 	settings.setValue("windowState", saveState());
 
 	settings.beginWriteArray("SubWindows");
-	QList<QMdiSubWindow *> subs = mMdiArea->subWindowList();
+	QList<QMdiSubWindow *> subs = ui->mdiArea->subWindowList();
 	int i=0;
 	for(const QMdiSubWindow * sub : subs)
 	{
@@ -85,7 +76,7 @@ void MainWindow::loadWindowState()
 		if(windowType == "ChartWindow")
 		{
 			ChartWindow* cw = new ChartWindow;
-			QMdiSubWindow* sub = mMdiArea->addSubWindow(cw);
+			QMdiSubWindow* sub = ui->mdiArea->addSubWindow(cw);
 			sub->restoreGeometry(settings.value("geometry").toByteArray());
 			cw->show();
 			cw->loadConfiguration(settings);
@@ -93,6 +84,26 @@ void MainWindow::loadWindowState()
 	}
 	settings.endArray();
 	settings.endGroup();
+}
+
+void MainWindow::onNewChartWindow()
+{
+	ConfigurationEditor editor(ChartWindow::defaultConfiguration(), this);
+	if(editor.exec())
+	{
+		ChartWindow* cw = new ChartWindow(editor.configuration());
+		ui->mdiArea->addSubWindow(cw);
+		cw->show();
+	}
+}
+
+void MainWindow::onChartWindowConfiguration()
+{
+	ChartWindow* cw = qobject_cast<ChartWindow*>(ui->mdiArea->activeSubWindow()->widget());
+	Q_ASSERT(cw);
+	ConfigurationEditor editor(cw->configuration(), this);
+	if(editor.exec())
+	{	cw->loadConfiguration(editor.configuration());	}
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

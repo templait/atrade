@@ -19,12 +19,12 @@ public:
 private:
 	Ui::MainWindow *ui;
 	LogDoc *mLogDoc;
-	QMdiArea *mMdiArea;
 
 	void initDocks();
-	void createChart();
 	void saveWindowState() const;
 	void loadWindowState();
+	void onNewChartWindow();
+	void onChartWindowConfiguration();
 
 	// QWidget interface
 protected:
