@@ -44,6 +44,27 @@ Configuration *ConfigurationModel::index2configuration(const QModelIndex &index)
 	return rv;
 }
 
+bool ConfigurationModel::isProduct(const Configuration *configuration) const
+{
+	bool rv = false;
+	if(configuration)
+	{
+		ProductID id = configuration->value().toUuid();
+		rv =  DataSourceFactory::instance().hasProduct(id) || IndicatorFactory::instance().hasProduct(id);
+	}
+	return rv;
+}
+
+bool ConfigurationModel::isChart(const Configuration *configuration) const
+{
+	return configuration && configuration->name()=="Chart";
+}
+
+bool ConfigurationModel::isRoot(const Configuration *configuration) const
+{
+	return configuration== &mRoot;
+}
+
 QModelIndex ConfigurationModel::index(int row, int column, const QModelIndex &parent) const
 {
 	QModelIndex rv;
@@ -194,11 +215,11 @@ Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 	if(index.isValid())
 	{
 		Configuration* conf = index2configuration(index);
-		ProductID id = conf->value().toUuid();
-		if(conf->name() == "Chart" && index.column()==0)
+		if(isRoot(conf))
+		{	rv |= Qt::ItemIsDropEnabled;	}
+		else if(isChart(conf) && index.column()==0)
 		{	rv |= Qt::ItemIsDropEnabled | Qt::ItemIsDragEnabled;	}
-
-		if(DataSourceFactory::instance().hasProduct(id) || IndicatorFactory::instance().hasProduct(id))
+		else if(isProduct(conf))
 		{	rv |= Qt::ItemIsDragEnabled;	}
 
 		if(index.column()==0  && conf->userEditabe(Configuration::Title))
@@ -211,14 +232,19 @@ Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 	return rv;
 }
 
-bool ConfigurationModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex & /*parent*/) const
+bool ConfigurationModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex & parent) const
 {
-	bool rv=false;
-	if(		action & (Qt::MoveAction|Qt::CopyAction)
-	        && data->hasFormat("configuration/product")
-			//&& parent.column()==0
-	  )
-	{	rv = true;	}
+	bool rv=true;
+	Configuration * parentConf = index2configuration(parent);
+
+	if(action & (Qt::MoveAction|Qt::CopyAction))
+	{
+		if(data->hasFormat("configuration/product") && (isProduct(parentConf) || isRoot(parentConf)))
+		{	rv = false;	}
+		else if(data->hasFormat("configuration/chart") && (isChart(parentConf) || isProduct(parentConf)))
+		{	rv = false;	}
+	}
+
 	return rv;
 }
 
@@ -226,23 +252,27 @@ bool ConfigurationModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
 {
 	bool rv=false;
 
-	QByteArray encodedData = data->data("configuration/product");
-	QDataStream stream(&encodedData, QIODevice::ReadOnly);
-
-	QList<Configuration> configs;
-	while (!stream.atEnd()) {
-		Configuration conf;
-		stream >> conf;
-		configs << conf;
-	}
-	if(action==Qt::CopyAction || action==Qt::MoveAction)
+	QStringList list {"configuration/product", "configuration/chart"};
+	for(const QString& mimeType : list)
 	{
-		for(const Configuration& conf : configs)
-		{
-			insertChild(parent, conf, row++);
-		}
+		QByteArray encodedData = data->data(mimeType);
+		QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-		rv = true;
+		QList<Configuration> configs;
+		while (!stream.atEnd()) {
+			Configuration conf;
+			stream >> conf;
+			configs << conf;
+		}
+		if(action==Qt::CopyAction || action==Qt::MoveAction)
+		{
+			for(const Configuration& conf : configs)
+			{
+				insertChild(parent, conf, row++);
+			}
+			rv = true;
+			break;
+		}
 	}
 	return rv;
 }
@@ -259,6 +289,11 @@ QMimeData *ConfigurationModel::mimeData(const QModelIndexList &indexes) const
 	{
 		stream << *conf;
 		rv->setData("configuration/product", 	encodedData);
+	}
+	else if(conf->name() == "Chart")
+	{
+		stream << *conf;
+		rv->setData("configuration/chart", 	encodedData);
 	}
 	return rv;
 }
