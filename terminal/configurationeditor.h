@@ -30,8 +30,9 @@ private:
 	void setConfidurationEditor(ProductConfigurationEditor* configurationEditor);
 	void setAppearanceEditor(ProductConfigurationEditor* configurationEditor);
 	void setProductEditor(ProductConfigurationEditor* newEditor, ProductConfigurationEditor **dstEditor);
-	void onItemActivated(const QModelIndex &index);
+	void onCurrentChanged(const QModelIndex &current, const QModelIndex &);
 	void onNewChart();
+	void onDelete();
 
 	// QWidget interface
 protected:

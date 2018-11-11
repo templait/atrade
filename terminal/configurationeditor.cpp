@@ -34,9 +34,11 @@ ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWi
 	//ui->tvConfiguration->setRootIndex(mConfigurationModel->index(0,0, QModelIndex()));
 	ui->tvConfiguration->expandAll();
 	ui->tvConfiguration->addAction(ui->actionNew_chart);
+	ui->tvConfiguration->addAction(ui->actionDelete);
 
-	connect(ui->tvConfiguration, &QAbstractItemView::activated, this, &ConfigurationEditor::onItemActivated);
+	connect(ui->tvConfiguration->selectionModel(), &QItemSelectionModel::currentChanged, this, &ConfigurationEditor::onCurrentChanged);
 	connect(ui->actionNew_chart, &QAction::triggered, this, &ConfigurationEditor::onNewChart);
+	connect(ui->actionDelete, &QAction::triggered, this, &ConfigurationEditor::onDelete);
 }
 
 ConfigurationEditor::~ConfigurationEditor()
@@ -68,28 +70,45 @@ void ConfigurationEditor::setProductEditor(ProductConfigurationEditor *configura
 	*dstEditor = configurationEditor;
 }
 
-void ConfigurationEditor::onItemActivated(const QModelIndex &index)
+void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QModelIndex &)
 {
-	QUuid uuid = index.sibling(index.row(), 1).data().toUuid();
-	Configuration* conf = const_cast<Configuration*>(&(mConfigurationModel->configuration(index)));
+	QUuid uuid = current.sibling(current.row(), 1).data().toUuid();
+	Configuration* conf = const_cast<Configuration*>(&(mConfigurationModel->configuration(current)));
 	if(IndicatorFactory::instance().hasProduct(uuid))
 	{
 		setConfidurationEditor(IndicatorFactory::instance().createConfigurationEditor(uuid, conf));
 		setAppearanceEditor(nullptr);
+		ui->actionDelete->setEnabled(true);
 	}
 	else if(DataSourceFactory::instance().hasProduct(uuid))
 	{
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(new DataSourceConfigurationEditor(conf));
+		ui->actionDelete->setEnabled(true);
+	}
+	else if(conf->name() == "Chart")
+	{
+		setConfidurationEditor(nullptr);
+		setAppearanceEditor(nullptr);
+		ui->actionDelete->setEnabled(true);
 	}
 	else
-	{	setConfidurationEditor(nullptr);	}
+	{
+		setConfidurationEditor(nullptr);
+		setAppearanceEditor(nullptr);
+		ui->actionDelete->setEnabled(false);
+	}
 }
 
 void ConfigurationEditor::onNewChart()
 {
-	//mConfiguration.appendChild({Configuration::Title, "chart", QVariant(), tr("График")});
-	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, "chart", QVariant(), tr("График")});
+	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, "Chart", QVariant(), tr("График")});
+}
+
+void ConfigurationEditor::onDelete()
+{
+	QModelIndex index = ui->tvConfiguration->selectionModel()->currentIndex();
+	mConfigurationModel->deleteChild(index.parent(), index.row());
 }
 
 void ConfigurationEditor::closeEvent(QCloseEvent *event)

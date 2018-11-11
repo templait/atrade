@@ -30,6 +30,14 @@ void ConfigurationModel::insertChild(const QModelIndex &parent, const Configurat
 	endInsertRows();
 }
 
+void ConfigurationModel::deleteChild(const QModelIndex &parent, int row)
+{
+	Configuration* parentConf = index2configuration(parent);
+	beginRemoveRows(parent, row, row);
+	parentConf->deleteChild(row);
+	endRemoveRows();
+}
+
 Configuration *ConfigurationModel::index2configuration(const QModelIndex &index) const
 {
 	Configuration* rv = nullptr;
@@ -109,6 +117,7 @@ QVariant ConfigurationModel::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case Qt::DisplayRole:
+		case Qt::EditRole:
 			rv = conf->title();
 			break;
 
@@ -119,6 +128,7 @@ QVariant ConfigurationModel::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case Qt::DisplayRole:
+		case Qt::EditRole:
 			rv = conf->value();
 			break;
 
@@ -129,6 +139,7 @@ QVariant ConfigurationModel::data(const QModelIndex &index, int role) const
 		switch(role)
 		{
 		case Qt::DisplayRole:
+		case Qt::EditRole:
 			rv = conf->name();
 			break;
 
@@ -188,7 +199,7 @@ Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 	if(index.isValid())
 	{
 		Configuration* conf = index2configuration(index);
-		if(conf->name() == "chart" && index.column()==0)
+		if(conf->name() == "Chart" && index.column()==0)
 		{	rv |= Qt::ItemIsDropEnabled;	}
 
 		if(index.column()==0  && conf->userEditabe(Configuration::Title))

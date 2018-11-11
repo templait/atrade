@@ -68,6 +68,17 @@
     <string>New chart</string>
    </property>
   </action>
+  <action name="actionDelete">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>tvProductList</tabstop>

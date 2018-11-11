@@ -242,7 +242,7 @@ Configuration ChartWindow::defaultConfiguration()
 {
 	Configuration chartWindow("ChartWindow", QVariant(), tr("Oкно графиков"));
 	chartWindow.insertChild({Configuration::Value, "TimeInterval", ETimeInterval::IntervalD1, tr("Интервал")});
-	chartWindow.insertChild({Configuration::Title, "chart", QVariant(), tr("График")});
+	//chartWindow.insertChild({Configuration::Title, "chart", QVariant(), tr("График")});
 
 	return chartWindow;
 }

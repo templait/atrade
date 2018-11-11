@@ -116,16 +116,25 @@ void Configuration::setTitle(const QString &title)
 	mTitle = title;
 }
 
-void Configuration::insertChild(Configuration child, int position)
+void Configuration::insertChild(Configuration child, int index)
 {
-	int insPos = position<0 || position >= mChildren.count() ? mChildren.count() : position;
+	int insPos = index<0 || index >= mChildren.count() ? mChildren.count() : index;
 	mChildren.insert(insPos, child);
 	mChildren[insPos].mParent = this;
 }
 
+void Configuration::deleteChild(int index)
+{
+	int delPos = index<0 || index >= mChildren.count() ? mChildren.count() : index;
+	mChildren.removeAt(delPos);
+}
+
 const Configuration *Configuration::childAt(int index) const
 {
-	return &(mChildren[index]);
+	const Configuration * rv = nullptr;
+	if(index>=0 && index<mChildren.size())
+	{	rv = &(mChildren[index]);	}
+	return rv;
 }
 
 int Configuration::childrenCount() const

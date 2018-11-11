@@ -27,7 +27,8 @@ public:
 	const QString& title() const;
 	void setTitle(const QString& title);
 
-	void insertChild(Configuration child, int position=-1);
+	void insertChild(Configuration child, int index=-1);
+	void deleteChild(int index);
 	const Configuration *childAt(int index) const;
 	int childrenCount() const;
 	bool containsChild(const QString& childName) const;
