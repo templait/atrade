@@ -3,7 +3,6 @@
 #include <QAbstractItemModel>
 
 #include <configuration.h>
-#include <datasources/datasourcefactory.h>
 
 class ConfigurationModel : public QAbstractItemModel
 {
@@ -12,7 +11,6 @@ public:
 	ConfigurationModel(const Configuration& configuration, QObject* parent=nullptr);
 	const Configuration& configuration(const QModelIndex& index = QModelIndex()) const;
 	void insertChild(const QModelIndex &parent, const Configuration& child, int row=-1);
-	void deleteChild(const QModelIndex &parent, int row);
 private:
 	Configuration mRoot;
 	Configuration *index2configuration(const QModelIndex &index) const;
@@ -29,5 +27,7 @@ public:
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
 	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &) const override;
 	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int, const QModelIndex &parent) override;
-	//virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
+	virtual QMimeData *mimeData(const QModelIndexList &indexes) const override;
+	virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
+	virtual Qt::DropActions supportedDropActions() const override;
 };

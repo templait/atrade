@@ -1,5 +1,8 @@
 #include "configurationmodel.h"
 
+#include <datasources/datasourcefactory.h>
+#include <indicators/indicatorfactory.h>
+
 #include <QDataStream>
 #include <QMimeData>
 
@@ -28,14 +31,6 @@ void ConfigurationModel::insertChild(const QModelIndex &parent, const Configurat
 	beginInsertRows(parent, insRow, insRow);
 	parentConf->insertChild(child, insRow);
 	endInsertRows();
-}
-
-void ConfigurationModel::deleteChild(const QModelIndex &parent, int row)
-{
-	Configuration* parentConf = index2configuration(parent);
-	beginRemoveRows(parent, row, row);
-	parentConf->deleteChild(row);
-	endRemoveRows();
 }
 
 Configuration *ConfigurationModel::index2configuration(const QModelIndex &index) const
@@ -199,8 +194,12 @@ Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 	if(index.isValid())
 	{
 		Configuration* conf = index2configuration(index);
+		ProductID id = conf->value().toUuid();
 		if(conf->name() == "Chart" && index.column()==0)
-		{	rv |= Qt::ItemIsDropEnabled;	}
+		{	rv |= Qt::ItemIsDropEnabled | Qt::ItemIsDragEnabled;	}
+
+		if(DataSourceFactory::instance().hasProduct(id) || IndicatorFactory::instance().hasProduct(id))
+		{	rv |= Qt::ItemIsDragEnabled;	}
 
 		if(index.column()==0  && conf->userEditabe(Configuration::Title))
 		{	rv |= Qt::ItemIsEditable;	}
@@ -216,7 +215,7 @@ bool ConfigurationModel::canDropMimeData(const QMimeData *data, Qt::DropAction a
 {
 	bool rv=false;
 	if(		action & (Qt::MoveAction|Qt::CopyAction)
-			&& data->hasFormat("configuration/datasource")
+	        && data->hasFormat("configuration/product")
 			//&& parent.column()==0
 	  )
 	{	rv = true;	}
@@ -227,7 +226,7 @@ bool ConfigurationModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
 {
 	bool rv=false;
 
-	QByteArray encodedData = data->data("configuration/datasource");
+	QByteArray encodedData = data->data("configuration/product");
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
 	QList<Configuration> configs;
@@ -236,23 +235,51 @@ bool ConfigurationModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
 		stream >> conf;
 		configs << conf;
 	}
-	if(action==Qt::CopyAction)
+	if(action==Qt::CopyAction || action==Qt::MoveAction)
 	{
-		//qDebug() << row << parent.internalId();
-		const Configuration* pConf = index2configuration(parent);
-		//beginInsertRows(parent.sibling(parent.row(), 0), row, row+configs.size()-1);
-		//beginInsertRows(parent, row, row+configs.size()-1);
-		int _row = qMax(0, pConf->childrenCount()-1);
-		beginInsertRows(parent, _row, _row);
 		for(const Configuration& conf : configs)
 		{
-			index2configuration(parent)->insertChild(conf);
+			insertChild(parent, conf, row++);
 		}
-		endInsertRows();
 
 		rv = true;
 	}
 	return rv;
+}
+
+QMimeData *ConfigurationModel::mimeData(const QModelIndexList &indexes) const
+{
+	QMimeData *rv = new QMimeData();
+	QByteArray encodedData;
+	QDataStream stream(&encodedData, QIODevice::WriteOnly);
+	const QModelIndex& index = indexes.first().sibling(indexes.first().row(), 1);
+	Configuration* conf = index2configuration(index);
+	ProductID id = conf->value().toUuid();
+	if(DataSourceFactory::instance().hasProduct(id) || IndicatorFactory::instance().hasProduct(id))
+	{
+		stream << *conf;
+		rv->setData("configuration/product", 	encodedData);
+	}
+	return rv;
+}
+
+bool ConfigurationModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+	Configuration* parentConf = index2configuration(parent);
+	row = qBound(0, row, parentConf->childrenCount()-1);
+	count = qBound(0, count, parentConf->childrenCount()-row);
+
+	beginRemoveRows(parent, row, row+count-1);
+	for(int i=row; i<row+count; i++)
+	{	parentConf->deleteChild(i);	}
+	endRemoveRows();
+
+	return count>0;
+}
+
+Qt::DropActions ConfigurationModel::supportedDropActions() const
+{
+	return Qt::CopyAction | Qt::MoveAction;
 }
 /*
 bool ConfigurationModel::insertRows(int row, int count, const QModelIndex &parent)

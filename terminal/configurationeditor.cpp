@@ -6,6 +6,7 @@
 #include <tools.h>
 #include <productlistmodel.h>
 #include <indicators/indicatorfactory.h>
+#include <datasources/datasourcefactory.h>
 
 #include "configurationmodel.h"
 #include "series/datasourceconfigurationeditor.h"
@@ -108,7 +109,7 @@ void ConfigurationEditor::onNewChart()
 void ConfigurationEditor::onDelete()
 {
 	QModelIndex index = ui->tvConfiguration->selectionModel()->currentIndex();
-	mConfigurationModel->deleteChild(index.parent(), index.row());
+	mConfigurationModel->removeRow(index.row(), index.parent());
 }
 
 void ConfigurationEditor::closeEvent(QCloseEvent *event)

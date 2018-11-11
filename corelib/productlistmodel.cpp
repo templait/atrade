@@ -131,7 +131,7 @@ QMimeData *ProductListModel::mimeData(const QModelIndexList &indexes) const
 
 	}
 	QMimeData *rv = new QMimeData();
-	rv->setData("configuration/datasource", 	encodedData);
+	rv->setData("configuration/product", 	encodedData);
 	return rv;
 }
 
