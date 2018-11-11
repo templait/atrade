@@ -45,11 +45,11 @@ void DataSourceConfigurationEditor::saveConfiguration()
 {
 	Configuration& conf(*configuration());
 	if(! conf.containsChild("increasingColor"))
-	{	conf.appendChild({"increasingColor", QVariant(), tr("Increasing color")});	}
+	{	conf.insertChild({"increasingColor", QVariant(), tr("Increasing color")});	}
 	if(! conf.containsChild("decreasingColor"))
-	{	conf.appendChild({"decreasingColor", QVariant(), tr("Decreasing color")});	}
+	{	conf.insertChild({"decreasingColor", QVariant(), tr("Decreasing color")});	}
 	if(! conf.containsChild("penColor"))
-	{	conf.appendChild({"penColor", QVariant(), tr("Pen color")});	}
+	{	conf.insertChild({"penColor", QVariant(), tr("Pen color")});	}
 
 	conf["increasingColor"].setValue(ui->tbIncreasingColor->palette().button().color());
 	conf["decreasingColor"].setValue(ui->tbDecreasingColor->palette().button().color());

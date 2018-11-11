@@ -11,6 +11,7 @@ class ConfigurationModel : public QAbstractItemModel
 public:
 	ConfigurationModel(const Configuration& configuration, QObject* parent=nullptr);
 	const Configuration& configuration(const QModelIndex& index = QModelIndex()) const;
+	void insertChild(const QModelIndex &parent, const Configuration& child, int row=-1);
 private:
 	Configuration mRoot;
 	Configuration *index2configuration(const QModelIndex &index) const;

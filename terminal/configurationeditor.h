@@ -31,6 +31,7 @@ private:
 	void setAppearanceEditor(ProductConfigurationEditor* configurationEditor);
 	void setProductEditor(ProductConfigurationEditor* newEditor, ProductConfigurationEditor **dstEditor);
 	void onItemActivated(const QModelIndex &index);
+	void onNewChart();
 
 	// QWidget interface
 protected:

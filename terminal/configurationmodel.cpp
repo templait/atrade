@@ -21,6 +21,15 @@ const Configuration &ConfigurationModel::configuration(const QModelIndex &index)
 	return *rv;
 }
 
+void ConfigurationModel::insertChild(const QModelIndex &parent, const Configuration &child, int row)
+{
+	Configuration* parentConf = index2configuration(parent);
+	int insRow = (row<0 || row>=parentConf->childrenCount()) ? parentConf->childrenCount() : row;
+	beginInsertRows(parent, insRow, insRow);
+	parentConf->insertChild(child, insRow);
+	endInsertRows();
+}
+
 Configuration *ConfigurationModel::index2configuration(const QModelIndex &index) const
 {
 	Configuration* rv = nullptr;
@@ -226,7 +235,7 @@ bool ConfigurationModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
 		beginInsertRows(parent, _row, _row);
 		for(const Configuration& conf : configs)
 		{
-			index2configuration(parent)->appendChild(conf);
+			index2configuration(parent)->insertChild(conf);
 		}
 		endInsertRows();
 

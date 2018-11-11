@@ -10,7 +10,6 @@
 #include "configurationmodel.h"
 #include "series/datasourceconfigurationeditor.h"
 
-
 ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWidget *parent)
 	: QDialog(parent)
 	, mConfiguration(configuration)
@@ -34,8 +33,10 @@ ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWi
 	ui->tvConfiguration->setModel(mConfigurationModel);
 	//ui->tvConfiguration->setRootIndex(mConfigurationModel->index(0,0, QModelIndex()));
 	ui->tvConfiguration->expandAll();
+	ui->tvConfiguration->addAction(ui->actionNew_chart);
 
 	connect(ui->tvConfiguration, &QAbstractItemView::activated, this, &ConfigurationEditor::onItemActivated);
+	connect(ui->actionNew_chart, &QAction::triggered, this, &ConfigurationEditor::onNewChart);
 }
 
 ConfigurationEditor::~ConfigurationEditor()
@@ -83,6 +84,12 @@ void ConfigurationEditor::onItemActivated(const QModelIndex &index)
 	}
 	else
 	{	setConfidurationEditor(nullptr);	}
+}
+
+void ConfigurationEditor::onNewChart()
+{
+	//mConfiguration.appendChild({Configuration::Title, "chart", QVariant(), tr("График")});
+	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, "chart", QVariant(), tr("График")});
 }
 
 void ConfigurationEditor::closeEvent(QCloseEvent *event)

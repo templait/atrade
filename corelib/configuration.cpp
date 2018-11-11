@@ -19,14 +19,14 @@ Configuration::Configuration(const Configuration &other)
 	mUserEditableMap = other.mUserEditableMap;
 
 	for(const Configuration& child : other.mChildren)
-	{	appendChild(child);	}
+	{	insertChild(child);	}
 }
 
 Configuration::Configuration(std::initializer_list<Configuration> list)
 	: Configuration()
 {
 	for(const Configuration& conf : list)
-	{	appendChild(conf);	}
+	{	insertChild(conf);	}
 }
 
 Configuration::Configuration(const QString &name, const QVariant &value, const QString &title)
@@ -82,7 +82,7 @@ Configuration &Configuration::operator=(const Configuration &other)
 	mUserEditableMap = other.mUserEditableMap;
 	mChildren.clear();
 	for(const Configuration& child : other.mChildren)
-	{	appendChild(child);	}
+	{	insertChild(child);	}
 	return *this;
 }
 
@@ -116,12 +116,11 @@ void Configuration::setTitle(const QString &title)
 	mTitle = title;
 }
 
-bool Configuration::appendChild(Configuration child)
+void Configuration::insertChild(Configuration child, int position)
 {
-	bool rv = false;
-	mChildren << child;
-	mChildren.last().mParent = this;
-	return rv;
+	int insPos = position<0 || position >= mChildren.count() ? mChildren.count() : position;
+	mChildren.insert(insPos, child);
+	mChildren[insPos].mParent = this;
 }
 
 const Configuration *Configuration::childAt(int index) const
@@ -174,7 +173,7 @@ QDataStream &operator>>(QDataStream &in, Configuration &configuration)
 	{
 		Configuration child;
 		in >> child;
-		configuration.appendChild(child);
+		configuration.insertChild(child);
 	}
 	return in;
 }

@@ -42,7 +42,7 @@ ChartWidget::ChartWidget(ETimeInterval interval, const Configuration &configurat
 		if(DataSourceFactory::instance().hasProduct(conf->value().toUuid()))
 		{
 			Configuration dsConf(*conf);
-			dsConf.appendChild({"interval",	interval,		tr("Интервал")});
+			dsConf.insertChild({"interval",	interval,		tr("Интервал")});
 			addDataSource(dsConf);
 		}
 	}
