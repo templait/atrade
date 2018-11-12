@@ -12,4 +12,5 @@ public:
 public:
 	virtual BDataSource *create(const Configuration &configuration) const override;
 	virtual Configuration defaultConfiguration() const override;
+	virtual ProductConfigurationEditor *createConfigurationEditor(const Configuration &configuration, QWidget *parent) const override;
 };

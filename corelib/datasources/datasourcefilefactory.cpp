@@ -1,5 +1,6 @@
 #include "datasourcefilefactory.h"
 #include "datasourcefile.h"
+#include "fileconfigurationeditor.h"
 
 #include <log.h>
 #include <tools.h>
@@ -51,4 +52,9 @@ Configuration DataSourceFileFactory::defaultConfiguration() const
 	rv.setUserEditableMap(Configuration::Title);
 
 	return rv;
+}
+
+ProductConfigurationEditor *DataSourceFileFactory::createConfigurationEditor(const Configuration & configuration, QWidget *parent) const
+{
+	return new FileConfigurationEditor(configuration, parent);
 }
