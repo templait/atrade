@@ -11,7 +11,7 @@ class FileConfigurationEditor : public ProductConfigurationEditor
 {
 	Q_OBJECT
 public:
-	FileConfigurationEditor(const Configuration& configuration, QWidget* parent=nullptr);
+	FileConfigurationEditor(Configuration* configuration, QWidget* parent=nullptr);
 	~FileConfigurationEditor();
 private:
 	Ui::ConfigurationEditor* ui;

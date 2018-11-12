@@ -21,7 +21,6 @@ public:
 	const Configuration& configuration() const;
 private:
 	Ui::ConfigurationEditor *ui;
-	Configuration mConfiguration;
 	ProductListModel* mProductListModel;
 	ConfigurationModel* mConfigurationModel;
 	ProductConfigurationEditor* mConfigurationEditor;

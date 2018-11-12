@@ -1,7 +1,7 @@
 #include "fileconfigurationeditor.h"
 #include <ui_fileconfigurationeditor.h>
 
-FileConfigurationEditor::FileConfigurationEditor(const Configuration &configuration, QWidget *parent)
+FileConfigurationEditor::FileConfigurationEditor(Configuration *configuration, QWidget *parent)
 	: ProductConfigurationEditor(configuration, parent)
 {
 	ui = new Ui::ConfigurationEditor;

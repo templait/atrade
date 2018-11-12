@@ -234,17 +234,19 @@ Qt::ItemFlags ConfigurationModel::flags(const QModelIndex &index) const
 
 bool ConfigurationModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex & parent) const
 {
-	bool rv=true;
-	Configuration * parentConf = index2configuration(parent);
-
-	if(action & (Qt::MoveAction|Qt::CopyAction))
+	bool rv=false;
+	if(data->hasFormat("configuration/product") || data->hasFormat("configuration/chart"))
 	{
-		if(data->hasFormat("configuration/product") && (isProduct(parentConf) || isRoot(parentConf)))
-		{	rv = false;	}
-		else if(data->hasFormat("configuration/chart") && (isChart(parentConf) || isProduct(parentConf)))
-		{	rv = false;	}
+		rv = true;
+		Configuration * parentConf = index2configuration(parent);
+		if(action & (Qt::MoveAction|Qt::CopyAction))
+		{
+			if(data->hasFormat("configuration/product") && (isProduct(parentConf) || isRoot(parentConf)))
+			{	rv = false;	}
+			else if(data->hasFormat("configuration/chart") && (isChart(parentConf) || isProduct(parentConf)))
+			{	rv = false;	}
+		}
 	}
-
 	return rv;
 }
 
@@ -271,7 +273,6 @@ bool ConfigurationModel::dropMimeData(const QMimeData *data, Qt::DropAction acti
 				insertChild(parent, conf, row++);
 			}
 			rv = true;
-			break;
 		}
 	}
 	return rv;

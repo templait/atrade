@@ -214,7 +214,7 @@ void ChartWindow::loadConfiguration(const Configuration& configuration)
 	for(int i=0; i<mConfiguration.childrenCount(); i++)
 	{
 		const Configuration* conf = mConfiguration.childAt(i);
-		if(conf->name() == "chart")
+		if(conf->name() == "Chart")
 		{	
 			cregetChartWidget(*conf, i);
 		}

@@ -13,7 +13,6 @@
 
 ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWidget *parent)
 	: QDialog(parent)
-	, mConfiguration(configuration)
 	, mConfigurationEditor(nullptr)
     , mAppearanceEditor(nullptr)
 {
@@ -30,7 +29,7 @@ ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWi
 	ui->tvProductList->setModel(mProductListModel);
 	ui->tvProductList->expandAll();
 
-	mConfigurationModel = new ConfigurationModel(configuration);
+	mConfigurationModel = new ConfigurationModel(configuration, this);
 	ui->tvConfiguration->setModel(mConfigurationModel);
 	//ui->tvConfiguration->setRootIndex(mConfigurationModel->index(0,0, QModelIndex()));
 	ui->tvConfiguration->expandAll();
