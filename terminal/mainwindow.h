@@ -8,7 +8,7 @@ namespace Ui
 }
 
 class LogDoc;
-class QMdiArea;
+class MDIArea;
 
 class MainWindow : public QMainWindow
 {
@@ -23,8 +23,12 @@ private:
 	void initDocks();
 	void saveWindowState() const;
 	void loadWindowState();
+	MDIArea *currentMDIArea();
+	void appendMDIArea(MDIArea *area);
 	void onNewChartWindow();
 	void onChartWindowConfiguration();
+	void onNewTab();
+	void onCurrentTabChanfed(int index);
 
 	// QWidget interface
 protected:

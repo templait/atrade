@@ -2,6 +2,7 @@
 #include "logdoc/logdoc.h"
 #include "chartwindow.h"
 #include "configurationeditor.h"
+#include "mdiarea.h"
 
 #include <ui_mainwindow.h>
 
@@ -14,14 +15,17 @@ MainWindow::MainWindow()
 	ui = new Ui::MainWindow;
 	ui->setupUi(this);
 
-	initDocks();
-	loadWindowState();
-
 	connect(ui->actionNew_chart_window, &QAction::triggered, this, &MainWindow::onNewChartWindow);
 	connect(ui->actionChart_window_configuration, &QAction::triggered, this, &MainWindow::onChartWindowConfiguration);
-	connect(ui->mdiArea, &QMdiArea::subWindowActivated, this, [this](QMdiSubWindow *window){
-		ui->actionChart_window_configuration->setEnabled(window);
-	});
+	connect(ui->actionNew_tab, &QAction::triggered, this, &MainWindow::onNewTab);
+	connect(ui->actionCascade, &QAction::triggered, [this](){currentMDIArea()->cascadeSubWindows();});
+	connect(ui->actionTile, &QAction::triggered, [this](){currentMDIArea()->tileSubWindows();});
+
+	connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onCurrentTabChanfed);
+	connect(ui->tabWidget, &QTabWidget::tabCloseRequested, ui->tabWidget, &QTabWidget::removeTab);
+
+	initDocks();
+	loadWindowState();
 }
 
 MainWindow::~MainWindow()
@@ -42,20 +46,18 @@ void MainWindow::saveWindowState() const
 {
 	QSettings settings;
 	settings.beginGroup(objectName());
-	settings.setValue("geometry", saveGeometry());
-	settings.setValue("windowState", saveState());
+	settings.setValue("Geometry", saveGeometry());
+	settings.setValue("WindowState", saveState());
 
-	settings.beginWriteArray("SubWindows");
-	QList<QMdiSubWindow *> subs = ui->mdiArea->subWindowList();
-	int i=0;
-	for(const QMdiSubWindow * sub : subs)
+	settings.beginWriteArray("Tabs");
+	for(int i=0; i<ui->tabWidget->count(); i++)
 	{
-		settings.setArrayIndex(i++);
-		if(const ChartWindow* cw = qobject_cast<const ChartWindow*>(sub->widget()))
+		settings.setArrayIndex(i);
+		QWidget* widget = ui->tabWidget->widget(i);
+		settings.setValue("TabName", widget->objectName());
+		if(MDIArea* mdiArea = qobject_cast<MDIArea*>(widget))
 		{
-			settings.setValue("WindowType", "ChartWindow");
-			settings.setValue("geometry", sub->saveGeometry());
-			cw->saveConfiguration(settings);
+			mdiArea->saveWindowState(settings);
 		}
 	}
 	settings.endArray();
@@ -66,24 +68,42 @@ void MainWindow::loadWindowState()
 {
 	QSettings settings;
 	settings.beginGroup(objectName());
-	restoreGeometry(settings.value("geometry").toByteArray());
-	restoreState(settings.value("windowState").toByteArray());
-	int chartWinCount = settings.beginReadArray("SubWindows");
-	for(int i=0; i<chartWinCount; i++)
+	restoreGeometry(settings.value("Geometry").toByteArray());
+	restoreState(settings.value("GindowState").toByteArray());
+	int tabsCount = settings.beginReadArray("Tabs");
+	for(int i=0; i<tabsCount; i++)
 	{
 		settings.setArrayIndex(i);
-		QString windowType = settings.value("WindowType").toString();
-		if(windowType == "ChartWindow")
-		{
-			ChartWindow* cw = new ChartWindow;
-			QMdiSubWindow* sub = ui->mdiArea->addSubWindow(cw);
-			sub->restoreGeometry(settings.value("geometry").toByteArray());
-			cw->show();
-			cw->loadConfiguration(settings);
-		}
+		QString tabName = settings.value("TabName").toString();
+		MDIArea* mdiArea = new MDIArea;
+		mdiArea->setObjectName(tabName);
+		mdiArea->loadWindowState(settings);
+		appendMDIArea(mdiArea);
 	}
 	settings.endArray();
 	settings.endGroup();
+}
+
+MDIArea *MainWindow::currentMDIArea()
+{
+	MDIArea * rv = nullptr;
+	if(MDIArea* area = qobject_cast<MDIArea*>(ui->tabWidget->currentWidget()))
+	{	rv = area;	}
+	return rv;
+}
+
+void MainWindow::appendMDIArea(MDIArea *area)
+{
+	ui->tabWidget->addTab(area, area->windowTitle());
+	connect(area, &QMdiArea::subWindowActivated, this, [this](QMdiSubWindow *window){
+		ui->actionChart_window_configuration->setEnabled(window);
+	});
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	saveWindowState();
+	QMainWindow::closeEvent(event);
 }
 
 void MainWindow::onNewChartWindow()
@@ -92,23 +112,55 @@ void MainWindow::onNewChartWindow()
 	if(editor.exec())
 	{
 		ChartWindow* cw = new ChartWindow(editor.configuration());
-		ui->mdiArea->addSubWindow(cw);
+		currentMDIArea()->addSubWindow(cw);
 		cw->show();
 	}
 }
 
 void MainWindow::onChartWindowConfiguration()
 {
-	ChartWindow* cw = qobject_cast<ChartWindow*>(ui->mdiArea->activeSubWindow()->widget());
+	ChartWindow* cw = qobject_cast<ChartWindow*>(currentMDIArea()->activeSubWindow()->widget());
 	Q_ASSERT(cw);
 	ConfigurationEditor editor(cw->configuration(), this);
 	if(editor.exec())
 	{	cw->loadConfiguration(editor.configuration());	}
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+void MainWindow::onNewTab()
 {
-	saveWindowState();
-	QMainWindow::closeEvent(event);
+	auto checkTabName = [this](const QString& name)
+	{
+		bool rv = true;
+		for(int i=0; i<ui->tabWidget->count(); i++)
+		{
+			if(ui->tabWidget->widget(i)->objectName()==name)
+			{
+				rv = false;
+				break;
+			}
+		}
+		return rv;
+	};
+	int suffix=0;
+	QString tabName;
+	do
+	{
+		suffix++;
+		tabName = QString("Page %1").arg(suffix);
+	}
+	while(!checkTabName(tabName));
+
+	MDIArea* mdiArea = new MDIArea;
+	mdiArea->setObjectName(tabName);
+	mdiArea->setWindowTitle(tabName);
+
+	appendMDIArea(mdiArea);
+}
+
+void MainWindow::onCurrentTabChanfed(int index)
+{
+	ui->actionNew_chart_window->setEnabled(index>=0);
+	ui->actionCascade->setEnabled(index>=0);
+	ui->actionTile->setEnabled(index>=0);
 }
 

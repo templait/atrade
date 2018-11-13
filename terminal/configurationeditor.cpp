@@ -66,7 +66,7 @@ void ConfigurationEditor::setProductEditor(ProductConfigurationEditor *configura
 	if(*dstEditor)
 	{	delete *dstEditor;	}
 	if(configurationEditor)
-	{	ui->gbConfigurationEditor->layout()->addWidget(configurationEditor);	}
+	{	ui->vlConfigurators->addWidget(configurationEditor);	}
 	*dstEditor = configurationEditor;
 }
 
@@ -82,11 +82,11 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 	}
 	else if(DataSourceFactory::instance().hasProduct(uuid))
 	{
-		setConfidurationEditor(nullptr);
+		setConfidurationEditor(DataSourceFactory::instance().createConfigurationEditor(uuid, conf));
 		setAppearanceEditor(new DataSourceConfigurationEditor(conf));
 		ui->actionDelete->setEnabled(true);
 	}
-	else if(conf->name() == "Chart")
+	else if(conf->name() == CHART_CONF)
 	{
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
@@ -102,7 +102,7 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 
 void ConfigurationEditor::onNewChart()
 {
-	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, "Chart", QVariant(), tr("График")});
+	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, CHART_CONF, QVariant(), tr("График")});
 }
 
 void ConfigurationEditor::onDelete()

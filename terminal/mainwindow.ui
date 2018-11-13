@@ -15,8 +15,15 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <item>
-     <widget class="QMdiArea" name="mdiArea"/>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -41,11 +48,24 @@
     <addaction name="actionNew_chart_window"/>
     <addaction name="actionChart_window_configuration"/>
    </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionCascade"/>
+    <addaction name="actionTile"/>
+    <addaction name="separator"/>
+    <addaction name="actionNew_tab"/>
+   </widget>
    <addaction name="menuChart"/>
    <addaction name="menuView"/>
+   <addaction name="menuWindow"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew_chart_window">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>New chart window </string>
    </property>
@@ -62,6 +82,26 @@
    </property>
    <property name="text">
     <string>Chart window configuration</string>
+   </property>
+  </action>
+  <action name="actionCascade">
+   <property name="text">
+    <string>Cascade</string>
+   </property>
+  </action>
+  <action name="actionTile">
+   <property name="text">
+    <string>Tile</string>
+   </property>
+  </action>
+  <action name="actionCreate_tab">
+   <property name="text">
+    <string>Create tab</string>
+   </property>
+  </action>
+  <action name="actionNew_tab">
+   <property name="text">
+    <string>New tab</string>
    </property>
   </action>
  </widget>

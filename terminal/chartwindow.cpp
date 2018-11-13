@@ -2,25 +2,18 @@
 #include "chartwindow.h"
 
 #include <ui_chartwindow.h>
-#include <QDir> // killme
 #include <QScrollBar>
 #include <QDateTimeAxis>
-#include <QSettings> //  killme
 
 #include <QGraphicsGridLayout>
+#include <QSettings>
 #include <tools.h>
-
-#include <datasources/datasourcefile.h>  // killme
-#include <datasources/datasourcequik.h>  // killme
-#include <indicators/candleadapterindicator.h>  // killme
-#include <indicators/lualineindicator.h>  // killme
-#include <datasources/datasourcefactory.h>	// killme
 
 using namespace QtCharts;
 
 ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 {
-	//setMinimumSize(1000,700);
+	setMinimumSize(100,100);
 
 	mCandleWidth = 6;
 	mConfiguration = defaultConfiguration();
@@ -43,36 +36,8 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mSceneLayout->setContentsMargins(0,0,0,0);
 	mGraphicsWidget->setLayout(mSceneLayout);
 
-	for(int i = IntervalM1; i!=IntervalMN1; i++)
+	for(int i = IntervalM1; i!=IntervalUnknown; i++)
 	{	ui->cbTimeInterval->addItem(intervalToString(static_cast<ETimeInterval>(i)), i);	}
-
-/*
-	BDataSource *ds;
-
-	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "GAZP", "192.168.9.156", 5000, this);
-	addDataSource(ds, 0);
-
-	ds = new DataSourceQUIK(mTimeInterval, "TQBR", "SBER", "192.168.9.156", 5000, this);
-	ChartWidget* cw = addDataSource(ds, 1);
-
-	ds = new DataSourceFile(QDir::homePath() + "/killme/SBER-D1.txt", this);
-	ChartWidget* cw = addDataSource(ds);
-*/
-/*
-	Configuration conf = DataSourceFactory::instance().defaultConfiguration(QUuid("ab38fe10-d502-11e8-b568-0800200c9a66"));
-	conf["class"].setValue("TQBR");
-	conf["code"].setValue("SBER");
-	conf["interval"].setValue(IntervalD1);
-	*/
-	//ChartWidget* cw =*/ addDataSource(DataSourceFactory::instance().product(conf));
-	/*if(cw)
-	{
-		QSettings settings;
-		BIndicator *indicator;
-		//indicator = new CandleAdapterIndicator(ds, CandleAdapterIndicator::MOpenClose, this);
-		indicator = new LuaLineIndicator(settings.value("LuaDir", "../lua").toString() + "/indicators/MA.lua", ds, this);
-		//cw->addIndicator(indicator);
-	}*/
 
 	ui->scrollBar->setEnabled(false);
 	connect(ui->scrollBar, &QAbstractSlider::actionTriggered, [this](int){
@@ -214,7 +179,7 @@ void ChartWindow::loadConfiguration(const Configuration& configuration)
 	for(int i=0; i<mConfiguration.childrenCount(); i++)
 	{
 		const Configuration* conf = mConfiguration.childAt(i);
-		if(conf->name() == "Chart")
+		if(conf->name() == CHART_CONF)
 		{	
 			cregetChartWidget(*conf, i);
 		}
@@ -242,7 +207,6 @@ Configuration ChartWindow::defaultConfiguration()
 {
 	Configuration chartWindow("ChartWindow", QVariant(), tr("Oкно графиков"));
 	chartWindow.insertChild({Configuration::Value, "TimeInterval", ETimeInterval::IntervalD1, tr("Интервал")});
-	//chartWindow.insertChild({Configuration::Title, "chart", QVariant(), tr("График")});
 
 	return chartWindow;
 }

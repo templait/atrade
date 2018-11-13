@@ -57,7 +57,7 @@ bool ConfigurationModel::isProduct(const Configuration *configuration) const
 
 bool ConfigurationModel::isChart(const Configuration *configuration) const
 {
-	return configuration && configuration->name()=="Chart";
+	return configuration && configuration->name()==CHART_CONF;
 }
 
 bool ConfigurationModel::isRoot(const Configuration *configuration) const
@@ -291,7 +291,7 @@ QMimeData *ConfigurationModel::mimeData(const QModelIndexList &indexes) const
 		stream << *conf;
 		rv->setData("configuration/product", 	encodedData);
 	}
-	else if(conf->name() == "Chart")
+	else if(conf->name() == CHART_CONF)
 	{
 		stream << *conf;
 		rv->setData("configuration/chart", 	encodedData);
