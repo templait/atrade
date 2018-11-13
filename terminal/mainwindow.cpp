@@ -69,7 +69,7 @@ void MainWindow::loadWindowState()
 	QSettings settings;
 	settings.beginGroup(objectName());
 	restoreGeometry(settings.value("Geometry").toByteArray());
-	restoreState(settings.value("GindowState").toByteArray());
+	restoreState(settings.value("WindowState").toByteArray());
 	int tabsCount = settings.beginReadArray("Tabs");
 	for(int i=0; i<tabsCount; i++)
 	{
