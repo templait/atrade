@@ -1,17 +1,17 @@
 #pragma once
 
-#include <productconfigurationeditor.h>
+#include <configurationeditormodule.h>
 
 namespace Ui
 {
 class DataSourceConfigurationEditor;
 }
 
-class DataSourceConfigurationEditor : public ProductConfigurationEditor
+class DataSourceConfigurationEditor : public ConfigurationEditorModule
 {
 	Q_OBJECT
 public:
-	DataSourceConfigurationEditor(const QModelIndex &configuration, QWidget *parent=nullptr);
+	DataSourceConfigurationEditor(const QModelIndex &index, QWidget *parent=nullptr);
 	~DataSourceConfigurationEditor();
 private:
 	Ui::DataSourceConfigurationEditor* ui;

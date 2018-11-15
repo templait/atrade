@@ -6,8 +6,8 @@
 #include <ui_fileconfigurationeditor.h>
 #include <configurationmodel.h>
 
-FileConfigurationEditor::FileConfigurationEditor(const QModelIndex &rootConfiguration, QWidget *parent)
-	: ProductConfigurationEditor(rootConfiguration, parent)
+FileConfigurationEditor::FileConfigurationEditor(const QModelIndex &index, QWidget *parent)
+	: ConfigurationEditorModule(index, parent)
 {
 	ui = new Ui::ConfigurationEditor;
 	ui->setupUi(this);

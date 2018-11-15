@@ -1,17 +1,17 @@
 #pragma once
 
-#include <productconfigurationeditor.h>
+#include <configurationeditormodule.h>
 
 namespace Ui
 {
 class ConfigurationEditor;
 }
 
-class FileConfigurationEditor : public ProductConfigurationEditor
+class FileConfigurationEditor : public ConfigurationEditorModule
 {
 	Q_OBJECT
 public:
-	FileConfigurationEditor(const QModelIndex& rootConfiguration, QWidget* parent=nullptr);
+	FileConfigurationEditor(const QModelIndex& index, QWidget* parent=nullptr);
 	~FileConfigurationEditor();
 private:
 	bool loadCodesForClass(const QString& textClassName);

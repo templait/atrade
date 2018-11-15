@@ -54,7 +54,7 @@ Configuration DataSourceFileFactory::defaultConfiguration() const
 	return rv;
 }
 
-ProductConfigurationEditor *DataSourceFileFactory::createConfigurationEditor(const QModelIndex& configuration, QWidget *parent) const
+ConfigurationEditorModule *DataSourceFileFactory::createConfigurationEditor(const QModelIndex& configuration, QWidget *parent) const
 {
 	return new FileConfigurationEditor(configuration, parent);
 }

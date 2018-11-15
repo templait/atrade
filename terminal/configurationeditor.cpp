@@ -10,11 +10,13 @@
 
 #include "configurationmodel.h"
 #include "series/datasourceconfigurationeditor.h"
+#include "titleconfigurationeditor.h"
 
 ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWidget *parent)
 	: QDialog(parent)
 	, mConfigurationEditor(nullptr)
     , mAppearanceEditor(nullptr)
+	, mTitleConfigurationEditor(nullptr)
 {
 	ui = new Ui::ConfigurationEditor;
 	ui->setupUi(this);
@@ -32,6 +34,8 @@ ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWi
 	mConfigurationModel = new ConfigurationModel(configuration, this);
 	ui->tvConfiguration->setModel(mConfigurationModel);
 	//ui->tvConfiguration->setRootIndex(mConfigurationModel->index(0,0, QModelIndex()));
+	ui->tvConfiguration->hideColumn(1);
+	ui->tvConfiguration->hideColumn(2);
 	ui->tvConfiguration->expandAll();
 	ui->tvConfiguration->addAction(ui->actionNew_chart);
 	ui->tvConfiguration->addAction(ui->actionDelete);
@@ -51,17 +55,22 @@ const Configuration &ConfigurationEditor::configuration() const
 	return mConfigurationModel->configuration();
 }
 
-void ConfigurationEditor::setConfidurationEditor(ProductConfigurationEditor *configurationEditor)
+void ConfigurationEditor::setConfidurationEditor(ConfigurationEditorModule *configurationEditor)
 {
-	setProductEditor(configurationEditor, &mConfigurationEditor);
+	setEditorModule(configurationEditor, &mConfigurationEditor);
 }
 
-void ConfigurationEditor::setAppearanceEditor(ProductConfigurationEditor *configurationEditor)
+void ConfigurationEditor::setAppearanceEditor(ConfigurationEditorModule *configurationEditor)
 {
-	setProductEditor(configurationEditor, &mAppearanceEditor);
+	setEditorModule(configurationEditor, &mAppearanceEditor);
 }
 
-void ConfigurationEditor::setProductEditor(ProductConfigurationEditor *configurationEditor, ProductConfigurationEditor **dstEditor)
+void ConfigurationEditor::setTitleEditor(ConfigurationEditorModule *configurationEditor)
+{
+	setEditorModule(configurationEditor, &mTitleConfigurationEditor);
+}
+
+void ConfigurationEditor::setEditorModule(ConfigurationEditorModule *configurationEditor, ConfigurationEditorModule **dstEditor)
 {
 	if(*dstEditor)
 	{	delete *dstEditor;	}
@@ -74,29 +83,38 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 {
 	QUuid uuid = current.sibling(current.row(), 1).data().toUuid();
 	//Configuration* conf = const_cast<Configuration*>(&(mConfigurationModel->configuration(current)));
+	QString currentName = mConfigurationModel->configuration(current).name();
 	if(IndicatorFactory::instance().hasProduct(uuid))
 	{
+		setTitleEditor(nullptr);
 		setConfidurationEditor(IndicatorFactory::instance().createConfigurationEditor(uuid, current));
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(true);
 	}
 	else if(DataSourceFactory::instance().hasProduct(uuid))
 	{
+		setTitleEditor(new TitleConfigurationEditor(current));
 		setConfidurationEditor(DataSourceFactory::instance().createConfigurationEditor(uuid, current));
 		setAppearanceEditor(new DataSourceConfigurationEditor(current));
 		ui->actionDelete->setEnabled(true);
 	}
-	else if(configuration().name() == CHART_CONF)
+	else if(currentName == CHART_CONF)
 	{
+		setTitleEditor(new TitleConfigurationEditor(current));
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(true);
 	}
-	/*else if(conf->name() == "ChartWindow")
+	else if(currentName == CHART_WINDOW_CONF)
 	{
-	}*/
+		setTitleEditor(new TitleConfigurationEditor(current));
+		setConfidurationEditor(nullptr);
+		setAppearanceEditor(nullptr);
+		ui->actionDelete->setEnabled(false);
+	}
 	else
 	{
+		setTitleEditor(nullptr);
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(false);

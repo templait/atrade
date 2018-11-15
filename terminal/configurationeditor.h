@@ -5,7 +5,7 @@
 
 class ProductListModel;
 class ConfigurationModel;
-class ProductConfigurationEditor;
+class ConfigurationEditorModule;
 
 namespace Ui
 {
@@ -23,12 +23,14 @@ private:
 	Ui::ConfigurationEditor *ui;
 	ProductListModel* mProductListModel;
 	ConfigurationModel* mConfigurationModel;
-	ProductConfigurationEditor* mConfigurationEditor;
-	ProductConfigurationEditor* mAppearanceEditor;
+	ConfigurationEditorModule* mConfigurationEditor;
+	ConfigurationEditorModule* mAppearanceEditor;
+	ConfigurationEditorModule* mTitleConfigurationEditor;
 
-	void setConfidurationEditor(ProductConfigurationEditor* configurationEditor);
-	void setAppearanceEditor(ProductConfigurationEditor* configurationEditor);
-	void setProductEditor(ProductConfigurationEditor* newEditor, ProductConfigurationEditor **dstEditor);
+	void setConfidurationEditor(ConfigurationEditorModule* configurationEditor);
+	void setAppearanceEditor(ConfigurationEditorModule* configurationEditor);
+	void setTitleEditor(ConfigurationEditorModule* configurationEditor);
+	void setEditorModule(ConfigurationEditorModule* newEditor, ConfigurationEditorModule **dstEditor);
 	void onCurrentChanged(const QModelIndex &current, const QModelIndex &);
 	void onNewChart();
 	void onDelete();

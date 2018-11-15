@@ -5,8 +5,8 @@
 
 #define DECREASING_ALPHA 150
 
-DataSourceConfigurationEditor::DataSourceConfigurationEditor(const QModelIndex &configuration, QWidget *parent)
-    : ProductConfigurationEditor(configuration, parent)
+DataSourceConfigurationEditor::DataSourceConfigurationEditor(const QModelIndex &index, QWidget *parent)
+	: ConfigurationEditorModule(index, parent)
 {
 	ui = new Ui::DataSourceConfigurationEditor;
 	ui->setupUi(this);

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <productconfigurationeditor.h>
+#include <configurationeditormodule.h>
 
 namespace Ui
 {
 class LuaLineConfigurationEditor;
 }
 
-class LuaLineConfigurationEditor : public ProductConfigurationEditor
+class LuaLineConfigurationEditor : public ConfigurationEditorModule
 {
 	Q_OBJECT
 public:

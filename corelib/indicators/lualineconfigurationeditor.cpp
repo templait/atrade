@@ -2,7 +2,7 @@
 #include "ui_lualineconfigurationeditor.h"
 
 LuaLineConfigurationEditor::LuaLineConfigurationEditor(const QModelIndex& configuration, QWidget *parent)
-	:ProductConfigurationEditor(configuration, parent)
+	:ConfigurationEditorModule(configuration, parent)
 {
 	ui = new Ui::LuaLineConfigurationEditor;
 	ui->setupUi(this);

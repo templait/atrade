@@ -176,6 +176,7 @@ void ChartWindow::loadConfiguration(const Configuration& configuration)
 {
 	clear();
 	mConfiguration = configuration;
+	setWindowTitle(configuration.title());
 	for(int i=0; i<mConfiguration.childrenCount(); i++)
 	{
 		const Configuration* conf = mConfiguration.childAt(i);
@@ -205,8 +206,8 @@ const Configuration &ChartWindow::configuration() const
 
 Configuration ChartWindow::defaultConfiguration()
 {
-	Configuration chartWindow("ChartWindow", QVariant(), tr("Oкно графиков"));
-	chartWindow.insertChild({Configuration::Value, "TimeInterval", ETimeInterval::IntervalD1, tr("Интервал")});
+	Configuration chartWindow("ChartWindow", QVariant(), tr("Chart window"));
+	chartWindow.insertChild({Configuration::Value, "TimeInterval", ETimeInterval::IntervalD1, tr("Interval")});
 
 	return chartWindow;
 }
