@@ -82,39 +82,40 @@ void ConfigurationEditor::setEditorModule(ConfigurationEditorModule *configurati
 void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QModelIndex &)
 {
 	QUuid uuid = current.sibling(current.row(), 1).data().toUuid();
-	//Configuration* conf = const_cast<Configuration*>(&(mConfigurationModel->configuration(current)));
+	Configuration* conf = const_cast<Configuration*>(&(mConfigurationModel->configuration(current)));
 	QString currentName = mConfigurationModel->configuration(current).name();
+
+	if(conf->userEditabe(Configuration::Title))
+	{	setTitleEditor(new TitleConfigurationEditor(current));	}
+	else
+	{	setTitleEditor(nullptr);	}
+
 	if(IndicatorFactory::instance().hasProduct(uuid))
 	{
-		setTitleEditor(nullptr);
 		setConfidurationEditor(IndicatorFactory::instance().createConfigurationEditor(uuid, current));
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(true);
 	}
 	else if(DataSourceFactory::instance().hasProduct(uuid))
 	{
-		setTitleEditor(new TitleConfigurationEditor(current));
 		setConfidurationEditor(DataSourceFactory::instance().createConfigurationEditor(uuid, current));
 		setAppearanceEditor(new DataSourceConfigurationEditor(current));
 		ui->actionDelete->setEnabled(true);
 	}
 	else if(currentName == CHART_CONF)
 	{
-		setTitleEditor(new TitleConfigurationEditor(current));
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(true);
 	}
 	else if(currentName == CHART_WINDOW_CONF)
 	{
-		setTitleEditor(new TitleConfigurationEditor(current));
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(false);
 	}
 	else
 	{
-		setTitleEditor(nullptr);
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(false);

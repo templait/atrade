@@ -132,7 +132,7 @@ void ChartWindow::setScrollValue(int value)
 	setViewTimeRange({min, max});
 }
 
-void ChartWindow::onCandlesAppend(const DataSource &dataSource, int)
+void ChartWindow::onCandlesAppend(const DataSource &, int)
 {
 	bool need2Last = false;
 	if(ui->scrollBar->sliderPosition() == ui->scrollBar->maximum())
@@ -206,7 +206,7 @@ const Configuration &ChartWindow::configuration() const
 
 Configuration ChartWindow::defaultConfiguration()
 {
-	Configuration chartWindow("ChartWindow", QVariant(), tr("Chart window"));
+	Configuration chartWindow(Configuration::Title, "ChartWindow", QVariant(), tr("Chart window"));
 	chartWindow.insertChild({Configuration::Value, "TimeInterval", ETimeInterval::IntervalD1, tr("Interval")});
 
 	return chartWindow;

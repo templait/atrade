@@ -55,7 +55,7 @@ private:
 	void clear();
 	ChartWidget* cregetChartWidget(const Configuration &configuration, int widgetNum=0);
 
-	void onCandlesAppend(const DataSource& dataSource, int);
+	void onCandlesAppend(const DataSource&, int);
 
 
 	// QWidget interface
