@@ -61,6 +61,7 @@ void MainWindow::saveWindowState() const
 		}
 	}
 	settings.endArray();
+	settings.setValue("CurrentTab", ui->tabWidget->currentIndex());
 	settings.endGroup();
 }
 
@@ -76,11 +77,13 @@ void MainWindow::loadWindowState()
 		settings.setArrayIndex(i);
 		QString tabName = settings.value("TabName").toString();
 		MDIArea* mdiArea = new MDIArea;
+		//mdiArea->setMaximumSize({900,800});
 		mdiArea->setObjectName(tabName);
 		mdiArea->loadWindowState(settings);
 		appendMDIArea(mdiArea);
 	}
 	settings.endArray();
+	ui->tabWidget->setCurrentIndex(settings.value("CurrentTab", 0).toInt());
 	settings.endGroup();
 }
 

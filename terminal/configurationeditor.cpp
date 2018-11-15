@@ -73,25 +73,28 @@ void ConfigurationEditor::setProductEditor(ProductConfigurationEditor *configura
 void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QModelIndex &)
 {
 	QUuid uuid = current.sibling(current.row(), 1).data().toUuid();
-	Configuration* conf = const_cast<Configuration*>(&(mConfigurationModel->configuration(current)));
+	//Configuration* conf = const_cast<Configuration*>(&(mConfigurationModel->configuration(current)));
 	if(IndicatorFactory::instance().hasProduct(uuid))
 	{
-		setConfidurationEditor(IndicatorFactory::instance().createConfigurationEditor(uuid, conf));
+		setConfidurationEditor(IndicatorFactory::instance().createConfigurationEditor(uuid, current));
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(true);
 	}
 	else if(DataSourceFactory::instance().hasProduct(uuid))
 	{
-		setConfidurationEditor(DataSourceFactory::instance().createConfigurationEditor(uuid, conf));
-		setAppearanceEditor(new DataSourceConfigurationEditor(conf));
+		setConfidurationEditor(DataSourceFactory::instance().createConfigurationEditor(uuid, current));
+		setAppearanceEditor(new DataSourceConfigurationEditor(current));
 		ui->actionDelete->setEnabled(true);
 	}
-	else if(conf->name() == CHART_CONF)
+	else if(configuration().name() == CHART_CONF)
 	{
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(true);
 	}
+	/*else if(conf->name() == "ChartWindow")
+	{
+	}*/
 	else
 	{
 		setConfidurationEditor(nullptr);

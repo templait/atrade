@@ -1,18 +1,23 @@
 #pragma once
 
-#include "configuration.h"
-
 #include <QWidget>
+
+class Configuration;
+class ConfigurationModel;
+class QModelIndex;
 
 class ProductConfigurationEditor : public QWidget
 {
 	Q_OBJECT
 public:
-	ProductConfigurationEditor(Configuration* configuration, QWidget *parent=nullptr);
+	ProductConfigurationEditor(const QModelIndex &configuration, QWidget *parent=nullptr);
 	virtual ~ProductConfigurationEditor(){}
 protected:
-	Configuration* configuration() const;
+	const QModelIndex& modelIndex() const;
+	const Configuration &configuration() const;
+	Configuration &configuration();
+	ConfigurationModel* model();
 private:
-	Configuration* mConfiguration;
-
+	const QModelIndex& mModelIndex;
+	ConfigurationModel *mModel;
 };

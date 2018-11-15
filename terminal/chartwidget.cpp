@@ -30,7 +30,7 @@ ChartWidget::ChartWidget(ETimeInterval interval, QGraphicsItem *parent) : QGraph
 	connect(mTimeAxis, SIGNAL(rangeChanged(QDateTime,QDateTime)), SLOT(onTimeRangeChanged(QDateTime,QDateTime)));
 	mChart->addAxis(mValueAxis, Qt::AlignLeft);
 	mChart->addAxis(mTimeAxis, Qt::AlignBottom);
-	mChart->legend()->hide();
+	//mChart->legend()->hide();
 }
 
 ChartWidget::ChartWidget(ETimeInterval interval, const Configuration &configuration, QGraphicsItem *parent)
@@ -58,6 +58,7 @@ void ChartWidget::addDataSource(const Configuration &dataSource)
 		QColor decreasingColor = dataSource.containsChild("decreasingColor") ? dataSource["decreasingColor"].value().value<QColor>() : QColor();
 		QColor penColor = dataSource.containsChild("penColor") ? dataSource["penColor"].value().value<QColor>() : QColor();
 		dss->setAppearance(increasingColor, decreasingColor, penColor);
+		dss->setName(dataSource.title());
 		connect(dss, SIGNAL(candlesAdppended(int)), SLOT(onCandlesAppended(int)));
 		mSeries << dss;
 	}

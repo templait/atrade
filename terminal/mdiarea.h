@@ -8,7 +8,7 @@ class MDIArea : public QMdiArea
 {
 	Q_OBJECT
 public:
-	using QMdiArea::QMdiArea;
+	MDIArea(QWidget* parent=nullptr);
 	void saveWindowState(QSettings& settings);
 	void loadWindowState(QSettings& settings);
 };

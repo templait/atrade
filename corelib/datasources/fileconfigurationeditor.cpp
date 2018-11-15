@@ -4,16 +4,13 @@
 #include <log.h>
 #include <tools.h>
 #include <ui_fileconfigurationeditor.h>
+#include <configurationmodel.h>
 
-
-FileConfigurationEditor::FileConfigurationEditor(Configuration *configuration, QWidget *parent)
-	: ProductConfigurationEditor(configuration, parent)
+FileConfigurationEditor::FileConfigurationEditor(const QModelIndex &rootConfiguration, QWidget *parent)
+	: ProductConfigurationEditor(rootConfiguration, parent)
 {
 	ui = new Ui::ConfigurationEditor;
 	ui->setupUi(this);
-
-	connect(ui->cbClass, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &FileConfigurationEditor::onClassActivated);
-	connect(ui->cbCode, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &FileConfigurationEditor::onCodeActivated);
 
 	QSettings settings;
 	QDir dir(settings.value("DataSourceFileDir").toString());
@@ -23,16 +20,17 @@ FileConfigurationEditor::FileConfigurationEditor(Configuration *configuration, Q
 		for(const QString& className : dir.entryList())
 		{	ui->cbClass->addItem(className);	}
 
-		if(configuration->containsChild("class"))
+		if(configuration().containsChild("class"))
 		{
-			QString confClass = (*configuration)["class"].value().toString();
+			QString confClass = configuration()["class"].value().toString();
 			int cur = ui->cbClass->findText(confClass);
 			if(cur>=0)
 			{
 				ui->cbClass->setCurrentIndex(cur);
-				if(configuration->containsChild("code"))
+				loadCodesForClass(ui->cbClass->currentText());
+				if(configuration().containsChild("code"))
 				{
-					QString confCode = (*configuration)["code"].value().toString();
+					QString confCode = configuration()["code"].value().toString();
 					cur = ui->cbCode->findText(confCode);
 					if(cur>=0)
 					{	ui->cbCode->setCurrentIndex(cur);	}
@@ -43,9 +41,13 @@ FileConfigurationEditor::FileConfigurationEditor(Configuration *configuration, Q
 			else
 			{	Log::error(QString("%1.can't find class: \"%2\"").arg(__CLASS_NAME__).arg(confClass));	}
 		}
+		connect(ui->cbClass, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &FileConfigurationEditor::onClassActivated);
+		connect(ui->cbCode, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &FileConfigurationEditor::onCodeActivated);
+		connect(ui->pbSetDefaultTitle, &QAbstractButton::clicked, this, &FileConfigurationEditor::onSetDefaulTitle);
 	}
 	else
 	{	Log::error(QString("%1.invalid path: \"%2\"").arg(__CLASS_NAME__).arg(dir.path()));	}
+
 }
 
 FileConfigurationEditor::~FileConfigurationEditor()
@@ -53,24 +55,36 @@ FileConfigurationEditor::~FileConfigurationEditor()
 	delete ui;
 }
 
-void FileConfigurationEditor::onClassActivated(const QString &textClassName)
+bool FileConfigurationEditor::loadCodesForClass(const QString& textClassName)
 {
+	bool rv = false;
 	ui->cbCode->clear();
 	QSettings settings;
 	QDir dir(settings.value("DataSourceFileDir").toString() + "/" + textClassName);
-	(*configuration())["class"].setValue(textClassName);
 	if(dir.isReadable())
 	{
 		dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 		for(const QString& codeName : dir.entryList())
 		{	ui->cbCode->addItem(codeName);	}
-
+		rv = true;
 	}
 	else
 	{	Log::error(QString("%1.invalid path: \"%2\"").arg(__CLASS_NAME__).arg(dir.path()));	}
+	return rv;
+}
+
+void FileConfigurationEditor::onClassActivated(const QString &textClassName)
+{
+	configuration()["class"].setValue(textClassName);
+	loadCodesForClass(textClassName);
 }
 
 void FileConfigurationEditor::onCodeActivated(const QString &textCodeName)
 {
-	(*configuration())["code"].setValue(textCodeName);
+	configuration()["code"].setValue(textCodeName);
+}
+
+void FileConfigurationEditor::onSetDefaulTitle()
+{
+	model()->setData(modelIndex().sibling(modelIndex().row(), 0), ui->cbClass->currentText() + '.' + ui->cbCode->currentText(), Qt::EditRole);
 }

@@ -16,7 +16,12 @@ ConfigurationModel::ConfigurationModel(const Configuration& configuration, QObje
 
 const Configuration &ConfigurationModel::configuration(const QModelIndex &index) const
 {
-	const Configuration* rv = &mRoot;
+	return const_cast<ConfigurationModel*>(this)->configuration(index);
+}
+
+Configuration &ConfigurationModel::configuration(const QModelIndex &index)
+{
+	Configuration* rv = &mRoot;
 	if(index.isValid())
 	{
 		rv = index2configuration(index);
@@ -190,6 +195,8 @@ bool ConfigurationModel::setData(const QModelIndex &index, const QVariant &value
 
 		}
 	}
+	if(rv)
+	{	emit dataChanged(index, index);	}
 	return rv;
 }
 

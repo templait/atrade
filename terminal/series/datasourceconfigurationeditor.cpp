@@ -1,9 +1,11 @@
 #include "datasourceconfigurationeditor.h"
-
+#include <configuration.h>
 #include <QColorDialog>
 #include <ui_datasourceconfigurationeditor.h>
 
-DataSourceConfigurationEditor::DataSourceConfigurationEditor(Configuration* configuration, QWidget *parent)
+#define DECREASING_ALPHA 150
+
+DataSourceConfigurationEditor::DataSourceConfigurationEditor(const QModelIndex &configuration, QWidget *parent)
     : ProductConfigurationEditor(configuration, parent)
 {
 	ui = new Ui::DataSourceConfigurationEditor;
@@ -14,6 +16,8 @@ DataSourceConfigurationEditor::DataSourceConfigurationEditor(Configuration* conf
 	connect(ui->tbIncreasingColor, &QAbstractButton::clicked, this, &DataSourceConfigurationEditor::onButtonClicked);
 	connect(ui->tbDecreasingColor, &QAbstractButton::clicked, this, &DataSourceConfigurationEditor::onButtonClicked);
 	connect(ui->tbPenColor, &QAbstractButton::clicked, this, &DataSourceConfigurationEditor::onButtonClicked);
+
+	connect(ui->pbSetAllColors, &QAbstractButton::clicked, this, &DataSourceConfigurationEditor::onSetAllColors);
 }
 
 DataSourceConfigurationEditor::~DataSourceConfigurationEditor()
@@ -23,18 +27,17 @@ DataSourceConfigurationEditor::~DataSourceConfigurationEditor()
 
 void DataSourceConfigurationEditor::loadConfiguration()
 {
-	QColor increasingColor(Qt::blue);
-	QColor decreasingColor = increasingColor;
-	decreasingColor.setAlpha(decreasingColor.alpha()/2);
-	QColor penColor = increasingColor;
+	QColor decreasingColor(Qt::blue);
+	QColor increasingColor = decreasingColor;
+	increasingColor.setAlpha(DECREASING_ALPHA);
+	QColor penColor = Qt::black;
 
-	Configuration& conf(*configuration());
-	if(conf.containsChild("increasingColor"))
-	{	increasingColor = conf["increasingColor"].value().value<QColor>();}
-	if(conf.containsChild("decreasingColor"))
-	{	decreasingColor = conf["decreasingColor"].value().value<QColor>();}
-	if(conf.containsChild("penColor"))
-	{	penColor = conf["penColor"].value().value<QColor>();}
+	if(configuration().containsChild("increasingColor"))
+	{	increasingColor = configuration()["increasingColor"].value().value<QColor>();}
+	if(configuration().containsChild("decreasingColor"))
+	{	decreasingColor = configuration()["decreasingColor"].value().value<QColor>();}
+	if(configuration().containsChild("penColor"))
+	{	penColor = configuration()["penColor"].value().value<QColor>();}
 
 	ui->tbDecreasingColor->setPalette(QPalette(decreasingColor));
 	ui->tbIncreasingColor->setPalette(QPalette(increasingColor));
@@ -43,17 +46,16 @@ void DataSourceConfigurationEditor::loadConfiguration()
 
 void DataSourceConfigurationEditor::saveConfiguration()
 {
-	Configuration& conf(*configuration());
-	if(! conf.containsChild("increasingColor"))
-	{	conf.insertChild({"increasingColor", QVariant(), tr("Increasing color")});	}
-	if(! conf.containsChild("decreasingColor"))
-	{	conf.insertChild({"decreasingColor", QVariant(), tr("Decreasing color")});	}
-	if(! conf.containsChild("penColor"))
-	{	conf.insertChild({"penColor", QVariant(), tr("Pen color")});	}
+	if(! configuration().containsChild("increasingColor"))
+	{	configuration().insertChild({"increasingColor", QVariant(), tr("Increasing color")});	}
+	if(! configuration().containsChild("decreasingColor"))
+	{	configuration().insertChild({"decreasingColor", QVariant(), tr("Decreasing color")});	}
+	if(! configuration().containsChild("penColor"))
+	{	configuration().insertChild({"penColor", QVariant(), tr("Pen color")});	}
 
-	conf["increasingColor"].setValue(ui->tbIncreasingColor->palette().button().color());
-	conf["decreasingColor"].setValue(ui->tbDecreasingColor->palette().button().color());
-	conf["penColor"].setValue(ui->tbPenColor->palette().button().color());
+	configuration()["increasingColor"].setValue(ui->tbIncreasingColor->palette().button().color());
+	configuration()["decreasingColor"].setValue(ui->tbDecreasingColor->palette().button().color());
+	configuration()["penColor"].setValue(ui->tbPenColor->palette().button().color());
 }
 
 void DataSourceConfigurationEditor::onButtonClicked()
@@ -65,6 +67,20 @@ void DataSourceConfigurationEditor::onButtonClicked()
 	if(color.isValid())
 	{
 		button->setPalette(color);
+		saveConfiguration();
+	}
+}
+
+void DataSourceConfigurationEditor::onSetAllColors()
+{
+	QColor color = ui->tbDecreasingColor->palette().button().color();
+	color = QColorDialog::getColor(color, nullptr, QString(), QColorDialog::ShowAlphaChannel);
+	if(color.isValid())
+	{
+		ui->tbDecreasingColor->setPalette(color);
+		color.setAlpha(DECREASING_ALPHA);
+		ui->tbIncreasingColor->setPalette(color);
+		ui->tbPenColor->setPalette(Qt::black);
 		saveConfiguration();
 	}
 }

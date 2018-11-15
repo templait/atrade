@@ -11,7 +11,7 @@ class DataSourceConfigurationEditor : public ProductConfigurationEditor
 {
 	Q_OBJECT
 public:
-	DataSourceConfigurationEditor(Configuration *configuration, QWidget* parent=nullptr);
+	DataSourceConfigurationEditor(const QModelIndex &configuration, QWidget *parent=nullptr);
 	~DataSourceConfigurationEditor();
 private:
 	Ui::DataSourceConfigurationEditor* ui;
@@ -20,4 +20,5 @@ private:
 	void saveConfiguration();
 
 	void onButtonClicked();
+	void onSetAllColors();
 };

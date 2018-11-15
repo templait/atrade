@@ -4,6 +4,12 @@
 #include <QSettings>
 
 
+MDIArea::MDIArea(QWidget *parent) : QMdiArea(parent)
+{
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+}
+
 void MDIArea::saveWindowState(QSettings& settings)
 {
 	settings.setValue("WindowTitle", windowTitle());
@@ -16,7 +22,7 @@ void MDIArea::saveWindowState(QSettings& settings)
 		if(const ChartWindow* cw = qobject_cast<const ChartWindow*>(sub->widget()))
 		{
 			settings.setValue("WindowType", "ChartWindow");
-			settings.setValue("Geometry", sub->saveGeometry());
+			settings.setValue("Geometry", sub->geometry());
 			cw->saveConfiguration(settings);
 		}
 	}
@@ -35,7 +41,7 @@ void MDIArea::loadWindowState(QSettings& settings)
 		{
 			ChartWindow* cw = new ChartWindow;
 			QMdiSubWindow* sub = addSubWindow(cw);
-			sub->restoreGeometry(settings.value("Geometry").toByteArray());
+			sub->setGeometry(settings.value("Geometry").toRect());
 			cw->show();
 			cw->loadConfiguration(settings);
 		}

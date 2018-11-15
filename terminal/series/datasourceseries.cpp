@@ -63,6 +63,11 @@ TimeRange DataSourceSeries::timeRange() const
 	return rv;
 }
 
+void DataSourceSeries::setName(const QString &name)
+{
+	mCandleStickSeries->setName(name);
+}
+
 DataSource DataSourceSeries::dataSource() const
 {
 	return mDataSource;

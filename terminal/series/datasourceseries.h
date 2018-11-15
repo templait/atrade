@@ -27,6 +27,7 @@ public:
 	virtual void setViewTimeRange(const TimeRange& range) override;
 	virtual ValueRange valueRange() const override;	//!< return value range for currenr view timerange
 	virtual TimeRange timeRange() const override;	//!< return whole timerange
+	virtual void setName(const QString &name) override;
 
 	DataSource dataSource() const;
 	void setAppearance(const QColor& increasingColor, const QColor& decreasingColor, const QColor &penColor);
