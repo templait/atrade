@@ -11,6 +11,7 @@
 #include "configurationmodel.h"
 #include "series/datasourceconfigurationeditor.h"
 #include "titleconfigurationeditor.h"
+#include "timeintervalconfigurationeditor.h"
 
 ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWidget *parent)
 	: QDialog(parent)
@@ -111,6 +112,12 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 	else if(currentName == CHART_WINDOW_CONF)
 	{
 		setConfidurationEditor(nullptr);
+		setAppearanceEditor(nullptr);
+		ui->actionDelete->setEnabled(false);
+	}
+	else if(currentName == TIME_INTERVAL_CONF)
+	{
+		setConfidurationEditor(new TimeIntervalConfigurationEditor(current));
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(false);
 	}

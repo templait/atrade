@@ -36,9 +36,6 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	mSceneLayout->setContentsMargins(0,0,0,0);
 	mGraphicsWidget->setLayout(mSceneLayout);
 
-	for(int i = IntervalM1; i!=IntervalUnknown; i++)
-	{	ui->cbTimeInterval->addItem(intervalToString(static_cast<ETimeInterval>(i)), i);	}
-
 	ui->scrollBar->setEnabled(false);
 	connect(ui->scrollBar, &QAbstractSlider::actionTriggered, [this](int){
 		setScrollValue(ui->scrollBar->sliderPosition());
@@ -156,14 +153,14 @@ void ChartWindow::adjustGraphicsScene()
 void ChartWindow::setTimeInterval(ETimeInterval interval)
 {
 	Configuration newConf(mConfiguration);
-	newConf["TimeInterval"].setValue(interval);
+	newConf[TIME_INTERVAL_CONF].setValue(interval);
 	loadConfiguration(newConf);
 }
 
 ETimeInterval ChartWindow::timeInterval() const
 {
-	Q_ASSERT(mConfiguration.containsChild("TimeInterval"));
-	return static_cast<ETimeInterval>(mConfiguration["TimeInterval"].value().toInt());
+	Q_ASSERT(mConfiguration.containsChild(TIME_INTERVAL_CONF));
+	return static_cast<ETimeInterval>(mConfiguration[TIME_INTERVAL_CONF].value().toInt());
 }
 
 int ChartWindow::rescaleInt64(qint64 value) const
@@ -186,14 +183,7 @@ void ChartWindow::loadConfiguration(const Configuration& configuration)
 		}
 	}
 	ui->cbTimeInterval->blockSignals(true);
-	for(int i=0; i<ui->cbTimeInterval->count(); i++)
-	{
-		if(ui->cbTimeInterval->itemData(i) == timeInterval())
-		{
-			ui->cbTimeInterval->setCurrentIndex(i);
-			break;
-		}
-	}
+	ui->cbTimeInterval->setTimeInterval(timeInterval());
 	ui->cbTimeInterval->blockSignals(false);
 	QApplication::processEvents(); // нужно подождать пока все виджеты примут должный размер
 	adjustScroll();
@@ -207,7 +197,7 @@ const Configuration &ChartWindow::configuration() const
 Configuration ChartWindow::defaultConfiguration()
 {
 	Configuration chartWindow(Configuration::Title, "ChartWindow", QVariant(), tr("Chart window"));
-	chartWindow.insertChild({Configuration::Value, "TimeInterval", ETimeInterval::IntervalD1, tr("Interval")});
+	chartWindow.insertChild({Configuration::Value, TIME_INTERVAL_CONF, ETimeInterval::IntervalD1, tr("Interval")});
 
 	return chartWindow;
 }

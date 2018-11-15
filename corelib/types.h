@@ -35,3 +35,4 @@ struct ValueRange : public Range<qreal>
 #define DAYS_IN_YEAR 365.259641
 #define CHART_CONF "Chart"
 #define CHART_WINDOW_CONF "ChartWindow"
+#define TIME_INTERVAL_CONF "TimeInterval"
