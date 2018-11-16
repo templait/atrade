@@ -1,6 +1,7 @@
 #include "datasourcefilefactory.h"
 #include "datasourcefile.h"
 #include "fileconfigurationeditor.h"
+#include "confnames.h"
 
 #include <log.h>
 #include <tools.h>
@@ -24,8 +25,8 @@ BDataSource *DataSourceFileFactory::create(const Configuration &configuration) c
 		QSettings appSettings;
 		QString path = QString("%1/%2/%3/%4.txt")
 		        .arg(appSettings.value("DataSourceFileDir", "../DataSourceFile").toString())
-				.arg(configuration["class"].value().toString())
-				.arg(configuration["code"].value().toString())
+				.arg(configuration[CN_CLASS].value().toString())
+				.arg(configuration[CN_CODE].value().toString())
 				.arg(intervalToString(static_cast<ETimeInterval>(configuration["interval"].value().toInt())));
 		rv = new DataSourceFile(path);
 	}
@@ -42,8 +43,8 @@ Configuration DataSourceFileFactory::defaultConfiguration() const
 	QString name = productName();
 	Configuration rv
 	{
-		{Configuration::Value, "class",		"TQBR",			QObject::tr("Класс",		name.toLocal8Bit())},
-		{Configuration::Value, "code",		"SBER",			QObject::tr("Символ",	name.toLocal8Bit())},
+		{Configuration::Value, CN_CLASS,		"TQBR",			QObject::tr("Класс",		name.toLocal8Bit())},
+		{Configuration::Value, CN_CODE,		"SBER",			QObject::tr("Символ",	name.toLocal8Bit())},
 		//{Configuration::Value, "interval",	IntervalD1,		QObject::tr("Интервал",		name.toLocal8Bit())}
 	};
 	rv.setName(name);

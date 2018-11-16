@@ -8,5 +8,4 @@ SOURCES += datasourcequik.cpp
 HEADERS += datasourcequikfactory.h
 SOURCES += datasourcequikfactory.cpp
 
-
-include(filedatasource/filedatasource.pri)
+include(datasourcefile/datasourcefile.pri)

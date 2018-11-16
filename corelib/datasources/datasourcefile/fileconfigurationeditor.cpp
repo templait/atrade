@@ -5,6 +5,7 @@
 #include <tools.h>
 #include <ui_fileconfigurationeditor.h>
 #include <configurationmodel.h>
+#include "confnames.h"
 
 FileConfigurationEditor::FileConfigurationEditor(const QModelIndex &index, QWidget *parent)
 	: ConfigurationEditorModule(index, parent)
@@ -20,17 +21,17 @@ FileConfigurationEditor::FileConfigurationEditor(const QModelIndex &index, QWidg
 		for(const QString& className : dir.entryList())
 		{	ui->cbClass->addItem(className);	}
 
-		if(configuration().containsChild("class"))
+		if(configuration().containsChild(CN_CLASS))
 		{
-			QString confClass = configuration()["class"].value().toString();
+			QString confClass = configuration()[CN_CLASS].value().toString();
 			int cur = ui->cbClass->findText(confClass);
 			if(cur>=0)
 			{
 				ui->cbClass->setCurrentIndex(cur);
 				loadCodesForClass(ui->cbClass->currentText());
-				if(configuration().containsChild("code"))
+				if(configuration().containsChild(CN_CODE))
 				{
-					QString confCode = configuration()["code"].value().toString();
+					QString confCode = configuration()[CN_CODE].value().toString();
 					cur = ui->cbCode->findText(confCode);
 					if(cur>=0)
 					{	ui->cbCode->setCurrentIndex(cur);	}
@@ -75,13 +76,13 @@ bool FileConfigurationEditor::loadCodesForClass(const QString& textClassName)
 
 void FileConfigurationEditor::onClassActivated(const QString &textClassName)
 {
-	configuration()["class"].setValue(textClassName);
+	configuration()[CN_CLASS].setValue(textClassName);
 	loadCodesForClass(textClassName);
 }
 
 void FileConfigurationEditor::onCodeActivated(const QString &textCodeName)
 {
-	configuration()["code"].setValue(textCodeName);
+	configuration()[CN_CODE].setValue(textCodeName);
 }
 
 void FileConfigurationEditor::onSetDefaulTitle()

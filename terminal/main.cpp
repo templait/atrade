@@ -1,7 +1,7 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include <datasources/datasourcefilefactory.h>
+#include <datasources/datasourcefile/datasourcefilefactory.h>
 #include <datasources/datasourcequikfactory.h>
 #include <indicators/lualineindicatorfactory.h>
 

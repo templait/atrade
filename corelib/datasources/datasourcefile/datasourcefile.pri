@@ -1,5 +1,7 @@
 VPATH += $$PWD
 
+HEADERS += confnames.h
+
 HEADERS += datasourcefile.h   datasourcefilefactory.h
 SOURCES += datasourcefile.cpp datasourcefilefactory.cpp
 
