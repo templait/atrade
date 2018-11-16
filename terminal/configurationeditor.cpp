@@ -103,19 +103,19 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 		setAppearanceEditor(new DataSourceConfigurationEditor(current));
 		ui->actionDelete->setEnabled(true);
 	}
-	else if(currentName == CHART_CONF)
+	else if(currentName == CONF_NAME_CHART)
 	{
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(true);
 	}
-	else if(currentName == CHART_WINDOW_CONF)
+	else if(currentName == CONF_NAME_CHART_WINDOW)
 	{
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(false);
 	}
-	else if(currentName == TIME_INTERVAL_CONF)
+	else if(currentName == CONF_NAME_TIME_INTERVAL)
 	{
 		setConfidurationEditor(new TimeIntervalConfigurationEditor(current));
 		setAppearanceEditor(nullptr);
@@ -131,7 +131,7 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 
 void ConfigurationEditor::onNewChart()
 {
-	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, CHART_CONF, QVariant(), tr("График")});
+	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, CONF_NAME_CHART, QVariant(), tr("График")});
 }
 
 void ConfigurationEditor::onDelete()

@@ -153,14 +153,14 @@ void ChartWindow::adjustGraphicsScene()
 void ChartWindow::setTimeInterval(ETimeInterval interval)
 {
 	Configuration newConf(mConfiguration);
-	newConf[TIME_INTERVAL_CONF].setValue(interval);
+	newConf[CONF_NAME_TIME_INTERVAL].setValue(interval);
 	loadConfiguration(newConf);
 }
 
 ETimeInterval ChartWindow::timeInterval() const
 {
-	Q_ASSERT(mConfiguration.containsChild(TIME_INTERVAL_CONF));
-	return static_cast<ETimeInterval>(mConfiguration[TIME_INTERVAL_CONF].value().toInt());
+	Q_ASSERT(mConfiguration.containsChild(CONF_NAME_TIME_INTERVAL));
+	return static_cast<ETimeInterval>(mConfiguration[CONF_NAME_TIME_INTERVAL].value().toInt());
 }
 
 int ChartWindow::rescaleInt64(qint64 value) const
@@ -177,7 +177,7 @@ void ChartWindow::loadConfiguration(const Configuration& configuration)
 	for(int i=0; i<mConfiguration.childrenCount(); i++)
 	{
 		const Configuration* conf = mConfiguration.childAt(i);
-		if(conf->name() == CHART_CONF)
+		if(conf->name() == CONF_NAME_CHART)
 		{	
 			cregetChartWidget(*conf, i);
 		}
@@ -197,7 +197,7 @@ const Configuration &ChartWindow::configuration() const
 Configuration ChartWindow::defaultConfiguration()
 {
 	Configuration chartWindow(Configuration::Title, "ChartWindow", QVariant(), tr("Chart window"));
-	chartWindow.insertChild({Configuration::Value, TIME_INTERVAL_CONF, ETimeInterval::IntervalD1, tr("Interval")});
+	chartWindow.insertChild({Configuration::Value, CONF_NAME_TIME_INTERVAL, ETimeInterval::IntervalD1, tr("Interval")});
 
 	return chartWindow;
 }
