@@ -1,6 +1,6 @@
 #include "lualineindicatorfactory.h"
 #include "lualineindicator.h"
-#include "lualineconfigurationeditor.h"
+#include "lualineindicatorconfigurationeditor.h"
 
 #include <QSettings>
 
@@ -45,5 +45,5 @@ Configuration LuaLineIndicatorFactory::defaultConfiguration() const
 
 ConfigurationEditorModule *LuaLineIndicatorFactory::createConfigurationEditor(const QModelIndex &configuration, QWidget *parent) const
 {
-	return new LuaLineConfigurationEditor(configuration, parent);
+	return new LuaLineIndicatorConfigurationEditor(configuration, parent);
 }

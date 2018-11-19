@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LuaLineConfigurationEditor</class>
- <widget class="QWidget" name="LuaLineConfigurationEditor">
+ <class>LuaLineIndicatorConfigurationEditor</class>
+ <widget class="QWidget" name="LuaLineIndicatorConfigurationEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
