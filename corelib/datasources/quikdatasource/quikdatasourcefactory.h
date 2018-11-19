@@ -2,11 +2,11 @@
 
 #include <datasources/datasourcefactory.h>
 
-class DataSourceQUIKFactory : public DataSourceFactory::Unit
+class QuikDataSourceFactory : public DataSourceFactory::Unit
 {
 public:
-	DataSourceQUIKFactory();
-	virtual ~DataSourceQUIKFactory() override{}
+	QuikDataSourceFactory();
+	virtual ~QuikDataSourceFactory() override{}
 
 	// Unit interface
 public:

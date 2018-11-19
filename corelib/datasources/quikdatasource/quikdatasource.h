@@ -9,12 +9,12 @@
 class QHostAddress;
 class QTcpSocket;
 
-class DataSourceQUIK : public BDataSource
+class QuikDataSource : public BDataSource
 {
 	Q_OBJECT
 public:
-	DataSourceQUIK(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent=nullptr);
-	virtual ~DataSourceQUIK() override;
+	QuikDataSource(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent=nullptr);
+	virtual ~QuikDataSource() override;
 private:
 	void connectToTerminal();
 	int quikInterval() const;

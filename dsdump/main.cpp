@@ -1,4 +1,4 @@
-#include <datasources/datasourcequik.h>
+#include <datasources/quikdatasource/quikdatasource.h>
 
 int main()
 {

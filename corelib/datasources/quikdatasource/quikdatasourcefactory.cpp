@@ -1,5 +1,5 @@
-#include "datasourcequikfactory.h"
-#include "datasourcequik.h"
+#include "quikdatasourcefactory.h"
+#include "quikdatasource.h"
 
 #include <log.h>
 
@@ -7,13 +7,13 @@
 
 #define PRODUCT_ID "c647314d-d9c0-4e97-9d57-d3c473d727ae"
 
-DataSourceQUIKFactory::DataSourceQUIKFactory()
+QuikDataSourceFactory::QuikDataSourceFactory()
 	: DataSourceFactory::Unit(QString("QUIK DataSource"), QUuid(PRODUCT_ID))
 {
 
 }
 
-BDataSource *DataSourceQUIKFactory::create(const Configuration &configuration) const
+BDataSource *QuikDataSourceFactory::create(const Configuration &configuration) const
 {
 	BDataSource* rv=nullptr;
 
@@ -30,7 +30,7 @@ BDataSource *DataSourceQUIKFactory::create(const Configuration &configuration) c
 			QString className = configuration["class"].value().toString();
 			QString code = configuration["code"].value().toString();
 
-			rv = new DataSourceQUIK(interval, className, code, hostName, port);
+			rv = new QuikDataSource(interval, className, code, hostName, port);
 		}
 		else
 		{
@@ -45,7 +45,7 @@ BDataSource *DataSourceQUIKFactory::create(const Configuration &configuration) c
 	return rv;
 }
 
-Configuration DataSourceQUIKFactory::defaultConfiguration() const
+Configuration QuikDataSourceFactory::defaultConfiguration() const
 {
 	QString name = productName();
 	Configuration rv

@@ -1,4 +1,4 @@
-#include "datasourcequik.h"
+#include "quikdatasource.h"
 
 #include <log.h>
 
@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-DataSourceQUIK::DataSourceQUIK(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent) :
+QuikDataSource::QuikDataSource(ETimeInterval interval, const QString &className, const QString &code, const QString &hostName, quint16 port, QObject* parent) :
 	BDataSource(parent)
 {
 	mSettings.interval = interval;
@@ -24,17 +24,17 @@ DataSourceQUIK::DataSourceQUIK(ETimeInterval interval, const QString &className,
 	connectToTerminal();
 }
 
-DataSourceQUIK::~DataSourceQUIK()
+QuikDataSource::~QuikDataSource()
 {
 	if(isActive()) mSocket->close();
 }
 
-void DataSourceQUIK::connectToTerminal()
+void QuikDataSource::connectToTerminal()
 {
 	mSocket->connectToHost(mSettings.hostName, mSettings.port);
 }
 
-int DataSourceQUIK::quikInterval() const
+int QuikDataSource::quikInterval() const
 {
 	int rv = -1;
 	switch(interval())
@@ -81,12 +81,12 @@ int DataSourceQUIK::quikInterval() const
 	return rv;
 }
 
-int DataSourceQUIK::size() const
+int QuikDataSource::size() const
 {
 	return mCandles.size();
 }
 
-const Candle *DataSourceQUIK::at(int index) const
+const Candle *QuikDataSource::at(int index) const
 {
 	const Candle * rv = 0;
 	if(index < size())
@@ -94,23 +94,23 @@ const Candle *DataSourceQUIK::at(int index) const
 	return rv;
 }
 
-bool DataSourceQUIK::isActive() const
+bool QuikDataSource::isActive() const
 {
 	return mSocket->state() == QAbstractSocket::ConnectedState;
 }
 
-QString DataSourceQUIK::errorString() const
+QString QuikDataSource::errorString() const
 {
 	return mSocket->errorString();
 }
 
-QString DataSourceQUIK::sourceName() const
+QString QuikDataSource::sourceName() const
 {
 	return QString("QUIK DS: %1:%2, %3:%4").arg(mSettings.hostName).arg(mSettings.port).arg(mSettings.className).arg(mSettings.code);
 }
 // telnet command
 // (echo '{"Command":"GetDataSource", "Continue":1, "Class":"TQBR", "Code":"SBER", "TimeFrame":1440}'; sleep 1) | telnet 192.168.9.63 5000
-void DataSourceQUIK::onStateChanged(QAbstractSocket::SocketState socketState)
+void QuikDataSource::onStateChanged(QAbstractSocket::SocketState socketState)
 {
 	switch(socketState)
 	{
@@ -122,14 +122,14 @@ void DataSourceQUIK::onStateChanged(QAbstractSocket::SocketState socketState)
 	}
 		break;
 	case QAbstractSocket::UnconnectedState:
-		QTimer::singleShot(5000, this, &DataSourceQUIK::connectToTerminal);
+		QTimer::singleShot(5000, this, &QuikDataSource::connectToTerminal);
 		break;
 	default:
 		break;
 	}
 }
 
-void DataSourceQUIK::onReadyRead()
+void QuikDataSource::onReadyRead()
 {
 	QString line;
 	int candles = mCandles.size();
@@ -170,12 +170,12 @@ void DataSourceQUIK::onReadyRead()
 	for(int index : needUpdate) emit candleUpdated(index);
 }
 
-void DataSourceQUIK::onError(QAbstractSocket::SocketError)
+void QuikDataSource::onError(QAbstractSocket::SocketError)
 {
 	Log::warning(sourceName() + ": \"" + errorString() + '"');
 }
 
-ETimeInterval DataSourceQUIK::interval() const
+ETimeInterval QuikDataSource::interval() const
 {
 	return mSettings.interval;
 }

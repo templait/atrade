@@ -2,7 +2,7 @@
 
 #include "mainwindow.h"
 #include <datasources/filedatasource/filedatasourcefactory.h>
-#include <datasources/datasourcequikfactory.h>
+#include <datasources/quikdatasource/quikdatasourcefactory.h>
 #include <indicators/lualineindicatorfactory.h>
 
 int main(int argc, char** argv)
@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	app.setApplicationName("atrade.terminal");
 
 	DataSourceFactory::instance().registerUnit(new FileDataSourceFactory());
-	DataSourceFactory::instance().registerUnit(new DataSourceQUIKFactory());
+	DataSourceFactory::instance().registerUnit(new QuikDataSourceFactory());
 
 	IndicatorFactory::instance().registerUnit(new LuaLineIndicatorFactory(LuaLineIndicatorFactory::IndicatorMA));
 

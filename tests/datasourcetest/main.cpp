@@ -1,5 +1,5 @@
 #include <datasources/bdatasource.h>
-#include <datasources/datasourcequik.h> // killme
+#include <datasources/quikdatasource/quikdatasource.h> // killme
 #include <functional>
 
 typedef std::function<void(QList<const Candle*>)> ScrollFunction;
