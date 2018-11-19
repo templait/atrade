@@ -43,7 +43,7 @@ Configuration DataSourceFileFactory::defaultConfiguration() const
 	QString name = productName();
 	Configuration rv
 	{
-		{Configuration::Value, CN_CLASS,		"TQBR",			QObject::tr("Класс",		name.toLocal8Bit())},
+		{Configuration::Value, CN_CLASS,	"TQBR",			QObject::tr("Класс",	name.toLocal8Bit())},
 		{Configuration::Value, CN_CODE,		"SBER",			QObject::tr("Символ",	name.toLocal8Bit())},
 		//{Configuration::Value, "interval",	IntervalD1,		QObject::tr("Интервал",		name.toLocal8Bit())}
 	};

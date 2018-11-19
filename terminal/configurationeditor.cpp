@@ -131,7 +131,7 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 
 void ConfigurationEditor::onNewChart()
 {
-	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, CONF_NAME_CHART, QVariant(), tr("График")});
+	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, CONF_NAME_CHART, QVariant(), tr("Chart")});
 }
 
 void ConfigurationEditor::onDelete()
