@@ -8,12 +8,12 @@ class QHostAddress;
 class QTcpSocket;
 class QFile;
 
-class DataSourceFile : public BDataSource
+class FileDataSource : public BDataSource
 {
 	Q_OBJECT
 public:
-	DataSourceFile(const QString &fileName, QObject* parent=nullptr);
-	virtual ~DataSourceFile() override;
+	FileDataSource(const QString &fileName, QObject* parent=nullptr);
+	virtual ~FileDataSource() override;
 private:
 	struct
 	{

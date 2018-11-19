@@ -7,12 +7,12 @@ namespace Ui
 class ConfigurationEditor;
 }
 
-class FileConfigurationEditor : public ConfigurationEditorModule
+class FileDataSourceConfigurationEditor : public ConfigurationEditorModule
 {
 	Q_OBJECT
 public:
-	FileConfigurationEditor(const QModelIndex& index, QWidget* parent=nullptr);
-	~FileConfigurationEditor();
+	FileDataSourceConfigurationEditor(const QModelIndex& index, QWidget* parent=nullptr);
+	~FileDataSourceConfigurationEditor();
 private:
 	bool loadCodesForClass(const QString& textClassName);
 

@@ -1,4 +1,4 @@
-#include "datasourcefile.h"
+#include "filedatasource.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -8,7 +8,7 @@
 #include "log.h"
 
 
-DataSourceFile::DataSourceFile(const QString &fileName, QObject* parent) : BDataSource(parent)
+FileDataSource::FileDataSource(const QString &fileName, QObject* parent) : BDataSource(parent)
 {
 	mFile = new QFile(fileName, this);
 	if(mFile->open(QIODevice::ReadOnly))
@@ -17,17 +17,17 @@ DataSourceFile::DataSourceFile(const QString &fileName, QObject* parent) : BData
 	{	Log::error(QString("%1.%2:%3").arg(__CLASS_NAME__).arg(sourceName()).arg(errorString()));	}
 }
 
-DataSourceFile::~DataSourceFile()
+FileDataSource::~FileDataSource()
 {
 
 }
 
-QString DataSourceFile::sourceName() const
+QString FileDataSource::sourceName() const
 {
 	return QString("File(%1)").arg(mFile->fileName());
 }
 
-void DataSourceFile::readData()
+void FileDataSource::readData()
 {
 	QTextStream stream(mFile);
 	int lineNum = 0;
@@ -65,7 +65,7 @@ void DataSourceFile::readData()
 	{	emit candlesAppended(mCandles.size()); }
 }
 
-bool DataSourceFile::readSettings(const QJsonObject &obj)
+bool FileDataSource::readSettings(const QJsonObject &obj)
 {
 	bool rv = false;
 	QString strInterval = obj.value("Interval").toString();
@@ -115,12 +115,12 @@ bool DataSourceFile::readSettings(const QJsonObject &obj)
 }
 
 
-int DataSourceFile::size() const
+int FileDataSource::size() const
 {
 	return mCandles.size();
 }
 
-const Candle *DataSourceFile::at(int index) const
+const Candle *FileDataSource::at(int index) const
 {
 	const Candle * rv = nullptr;
 	if(index < size())
@@ -128,17 +128,17 @@ const Candle *DataSourceFile::at(int index) const
 	return rv;
 }
 
-bool DataSourceFile::isActive() const
+bool FileDataSource::isActive() const
 {
 	return false;
 }
 
-QString DataSourceFile::errorString() const
+QString FileDataSource::errorString() const
 {
 	return mFile->errorString();
 }
 
-ETimeInterval DataSourceFile::interval() const
+ETimeInterval FileDataSource::interval() const
 {
 	return mSettings.interval;
 }

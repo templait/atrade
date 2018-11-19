@@ -1,7 +1,7 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include <datasources/datasourcefile/datasourcefilefactory.h>
+#include <datasources/filedatasource/filedatasourcefactory.h>
 #include <datasources/datasourcequikfactory.h>
 #include <indicators/lualineindicatorfactory.h>
 
@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 	app.setOrganizationName("zoldnet");
 	app.setApplicationName("atrade.terminal");
 
-	DataSourceFactory::instance().registerUnit(new DataSourceFileFactory());
+	DataSourceFactory::instance().registerUnit(new FileDataSourceFactory());
 	DataSourceFactory::instance().registerUnit(new DataSourceQUIKFactory());
 
 	IndicatorFactory::instance().registerUnit(new LuaLineIndicatorFactory(LuaLineIndicatorFactory::IndicatorMA));

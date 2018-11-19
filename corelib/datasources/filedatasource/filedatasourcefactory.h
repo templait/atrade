@@ -2,11 +2,11 @@
 
 #include <datasources/datasourcefactory.h>
 
-class DataSourceFileFactory : public DataSourceFactory::Unit
+class FileDataSourceFactory : public DataSourceFactory::Unit
 {
 public:
-	DataSourceFileFactory();
-	virtual ~DataSourceFileFactory() override{}
+	FileDataSourceFactory();
+	virtual ~FileDataSourceFactory() override{}
 
 	// Unit interface
 public:

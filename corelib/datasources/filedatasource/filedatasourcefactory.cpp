@@ -1,6 +1,6 @@
-#include "datasourcefilefactory.h"
-#include "datasourcefile.h"
-#include "fileconfigurationeditor.h"
+#include "filedatasourcefactory.h"
+#include "filedatasource.h"
+#include "filedatasourceconfigurationeditor.h"
 #include "confnames.h"
 
 #include <log.h>
@@ -10,13 +10,13 @@
 
 #define PRODUCT_ID "ab38fe10-d502-11e8-b568-0800200c9a66"
 
-DataSourceFileFactory::DataSourceFileFactory()
+FileDataSourceFactory::FileDataSourceFactory()
 	: DataSourceFactory::Unit(QString("File DataSource"), QUuid(PRODUCT_ID))
 {
 
 }
 
-BDataSource *DataSourceFileFactory::create(const Configuration &configuration) const
+BDataSource *FileDataSourceFactory::create(const Configuration &configuration) const
 {
 	BDataSource* rv=nullptr;
 
@@ -28,7 +28,7 @@ BDataSource *DataSourceFileFactory::create(const Configuration &configuration) c
 				.arg(configuration[CN_CLASS].value().toString())
 				.arg(configuration[CN_CODE].value().toString())
 				.arg(intervalToString(static_cast<ETimeInterval>(configuration["interval"].value().toInt())));
-		rv = new DataSourceFile(path);
+		rv = new FileDataSource(path);
 	}
 	else
 	{
@@ -38,7 +38,7 @@ BDataSource *DataSourceFileFactory::create(const Configuration &configuration) c
 	return rv;
 }
 
-Configuration DataSourceFileFactory::defaultConfiguration() const
+Configuration FileDataSourceFactory::defaultConfiguration() const
 {
 	QString name = productName();
 	Configuration rv
@@ -55,7 +55,7 @@ Configuration DataSourceFileFactory::defaultConfiguration() const
 	return rv;
 }
 
-ConfigurationEditorModule *DataSourceFileFactory::createConfigurationEditor(const QModelIndex& configuration, QWidget *parent) const
+ConfigurationEditorModule *FileDataSourceFactory::createConfigurationEditor(const QModelIndex& configuration, QWidget *parent) const
 {
-	return new FileConfigurationEditor(configuration, parent);
+	return new FileDataSourceConfigurationEditor(configuration, parent);
 }

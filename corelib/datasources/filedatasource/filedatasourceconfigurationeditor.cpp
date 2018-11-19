@@ -1,4 +1,4 @@
-#include "fileconfigurationeditor.h"
+#include "filedatasourceconfigurationeditor.h"
 #include <QDir>
 #include <QSettings>
 #include <log.h>
@@ -7,7 +7,7 @@
 #include <configurationmodel.h>
 #include "confnames.h"
 
-FileConfigurationEditor::FileConfigurationEditor(const QModelIndex &index, QWidget *parent)
+FileDataSourceConfigurationEditor::FileDataSourceConfigurationEditor(const QModelIndex &index, QWidget *parent)
 	: ConfigurationEditorModule(index, parent)
 {
 	ui = new Ui::ConfigurationEditor;
@@ -42,21 +42,21 @@ FileConfigurationEditor::FileConfigurationEditor(const QModelIndex &index, QWidg
 			else
 			{	Log::error(QString("%1.can't find class: \"%2\"").arg(__CLASS_NAME__).arg(confClass));	}
 		}
-		connect(ui->cbClass, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &FileConfigurationEditor::onClassActivated);
-		connect(ui->cbCode, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &FileConfigurationEditor::onCodeActivated);
-		connect(ui->pbSetDefaultTitle, &QAbstractButton::clicked, this, &FileConfigurationEditor::onSetDefaulTitle);
+		connect(ui->cbClass, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &FileDataSourceConfigurationEditor::onClassActivated);
+		connect(ui->cbCode, qOverload<const QString&>(&QComboBox::currentIndexChanged), this, &FileDataSourceConfigurationEditor::onCodeActivated);
+		connect(ui->pbSetDefaultTitle, &QAbstractButton::clicked, this, &FileDataSourceConfigurationEditor::onSetDefaulTitle);
 	}
 	else
 	{	Log::error(QString("%1.invalid path: \"%2\"").arg(__CLASS_NAME__).arg(dir.path()));	}
 
 }
 
-FileConfigurationEditor::~FileConfigurationEditor()
+FileDataSourceConfigurationEditor::~FileDataSourceConfigurationEditor()
 {
 	delete ui;
 }
 
-bool FileConfigurationEditor::loadCodesForClass(const QString& textClassName)
+bool FileDataSourceConfigurationEditor::loadCodesForClass(const QString& textClassName)
 {
 	bool rv = false;
 	ui->cbCode->clear();
@@ -74,18 +74,18 @@ bool FileConfigurationEditor::loadCodesForClass(const QString& textClassName)
 	return rv;
 }
 
-void FileConfigurationEditor::onClassActivated(const QString &textClassName)
+void FileDataSourceConfigurationEditor::onClassActivated(const QString &textClassName)
 {
 	configuration()[CN_CLASS].setValue(textClassName);
 	loadCodesForClass(textClassName);
 }
 
-void FileConfigurationEditor::onCodeActivated(const QString &textCodeName)
+void FileDataSourceConfigurationEditor::onCodeActivated(const QString &textCodeName)
 {
 	configuration()[CN_CODE].setValue(textCodeName);
 }
 
-void FileConfigurationEditor::onSetDefaulTitle()
+void FileDataSourceConfigurationEditor::onSetDefaulTitle()
 {
 	model()->setData(modelIndex().sibling(modelIndex().row(), 0), ui->cbClass->currentText() + '.' + ui->cbCode->currentText(), Qt::EditRole);
 }
