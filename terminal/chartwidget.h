@@ -22,7 +22,7 @@ public:
 	ChartWidget(ETimeInterval interval, QGraphicsItem* parent=nullptr);
 	ChartWidget(ETimeInterval interval, const Configuration& configuration, QGraphicsItem* parent=nullptr);
 	void addDataSource(const Configuration& dataSource);
-	void addIndicator(BIndicator* indicator);
+	void addIndicator(const Configuration &indicator);
 	TimeRange viewTimeRange() const;
 	void setViewTimeRange(const TimeRange &range);
 	TimeRange timeRange() const;	// return whole timerange

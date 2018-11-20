@@ -11,7 +11,8 @@
 #include <QValueAxis>
 #include <configuration.h>
 #include <confnames.h>
-#include <datasources/datasourcefactory.h>
+#include <datasources/datasource.h>
+#include <indicators/indicator.h>
 
 using namespace QtCharts;
 
@@ -43,8 +44,12 @@ ChartWidget::ChartWidget(ETimeInterval interval, const Configuration &configurat
 		if(DataSourceFactory::instance().hasProduct(conf->value().toUuid()))
 		{
 			Configuration dsConf(*conf);
-			dsConf.insertChild({CN_TIME_INTERVAL,	interval,		tr("Интервал")});
+			dsConf.insertChild({CN_TIME_INTERVAL,	interval,		tr("Interval")});
 			addDataSource(dsConf);
+		}
+		else if(IndicatorFactory::instance().hasProduct(conf->value().toUuid()))
+		{
+			addIndicator(*conf);
 		}
 	}
 }
@@ -65,10 +70,11 @@ void ChartWidget::addDataSource(const Configuration &dataSource)
 	}
 }
 
-void ChartWidget::addIndicator(BIndicator *indicator)
+void ChartWidget::addIndicator(const Configuration &indicator)
 {
-	LineIndicatorSeries *is = new LineIndicatorSeries(mChart, indicator, this);
-	mSeries << is;
+	/*Indicator ind = IndicatorFactory::instance().product(indicator);
+	LineIndicatorSeries *is = new LineIndicatorSeries(mChart, ind, this);
+	mSeries << is;*/
 }
 
 void ChartWidget::adjustValueAxis()

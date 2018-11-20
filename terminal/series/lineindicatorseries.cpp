@@ -9,13 +9,13 @@
 
 using namespace QtCharts;
 
-LineIndicatorSeries::LineIndicatorSeries(QChart *chart, BIndicator *indicator, QObject *parent)
+LineIndicatorSeries::LineIndicatorSeries(QChart *chart, Indicator indicator, QObject *parent)
 	: QObject(parent)
 	, mChart(chart)
 	, mIndicator(indicator)
 {
-	connect(mIndicator, SIGNAL(pointsAppended(int)), SLOT(onPointsAppended(int)));
-	connect(mIndicator, SIGNAL(pointUpdated(int)), SLOT(onPointUpdated(int)));
+	connect(&mIndicator, SIGNAL(pointsAppended(int)), SLOT(onPointsAppended(int)));
+	connect(&mIndicator, SIGNAL(pointUpdated(int)), SLOT(onPointUpdated(int)));
 }
 
 void LineIndicatorSeries::appendPoints(const QList<const Point *> points)

@@ -39,6 +39,24 @@ void ConfigurationModel::insertChild(const QModelIndex &parent, const Configurat
 	endInsertRows();
 }
 
+QModelIndex ConfigurationModel::modelIndex(const Configuration *conf, const QModelIndex &parent)
+{
+	const Configuration& rootConf = configuration(parent);
+	QModelIndex rv = QModelIndex();
+	if(&rootConf==conf)
+	{	rv = parent;	}
+	else
+	{
+		for(int i=0; i<rootConf.childrenCount(); i++)
+		{
+			rv = modelIndex(conf, index(i,0, parent));
+			if(rv.isValid())
+			{	break;	}
+		}
+	}
+	return rv;
+}
+
 Configuration *ConfigurationModel::index2configuration(const QModelIndex &index) const
 {
 	Configuration* rv = nullptr;
@@ -110,7 +128,11 @@ int ConfigurationModel::rowCount(const QModelIndex &parent) const
 	if(parent.isValid())
 	{
 		Configuration* parentConf = index2configuration(parent);
-		if(! DataSourceFactory::instance().hasProduct(parentConf->value().toUuid()))
+		// Не показываем дочернии элементы для продуктов.
+		// Все изменения в настройках продуктов должны осущемтвляться с помощью ConfigurationEditorModule.
+		if(! (DataSourceFactory::instance().hasProduct(parentConf->value().toUuid())
+			  || IndicatorFactory::instance().hasProduct(parentConf->value().toUuid()))
+		)
 		{	rv = parentConf->childrenCount();	}
 		else
 		{	rv = 0;	}

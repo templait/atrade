@@ -129,7 +129,7 @@ void Configuration::deleteChild(int index)
 	mChildren.removeAt(delPos);
 }
 
-int Configuration::deleteAllChild(const QString &name)
+int Configuration::deleteChildren(const QString &name)
 {
 	int rv = 0;
 	if(name.isEmpty())

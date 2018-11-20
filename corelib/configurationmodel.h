@@ -12,6 +12,7 @@ public:
 	const Configuration& configuration(const QModelIndex& index = QModelIndex()) const;
 	Configuration& configuration(const QModelIndex& index = QModelIndex());
 	void insertChild(const QModelIndex &parent, const Configuration& child, int row=-1);
+	QModelIndex modelIndex(const Configuration* conf, const QModelIndex &parent = QModelIndex());
 private:
 	Configuration mRoot;
 	Configuration *index2configuration(const QModelIndex &index) const;

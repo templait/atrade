@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bseries.h"
+#include <indicators/indicator.h>
 #include <QObject>
 
 namespace QtCharts
@@ -16,13 +17,13 @@ class LineIndicatorSeries : public QObject, public BSeries
 {
 	Q_OBJECT
 public:
-	LineIndicatorSeries(QtCharts::QChart *chart, BIndicator *indicator, QObject * parent=0);
-	virtual ~LineIndicatorSeries(){}
+	LineIndicatorSeries(QtCharts::QChart *chart, Indicator indicator, QObject * parent=nullptr);
+	virtual ~LineIndicatorSeries() override {}
 private:
 	void appendPoints(const QList<const Point *> points);
 
 	QtCharts::QChart *mChart;
-	BIndicator* mIndicator;
+	Indicator mIndicator;
 	TimeRange mViewTimeRange;
 	QList<QtCharts::QLineSeries*> mSeries;
 private slots:

@@ -10,8 +10,8 @@ public:
 	Configuration();
 	Configuration(const Configuration &other);
 	Configuration(std::initializer_list<Configuration> list);
-	Configuration(const QString& name, const QVariant& value, const QString& title = QString());
-	Configuration( int userEditableMap, const QString& name, const QVariant& value, const QString& title = QString());
+	Configuration(const QString& name, const QVariant& value = QVariant(), const QString& title = QString());
+	Configuration( int userEditableMap, const QString& name, const QVariant& value = QVariant(), const QString& title = QString());
 
 	Configuration operator[](const QString& childName) const;
 	Configuration& operator[](const QString& childName);
@@ -29,7 +29,7 @@ public:
 
 	void insertChild(Configuration child, int index=-1);
 	void deleteChild(int index);
-	int deleteAllChild(const QString& name = QString());
+	int deleteChildren(const QString& name = QString());
 	const Configuration *childAt(int index) const;
 	int childrenCount() const;
 	bool containsChild(const QString& childName) const;

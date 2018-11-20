@@ -19,4 +19,7 @@ private:
 
 	void onProductChanged(int);
 	void setEditorModule(ConfigurationEditorModule *configurationEditor);
+	void updateSourceEditor();
+	QModelIndex sourceIndex();
+	const Configuration* sourceConf() const;
 };
