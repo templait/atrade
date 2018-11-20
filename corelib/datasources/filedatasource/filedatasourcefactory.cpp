@@ -1,7 +1,7 @@
 #include "filedatasourcefactory.h"
 #include "filedatasource.h"
 #include "filedatasourceconfigurationeditor.h"
-#include "confnames.h"
+#include "filedatasourceconfnames.h"
 
 #include <log.h>
 #include <tools.h>
@@ -27,7 +27,7 @@ BDataSource *FileDataSourceFactory::create(const Configuration &configuration) c
 		        .arg(appSettings.value("DataSourceFileDir", "../DataSourceFile").toString())
 				.arg(configuration[CN_CLASS].value().toString())
 				.arg(configuration[CN_CODE].value().toString())
-				.arg(intervalToString(static_cast<ETimeInterval>(configuration["interval"].value().toInt())));
+				.arg(intervalToString(static_cast<ETimeInterval>(configuration[CN_TIME_INTERVAL].value().toInt())));
 		rv = new FileDataSource(path);
 	}
 	else
@@ -45,7 +45,7 @@ Configuration FileDataSourceFactory::defaultConfiguration() const
 	{
 		{Configuration::Value, CN_CLASS,	"TQBR",			QObject::tr("Класс",	name.toLocal8Bit())},
 		{Configuration::Value, CN_CODE,		"SBER",			QObject::tr("Символ",	name.toLocal8Bit())},
-		//{Configuration::Value, "interval",	IntervalD1,		QObject::tr("Интервал",		name.toLocal8Bit())}
+		//{Configuration::Value, CN_TIME_INTERVAL",	IntervalD1,		QObject::tr("Интервал",		name.toLocal8Bit())}
 	};
 	rv.setName(name);
 	rv.setValue(ProductID(PRODUCT_ID));

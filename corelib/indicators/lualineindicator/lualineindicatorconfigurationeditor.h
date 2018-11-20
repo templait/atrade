@@ -15,4 +15,8 @@ public:
 	~LuaLineIndicatorConfigurationEditor();
 private:
 	Ui::LuaLineIndicatorConfigurationEditor* ui;
+	ConfigurationEditorModule* mConfigModule;
+
+	void onProductChanged(int);
+	void setEditorModule(ConfigurationEditorModule *configurationEditor);
 };

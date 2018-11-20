@@ -10,6 +10,7 @@
 #include <QGraphicsLinearLayout>
 #include <QValueAxis>
 #include <configuration.h>
+#include <confnames.h>
 #include <datasources/datasourcefactory.h>
 
 using namespace QtCharts;
@@ -42,7 +43,7 @@ ChartWidget::ChartWidget(ETimeInterval interval, const Configuration &configurat
 		if(DataSourceFactory::instance().hasProduct(conf->value().toUuid()))
 		{
 			Configuration dsConf(*conf);
-			dsConf.insertChild({"interval",	interval,		tr("Интервал")});
+			dsConf.insertChild({CN_TIME_INTERVAL,	interval,		tr("Интервал")});
 			addDataSource(dsConf);
 		}
 	}

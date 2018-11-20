@@ -104,7 +104,7 @@ QVariant ProductListModel::data(const QModelIndex &index, int role) const
 				rv = productList[index.row()].first;
 				break;
 			case 1:
-				rv = productList[index.row()].second.toByteArray();
+				rv = productList[index.row()].second;
 				break;
 			}
 		}

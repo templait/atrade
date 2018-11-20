@@ -3,7 +3,7 @@
 #include "mainwindow.h"
 #include <datasources/filedatasource/filedatasourcefactory.h>
 #include <datasources/quikdatasource/quikdatasourcefactory.h>
-#include <indicators/lualineindicatorfactory.h>
+#include <indicators/lualineindicator/lualineindicatorfactory.h>
 
 int main(int argc, char** argv)
 {

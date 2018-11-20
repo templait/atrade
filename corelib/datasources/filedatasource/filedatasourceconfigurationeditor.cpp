@@ -5,7 +5,7 @@
 #include <tools.h>
 #include <ui_fileconfigurationeditor.h>
 #include <configurationmodel.h>
-#include "confnames.h"
+#include "filedatasourceconfnames.h"
 
 FileDataSourceConfigurationEditor::FileDataSourceConfigurationEditor(const QModelIndex &index, QWidget *parent)
 	: ConfigurationEditorModule(index, parent)

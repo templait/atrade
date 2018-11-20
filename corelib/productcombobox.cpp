@@ -21,3 +21,13 @@ void ProductComboBox::setType(ProductComboBox::EType type)
 	}
 	setEnabled(count());
 }
+
+ProductID ProductComboBox::currentProduct() const
+{
+	ProductID rv;
+	if(currentIndex()>=0)
+	{
+		return rootModelIndex().child(currentIndex(),1).data(Qt::DisplayRole).toUuid();
+	}
+	return rv;
+}

@@ -33,8 +33,3 @@ struct ValueRange : public Range<qreal>
 };
 
 #define DAYS_IN_YEAR 365.259641
-
-// Константы, используемые, для формирования имён конфигураций.
-#define CONF_NAME_CHART "Chart"
-#define CONF_NAME_CHART_WINDOW "ChartWindow"
-#define CONF_NAME_TIME_INTERVAL "TimeInterval"

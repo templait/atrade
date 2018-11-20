@@ -2,6 +2,7 @@
 
 #include <datasources/datasourcefactory.h>
 #include <indicators/indicatorfactory.h>
+#include <confnames.h>
 
 #include <QDataStream>
 #include <QMimeData>
@@ -62,7 +63,7 @@ bool ConfigurationModel::isProduct(const Configuration *configuration) const
 
 bool ConfigurationModel::isChart(const Configuration *configuration) const
 {
-	return configuration && configuration->name()==CONF_NAME_CHART;
+	return configuration && configuration->name()==CN_CHART;
 }
 
 bool ConfigurationModel::isRoot(const Configuration *configuration) const
@@ -298,7 +299,7 @@ QMimeData *ConfigurationModel::mimeData(const QModelIndexList &indexes) const
 		stream << *conf;
 		rv->setData("configuration/product", 	encodedData);
 	}
-	else if(conf->name() == CONF_NAME_CHART)
+	else if(conf->name() == CN_CHART)
 	{
 		stream << *conf;
 		rv->setData("configuration/chart", 	encodedData);

@@ -29,6 +29,7 @@ public:
 
 	void insertChild(Configuration child, int index=-1);
 	void deleteChild(int index);
+	int deleteAllChild(const QString& name = QString());
 	const Configuration *childAt(int index) const;
 	int childrenCount() const;
 	bool containsChild(const QString& childName) const;

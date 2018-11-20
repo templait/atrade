@@ -12,6 +12,7 @@
 #include "series/datasourceconfigurationeditor.h"
 #include "titleconfigurationeditor.h"
 #include "timeintervalconfigurationeditor.h"
+#include "confnames.h"
 
 ConfigurationEditor::ConfigurationEditor(const Configuration &configuration, QWidget *parent)
 	: QDialog(parent)
@@ -103,19 +104,19 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 		setAppearanceEditor(new DataSourceConfigurationEditor(current));
 		ui->actionDelete->setEnabled(true);
 	}
-	else if(currentName == CONF_NAME_CHART)
+	else if(currentName == CN_CHART)
 	{
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(true);
 	}
-	else if(currentName == CONF_NAME_CHART_WINDOW)
+	else if(currentName == CN_CHART_WINDOW)
 	{
 		setConfidurationEditor(nullptr);
 		setAppearanceEditor(nullptr);
 		ui->actionDelete->setEnabled(false);
 	}
-	else if(currentName == CONF_NAME_TIME_INTERVAL)
+	else if(currentName == CN_TIME_INTERVAL)
 	{
 		setConfidurationEditor(new TimeIntervalConfigurationEditor(current));
 		setAppearanceEditor(nullptr);
@@ -131,7 +132,7 @@ void ConfigurationEditor::onCurrentChanged(const QModelIndex &current, const QMo
 
 void ConfigurationEditor::onNewChart()
 {
-	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, CONF_NAME_CHART, QVariant(), tr("Chart")});
+	mConfigurationModel->insertChild(mConfigurationModel->index(0,0, QModelIndex()), {Configuration::Title, CN_CHART, QVariant(), tr("Chart")});
 }
 
 void ConfigurationEditor::onDelete()

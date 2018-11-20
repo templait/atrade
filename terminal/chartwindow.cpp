@@ -8,6 +8,7 @@
 #include <QGraphicsGridLayout>
 #include <QSettings>
 #include <tools.h>
+#include <confnames.h>
 
 using namespace QtCharts;
 
@@ -153,14 +154,14 @@ void ChartWindow::adjustGraphicsScene()
 void ChartWindow::setTimeInterval(ETimeInterval interval)
 {
 	Configuration newConf(mConfiguration);
-	newConf[CONF_NAME_TIME_INTERVAL].setValue(interval);
+	newConf[CN_TIME_INTERVAL].setValue(interval);
 	loadConfiguration(newConf);
 }
 
 ETimeInterval ChartWindow::timeInterval() const
 {
-	Q_ASSERT(mConfiguration.containsChild(CONF_NAME_TIME_INTERVAL));
-	return static_cast<ETimeInterval>(mConfiguration[CONF_NAME_TIME_INTERVAL].value().toInt());
+	Q_ASSERT(mConfiguration.containsChild(CN_TIME_INTERVAL));
+	return static_cast<ETimeInterval>(mConfiguration[CN_TIME_INTERVAL].value().toInt());
 }
 
 int ChartWindow::rescaleInt64(qint64 value) const
@@ -177,7 +178,7 @@ void ChartWindow::loadConfiguration(const Configuration& configuration)
 	for(int i=0; i<mConfiguration.childrenCount(); i++)
 	{
 		const Configuration* conf = mConfiguration.childAt(i);
-		if(conf->name() == CONF_NAME_CHART)
+		if(conf->name() == CN_CHART)
 		{	
 			cregetChartWidget(*conf, i);
 		}
@@ -197,7 +198,7 @@ const Configuration &ChartWindow::configuration() const
 Configuration ChartWindow::defaultConfiguration()
 {
 	Configuration chartWindow(Configuration::Title, "ChartWindow", QVariant(), tr("Chart window"));
-	chartWindow.insertChild({Configuration::Value, CONF_NAME_TIME_INTERVAL, ETimeInterval::IntervalD1, tr("Interval")});
+	chartWindow.insertChild({Configuration::Value, CN_TIME_INTERVAL, ETimeInterval::IntervalD1, tr("Interval")});
 
 	return chartWindow;
 }

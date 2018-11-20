@@ -129,6 +129,28 @@ void Configuration::deleteChild(int index)
 	mChildren.removeAt(delPos);
 }
 
+int Configuration::deleteAllChild(const QString &name)
+{
+	int rv = 0;
+	if(name.isEmpty())
+	{
+		rv = mChildren.count();
+		mChildren.clear();
+	}
+	else
+	{	std::remove_if(mChildren.begin(), mChildren.end(), [name, &rv](const Configuration& conf){
+			bool ret = false;
+			if(conf.name()==name)
+			{
+				rv++;
+				ret = true;
+			}
+			return ret;
+		});
+	}
+	return rv;
+}
+
 const Configuration *Configuration::childAt(int index) const
 {
 	const Configuration * rv = nullptr;
