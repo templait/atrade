@@ -111,12 +111,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::onNewChartWindow()
 {
-	ConfigurationEditor editor(ChartWindow::defaultConfiguration(), this);
+	ConfigurationEditor editor(this);
 	if(editor.exec())
 	{
-		ChartWindow* cw = new ChartWindow(editor.configuration());
-		currentMDIArea()->addSubWindow(cw);
-		cw->show();
+
 	}
 }
 
@@ -124,9 +122,9 @@ void MainWindow::onChartWindowConfiguration()
 {
 	ChartWindow* cw = qobject_cast<ChartWindow*>(currentMDIArea()->activeSubWindow()->widget());
 	Q_ASSERT(cw);
-	ConfigurationEditor editor(cw->configuration(), this);
+	ConfigurationEditor editor(this);
 	if(editor.exec())
-	{	cw->loadConfiguration(editor.configuration());	}
+	{		}
 }
 
 void MainWindow::onNewTab()

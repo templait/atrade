@@ -2,6 +2,7 @@
 
 #include <QDateTime>
 #include <sharedpointer.hpp>
+#include <QtCore/QMetaType>
 
 enum ETimeInterval
 {
@@ -13,6 +14,8 @@ enum ETimeInterval
 	IntervalMN1,
 	IntervalUnknown
 };
+
+Q_DECLARE_METATYPE(ETimeInterval);
 
 template <class T>
 struct Range : public QPair<T, T>

@@ -6,6 +6,9 @@ QT = core network charts
 
 HEADERS = types.h confnames.h serial.hpp sharedpointer.hpp factory.hpp
 
+HEADERS += bconf.h   timeintervalconf.h
+SOURCES += bconf.cpp timeintervalconf.cpp
+
 HEADERS += log.h   tools.h   candle.h   point.h   configuration.h   configurationeditormodule.h   productcombobox.h
 SOURCES += log.cpp tools.cpp candle.cpp point.cpp configuration.cpp configurationeditormodule.cpp productcombobox.cpp
 
