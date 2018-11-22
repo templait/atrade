@@ -10,6 +10,8 @@
 #include <tools.h>
 #include <confnames.h>
 
+#include "chartwindowconf.h"
+
 using namespace QtCharts;
 
 ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
@@ -18,6 +20,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 
 	mCandleWidth = 6;
 	mConfiguration = defaultConfiguration();
+	mConf = new ChartWindowConf;
 
 	ui = new Ui::ChartWindow;
 	ui->setupUi(this);
@@ -56,6 +59,7 @@ ChartWindow::ChartWindow(const Configuration &configuration, QWidget *parent)
 ChartWindow::~ChartWindow()
 {
 	delete ui;
+	delete mConf;
 }
 
 qint64 ChartWindow::timeFrame() const
@@ -193,6 +197,11 @@ void ChartWindow::loadConfiguration(const Configuration& configuration)
 const Configuration &ChartWindow::configuration() const
 {
 	return mConfiguration;
+}
+
+ChartWindowConf *ChartWindow::conf()
+{
+	return mConf;
 }
 
 Configuration ChartWindow::defaultConfiguration()

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "logdoc/logdoc.h"
 #include "chartwindow.h"
+#include "chartwindowconf.h"
 #include "configurationeditor.h"
 #include "mdiarea.h"
 
@@ -111,18 +112,21 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::onNewChartWindow()
 {
-	ConfigurationEditor editor(this);
+	ChartWindowConf* conf = new ChartWindowConf;
+	ConfigurationEditor editor(conf, this);
 	if(editor.exec())
 	{
 
 	}
+	else
+	{	delete conf;	}
 }
 
 void MainWindow::onChartWindowConfiguration()
 {
 	ChartWindow* cw = qobject_cast<ChartWindow*>(currentMDIArea()->activeSubWindow()->widget());
 	Q_ASSERT(cw);
-	ConfigurationEditor editor(this);
+	ConfigurationEditor editor(cw->conf(), this);
 	if(editor.exec())
 	{		}
 }

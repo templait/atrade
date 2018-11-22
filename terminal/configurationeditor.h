@@ -4,8 +4,8 @@
 #include <configuration.h>
 
 class ProductListModel;
-class ConfigurationModel;
-class ConfigurationEditorModule;
+class BConf;
+class ConfModel;
 
 namespace Ui
 {
@@ -16,13 +16,14 @@ class ConfigurationEditor : public QDialog
 {
 	Q_OBJECT
 public:
-	ConfigurationEditor(QWidget* parent=nullptr);
+	ConfigurationEditor(BConf* conf, QWidget* parent=nullptr);
 	~ConfigurationEditor() override;
 	const Configuration& configuration() const;
 private:
 	Ui::ConfigurationEditor *ui;
 	ProductListModel* mProductListModel;
-
+	ConfModel *mConfModel;
+	BConf* mConf;
 
 
 

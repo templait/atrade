@@ -3,19 +3,13 @@
 #include <ui_configurationeditor.h>
 
 #include <QSettings>
-#include <tools.h>
 #include <productlistmodel.h>
-#include <indicators/indicatorfactory.h>
-#include <datasources/datasourcefactory.h>
 
-#include "configurationmodel.h"
-#include "series/datasourceconfigurationeditor.h"
-#include "titleconfigurationeditor.h"
-#include "timeintervalconfigurationeditor.h"
-#include "confnames.h"
+#include "confmodel.h"
 
-ConfigurationEditor::ConfigurationEditor(QWidget *parent)
+ConfigurationEditor::ConfigurationEditor(BConf *conf, QWidget *parent)
 	: QDialog(parent)
+	, mConf(conf)
 {
 	ui = new Ui::ConfigurationEditor;
 	ui->setupUi(this);
@@ -30,7 +24,8 @@ ConfigurationEditor::ConfigurationEditor(QWidget *parent)
 	ui->tvProductList->setModel(mProductListModel);
 	ui->tvProductList->expandAll();
 
-
+	mConfModel = new ConfModel(conf, this);
+	ui->tvConf->setModel(mConfModel);
 }
 
 ConfigurationEditor::~ConfigurationEditor()

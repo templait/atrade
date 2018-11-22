@@ -12,8 +12,8 @@ SOURCES += bconf.cpp timeintervalconf.cpp
 HEADERS += log.h   tools.h   candle.h   point.h   configuration.h   configurationeditormodule.h   productcombobox.h
 SOURCES += log.cpp tools.cpp candle.cpp point.cpp configuration.cpp configurationeditormodule.cpp productcombobox.cpp
 
-HEADERS += productlistmodel.h   configurationmodel.h
-SOURCES += productlistmodel.cpp configurationmodel.cpp
+HEADERS += productlistmodel.h   configurationmodel.h   confmodel.h
+SOURCES += productlistmodel.cpp configurationmodel.cpp confmodel.cpp
 
 include(datasources/datasources.pri)
 include(indicators/indicators.pri)

@@ -8,6 +8,11 @@ BConf::BConf(BConf *parent) : QObject(parent)
 
 }
 
+BConf::~BConf()
+{
+	qDeleteAll(mChildTypes);
+}
+
 const QString &BConf::title() const
 {
 	return mTitle;
@@ -19,6 +24,17 @@ void BConf::setTitle(const QString &title)
 	emit titleChanged(mTitle);
 }
 
+const QString &BConf::name() const
+{
+	return mName;
+}
+
+void BConf::setName(const QString &name)
+{
+	mName=name;
+	emit nameChanged(mName);
+}
+
 BConf *BConf::parentConf()
 {
 	BConf* parentCfg = qobject_cast<BConf*>(parent());
@@ -28,8 +44,16 @@ BConf *BConf::parentConf()
 
 bool BConf::canAppendChild(const BConf *child) const
 {
-	Q_UNUSED(child)
-	return false;
+	bool rv=false;
+	for(const BConf* childType : mChildTypes)
+	{
+		if(childType->metaObject()->className() == child->metaObject()->className())
+		{
+			rv = true;
+			break;
+		}
+	}
+	return rv;
 }
 
 BConf *BConf::clone(BConf *parentConf) const
@@ -52,7 +76,7 @@ BConf *BConf::clone(BConf *parentConf) const
 	return rv;
 }
 
-bool BConf::insertChild(BConf *conf, int index)
+bool BConf::insertChild(int index, BConf *conf)
 {
 	bool rv = canAppendChild(conf);
 	if(rv)
@@ -63,9 +87,59 @@ bool BConf::insertChild(BConf *conf, int index)
 	return rv;
 }
 
+bool BConf::insertChild(int index, int typeIndex)
+{
+	bool rv=false;
+	if(childTypesCount())
+	{
+		typeIndex = qBound(0, typeIndex, childTypesCount()-1);
+		rv = insertChild(index, mChildCtors[index](this));
+	}
+	return rv;
+}
+
 bool BConf::appendChild(BConf *conf)
 {
-	return insertChild(conf, mChildren.count());
+	return insertChild(mChildren.count(), conf);
+}
+
+bool BConf::appendChild(int typeIndex)
+{
+	return insertChild(mChildren.count(), typeIndex);
+}
+
+int BConf::childTypesCount() const
+{
+	return mChildTypes.count();
+}
+
+int BConf::childrenCount() const
+{
+	return mChildren.count();
+}
+
+QStringList BConf::childTypesNames() const
+{
+	QStringList rv;
+	for(const BConf* childType : mChildTypes)
+	{
+		rv << childType->name();
+	}
+	return rv;
+}
+
+BConf *BConf::childAt(int index)
+{
+	BConf* rv=nullptr;
+	if(index>=0 && index<=mChildren.size())
+	{	rv = mChildren[index];	}
+	return rv;
+}
+
+void BConf::appendChildctor(BConf::Childctor childctor)
+{
+	mChildTypes << childctor(nullptr);
+	mChildCtors << childctor;
 }
 
 bool BConf::event(QEvent *event)

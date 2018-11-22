@@ -30,7 +30,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QTreeView" name="tvConfiguration">
+     <widget class="QTreeView" name="tvConf">
       <property name="contextMenuPolicy">
        <enum>Qt::ActionsContextMenu</enum>
       </property>
@@ -102,7 +102,7 @@
  </widget>
  <tabstops>
   <tabstop>tvProductList</tabstop>
-  <tabstop>tvConfiguration</tabstop>
+  <tabstop>tvConf</tabstop>
  </tabstops>
  <resources/>
  <connections>
