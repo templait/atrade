@@ -10,9 +10,10 @@ class ConfModel : public QAbstractItemModel
 public:
 	ConfModel(BConf *conf, QObject* parent=nullptr);
 	const BConf *conf(const QModelIndex &index) const;
+	BConf *conf(const QModelIndex &index);
+	bool appendChild(const QModelIndex &parent, int childType);
 private:
 	BConf* mRoot;
-	BConf *conf(const QModelIndex &index);
 
 	// QAbstractItemModel interface
 public:

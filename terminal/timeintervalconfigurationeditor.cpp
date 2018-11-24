@@ -1,7 +1,6 @@
 #include "timeintervalconfigurationeditor.h"
-
+#include <QtGlobal>
 #include <configurationmodel.h>
-
 #include "ui_timeintervalconfigurationeditor.h"
 
 TimeIntervalConfigurationEditor::TimeIntervalConfigurationEditor(const QModelIndex &index, QWidget *parent)

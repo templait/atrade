@@ -25,7 +25,7 @@ private:
 	ConfModel *mConfModel;
 	BConf* mConf;
 
-
+	void execContextMenu(const QPoint& point);
 
 	// QWidget interface
 protected:

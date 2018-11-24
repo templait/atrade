@@ -3,7 +3,7 @@
 #include <QSettings>
 #include <log.h>
 #include <tools.h>
-#include <ui_fileconfigurationeditor.h>
+#include <ui_filedatasourceconfigurationeditor.h>
 #include <configurationmodel.h>
 #include "filedatasourceconfnames.h"
 

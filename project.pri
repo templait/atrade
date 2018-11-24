@@ -1,4 +1,4 @@
-CONFIG+=debug_and_release
+CONFIG+=debug_and_release c++1z
 BUILDPATH = $$PWD/build
 CONFIG(debug, debug|release) {
 	DESTDIR=$$BUILDPATH/binDebug

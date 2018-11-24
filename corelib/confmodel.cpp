@@ -1,5 +1,7 @@
 #include "confmodel.h"
 
+#include <QtDebug>
+
 #define COL_COUNT 1
 
 ConfModel::ConfModel(BConf *conf, QObject *parent)
@@ -16,43 +18,38 @@ const BConf *ConfModel::conf(const QModelIndex &index) const
 
 BConf *ConfModel::conf(const QModelIndex &index)
 {
-	BConf* rv = mRoot;
+	BConf* rv = nullptr;
 	if(index.isValid())
 	{
 		void* ptr = index.internalPointer();
-		Q_CHECK_PTR(rv);
 		rv = static_cast<BConf*>(ptr);
+		Q_CHECK_PTR(rv);
 	}
+	return rv;
+}
+
+bool ConfModel::appendChild(const QModelIndex &parent, int childType)
+{
+	int row = rowCount(parent);
+	beginInsertRows(parent, row, row);
+	bool rv = conf(parent)->appendChild(childType);
+	endInsertRows();
 	return rv;
 }
 
 QModelIndex ConfModel::index(int row, int column, const QModelIndex &parent) const
 {
-	QModelIndex rv;
-	if(column < COL_COUNT)
-	{
-		if(parent.isValid())
-		{
-			const BConf* parentConf = conf(parent);
-			if(BConf* conf = const_cast<BConf*>(parentConf)->childAt(row))
-			{
-				QModelIndex idx = createIndex(row, column, conf);
-				if(column <= columnCount(idx))
-				{	rv = idx;	}
-			}
-		}
-		else
-		{	rv = createIndex(row, column, const_cast<ConfModel*>(this)->conf(parent));	}
-	}
-	return rv;
+	return createIndex(row, column, parent.isValid()
+	                   ? const_cast<BConf*>(conf(parent))->childAt(row)
+	                   : const_cast<BConf*>(mRoot) );
 }
 
 QModelIndex ConfModel::parent(const QModelIndex &child) const
 {
 	QModelIndex rv;
-	BConf* childConf = const_cast<BConf*>(conf(child));
-	if(childConf!=mRoot)
-	{	createIndex(0,0, childConf->parentConf());	}
+	BConf* parentConf = const_cast<BConf*>(conf(child))->parentConf();
+	if(parentConf)
+	{	rv = createIndex(0,0, parentConf);	}
 	return rv;
 }
 

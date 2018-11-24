@@ -32,7 +32,7 @@
      </widget>
      <widget class="QTreeView" name="tvConf">
       <property name="contextMenuPolicy">
-       <enum>Qt::ActionsContextMenu</enum>
+       <enum>Qt::CustomContextMenu</enum>
       </property>
       <property name="acceptDrops">
        <bool>true</bool>
@@ -83,22 +83,6 @@
     </widget>
    </item>
   </layout>
-  <action name="actionNew_chart">
-   <property name="text">
-    <string>New chart</string>
-   </property>
-  </action>
-  <action name="actionDelete">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Delete</string>
-   </property>
-   <property name="shortcut">
-    <string>Del</string>
-   </property>
-  </action>
  </widget>
  <tabstops>
   <tabstop>tvProductList</tabstop>

@@ -37,9 +37,13 @@ void BConf::setName(const QString &name)
 
 BConf *BConf::parentConf()
 {
-	BConf* parentCfg = qobject_cast<BConf*>(parent());
-	Q_CHECK_PTR(parentCfg);
-	return parentCfg;
+	BConf* rv = nullptr;
+	if(QObject * pObject = parent())
+	{
+		rv = qobject_cast<BConf*>(pObject);
+		Q_CHECK_PTR(rv);
+	}
+	return rv;
 }
 
 bool BConf::canAppendChild(const BConf *child) const
@@ -79,11 +83,12 @@ BConf *BConf::clone(BConf *parentConf) const
 bool BConf::insertChild(int index, BConf *conf)
 {
 	bool rv = canAppendChild(conf);
-	if(rv)
+	if(rv && conf->parent()!=this)
 	{
 		conf->setParent(this);
 		mChildren.insert(index, conf);
 	}
+
 	return rv;
 }
 
@@ -92,8 +97,7 @@ bool BConf::insertChild(int index, int typeIndex)
 	bool rv=false;
 	if(childTypesCount())
 	{
-		typeIndex = qBound(0, typeIndex, childTypesCount()-1);
-		rv = insertChild(index, mChildCtors[index](this));
+		rv = insertChild(index, mChildCtors[typeIndex](this));
 	}
 	return rv;
 }
@@ -144,12 +148,15 @@ void BConf::appendChildctor(BConf::Childctor childctor)
 
 bool BConf::event(QEvent *event)
 {
+	bool rv = QObject::event(event);
 	if(event->type() == QEvent::ChildAdded)
 	{
 		QChildEvent* chEvent = static_cast<QChildEvent*>(event);
-		BConf* child = qobject_cast<BConf*>(chEvent->child());
+		// static_cast используется потому, что вызв обработчика события производится из конструктора потомка.
+		// Похоже, в этот момент информация о типе недоступна.
+		BConf* child = static_cast<BConf*>(chEvent->child());
 		Q_CHECK_PTR(child);
-		Q_ASSERT(canAppendChild(child));
+		//Q_ASSERT(canAppendChild(child));
 		mChildren << child;
 	}
 	else if(event->type() == QEvent::ChildRemoved)
@@ -159,5 +166,5 @@ bool BConf::event(QEvent *event)
 		Q_CHECK_PTR(child);
 		mChildren.removeAll(child);
 	}
-	return QObject::event(event);
+	return rv;
 }

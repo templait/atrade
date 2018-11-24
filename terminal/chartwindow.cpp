@@ -45,7 +45,7 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 		setScrollValue(ui->scrollBar->sliderPosition());
 	});
 
-	connect(ui->cbTimeInterval, QOverload<int>::of(&QComboBox::activated), [this](int index){
+	connect(ui->cbTimeInterval, qOverload<int>(&QComboBox::activated), [this](int index){
 		setTimeInterval(static_cast<ETimeInterval>(ui->cbTimeInterval->itemData(index).toInt()));
 	});
 }
