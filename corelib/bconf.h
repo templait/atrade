@@ -9,21 +9,19 @@
 2. Каким образом определить может ли родитель содержать потомка данного типа или наоборот.
 */
 
+#define CONF_NAME(name) Q_CLASSINFO("name", name)
+
 class BConf : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged USER true)
-	Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged USER true)
 	typedef std::function<BConf* (BConf* parentConf)> Childctor;
 public:
-	BConf(BConf* parent = nullptr);
+	Q_INVOKABLE BConf(BConf* parent = nullptr);
 	virtual ~BConf() override;
 
 	const QString& title() const;
 	void setTitle(const QString& title);
-
-	const QString& name() const;
-	void setName(const QString& name);
 
 	BConf* parentConf();
 	bool canAppendChild(const BConf* child) const;
@@ -37,16 +35,16 @@ public:
 	QStringList childTypesNames() const;
 	BConf* childAt(int index);
 protected:
-	void appendChildctor(Childctor childctor);
+	template <class ChildT> void appendChildType() {appendMetaChild(&ChildT::staticMetaObject);}
 private:
+	void appendMetaChild(const QMetaObject* metaChild);
+
 	QString mTitle;
 	QString mName;
 	QList<BConf*> mChildren;
-	QList<Childctor> mChildCtors;
-	QList<BConf*> mChildTypes;
+	QList<const QMetaObject*> mMetaChildren;
 signals:
 	void titleChanged(const QString& title);
-	void nameChanged(const QString& name);
 
 	// QObject interface
 public:

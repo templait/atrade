@@ -8,7 +8,7 @@ class TimeIntervalConf : public BConf
 	Q_OBJECT
 	Q_PROPERTY(ETimeInterval timeInterval READ timeInterval WRITE setTimeInterval NOTIFY timeIntervalChanged)
 public:
-	TimeIntervalConf(BConf *parent);
+	Q_INVOKABLE TimeIntervalConf(BConf *parent);
 	virtual ~TimeIntervalConf() override {}
 
 	ETimeInterval timeInterval() const;

@@ -5,6 +5,7 @@
 class ChartConf : public BConf
 {
 	Q_OBJECT
+	CONF_NAME("Chart")
 public:
-	ChartConf(BConf* parent=nullptr);
+	Q_INVOKABLE ChartConf(BConf* parent=nullptr);
 };

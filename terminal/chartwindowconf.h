@@ -6,5 +6,5 @@ class ChartWindowConf final : public TimeIntervalConf
 {
 	Q_OBJECT
 public:
-	ChartWindowConf(BConf* parent=nullptr);
+	Q_INVOKABLE ChartWindowConf(BConf* parent=nullptr);
 };

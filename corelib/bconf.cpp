@@ -10,7 +10,6 @@ BConf::BConf(BConf *parent) : QObject(parent)
 
 BConf::~BConf()
 {
-	qDeleteAll(mChildTypes);
 }
 
 const QString &BConf::title() const
@@ -22,17 +21,6 @@ void BConf::setTitle(const QString &title)
 {
 	mTitle = title;
 	emit titleChanged(mTitle);
-}
-
-const QString &BConf::name() const
-{
-	return mName;
-}
-
-void BConf::setName(const QString &name)
-{
-	mName=name;
-	emit nameChanged(mName);
 }
 
 BConf *BConf::parentConf()
@@ -49,9 +37,9 @@ BConf *BConf::parentConf()
 bool BConf::canAppendChild(const BConf *child) const
 {
 	bool rv=false;
-	for(const BConf* childType : mChildTypes)
+	for(const QMetaObject* childMeta : mMetaChildren)
 	{
-		if(childType->metaObject()->className() == child->metaObject()->className())
+		if(childMeta->className() == child->metaObject()->className())
 		{
 			rv = true;
 			break;
@@ -97,7 +85,8 @@ bool BConf::insertChild(int index, int typeIndex)
 	bool rv=false;
 	if(childTypesCount())
 	{
-		rv = insertChild(index, mChildCtors[typeIndex](this));
+		QObject* obj = mMetaChildren[typeIndex]->newInstance(Q_ARG(BConf*, this));
+		rv = insertChild(index, static_cast<BConf*>(obj));
 	}
 	return rv;
 }
@@ -114,7 +103,7 @@ bool BConf::appendChild(int typeIndex)
 
 int BConf::childTypesCount() const
 {
-	return mChildTypes.count();
+	return mMetaChildren.count();
 }
 
 int BConf::childrenCount() const
@@ -125,9 +114,13 @@ int BConf::childrenCount() const
 QStringList BConf::childTypesNames() const
 {
 	QStringList rv;
-	for(const BConf* childType : mChildTypes)
+	for(const QMetaObject* metaChild : mMetaChildren)
 	{
-		rv << childType->name();
+		QString name = tr("No name");
+		int i = metaChild->indexOfClassInfo("name");
+		if(i>=0)
+		{	name = metaChild->classInfo(i).value();	}
+		rv << name;
 	}
 	return rv;
 }
@@ -140,10 +133,9 @@ BConf *BConf::childAt(int index)
 	return rv;
 }
 
-void BConf::appendChildctor(BConf::Childctor childctor)
+void BConf::appendMetaChild(const QMetaObject *metaChild)
 {
-	mChildTypes << childctor(nullptr);
-	mChildCtors << childctor;
+	mMetaChildren << metaChild;
 }
 
 bool BConf::event(QEvent *event)
