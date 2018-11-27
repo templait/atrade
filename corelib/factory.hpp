@@ -50,8 +50,6 @@ private:
 		bool remove(const ProductKey& key);
 		Product  operator [](const ProductKey& key) const;
 		Product& operator [](const ProductKey& key);
-
-
 	};
 public:
 	class Unit
@@ -72,7 +70,6 @@ public:
 		QString mProductName;
 		ProductID mProductID;
 	};
-
 
 	static Factory& instance();
 	Product product(const Configuration& settings = Configuration());

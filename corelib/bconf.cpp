@@ -3,6 +3,8 @@
 #include <QChildEvent>
 #include <QMetaProperty>
 
+QMap<QString, const QMetaObject*> BConf::mRegistreadConfs;
+
 BConf::BConf(BConf *parent) : QObject(parent)
 {
 

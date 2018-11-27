@@ -1,5 +1,7 @@
 #include "confmodel.h"
 
+#include <QDataStream>
+#include <QMimeData>
 #include <QtDebug>
 
 #define COL_COUNT 1
@@ -73,5 +75,46 @@ QVariant ConfModel::data(const QModelIndex &index, int role) const
 		rv = conf(index)->title();
 		break;
 	}
+	return rv;
+}
+
+Qt::ItemFlags ConfModel::flags(const QModelIndex &index) const
+{
+	Qt::ItemFlags rv = QAbstractItemModel::flags(index);
+
+	if(index.isValid())
+	{
+		rv |= Qt::ItemIsDragEnabled;
+	}
+	return rv;
+}
+
+bool ConfModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) const
+{
+	QByteArray encodedData = data->data("configuration/pointer");
+	QDataStream stream(&encodedData, QIODevice::ReadOnly);
+	while(!stream.atEnd())
+	{
+		BConf* cfg;
+		stream.readRawData(reinterpret_cast<char*>(&cfg), sizeof(cfg));
+		qDebug() << "drop: " << (ulong)cfg;//->metaObject()->className();
+	}
+	return false;
+}
+
+QMimeData *ConfModel::mimeData(const QModelIndexList &indexes) const
+{
+	QMimeData *rv = new QMimeData();
+	QByteArray encodedData;
+	QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+	for(int row=indexes.first().row(); row<=indexes.last().row(); row++)
+	{
+		const BConf* cfg = conf(indexes.first().sibling(row,0));
+		stream.writeBytes(reinterpret_cast<const char*>(&cfg), sizeof(cfg));
+		qDebug() << "drag: " << (ulong)cfg;//->metaObject()->className();
+	}
+
+	rv->setData("configuration/pointer", 	encodedData);
 	return rv;
 }
