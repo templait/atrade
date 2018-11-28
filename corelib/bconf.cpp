@@ -74,7 +74,7 @@ QString BConf::childName() const
 	return QString();
 }
 
-void BConf::setParent(const BConf *parent)
+void BConf::beParentForChild(BConf &child)
 {
-	mParent = parent;
+	child.mParent=this;
 }

@@ -30,8 +30,8 @@ public:
 	virtual const BConf* childAt(int index);
 	virtual bool removeChild(int index);
 	virtual QString childName() const;
-public:
-	void setParent(const BConf* parent);
+protected:
+	void beParentForChild(BConf &child);
 
 private:
 	const BConf* mParent;

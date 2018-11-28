@@ -39,8 +39,7 @@ bool ParentConf<ParentT, ChildT>::insertChild(const BConf &conf, int index)
 	{
 		index = qBound(0, index, mChildren.count());
 		mChildren.insert(index, static_cast<const ChildT&>(conf));
-		//mChildren[index].setParent(this);
-		reinterpret_cast<ParentConf<ParentT, ChildT>&>(mChildren[index]).mParent=this;
+		ParentT::beParentForChild(mChildren[index]);
 		rv = true;
 	}
 	return rv;
