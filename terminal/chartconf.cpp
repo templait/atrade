@@ -1,6 +1,6 @@
 #include "chartconf.h"
 
-ChartConf::ChartConf(BConf *parent) : BConf(parent)
+ChartConf::ChartConf()
 {
 	setTitle(tr("Chart"));
 }

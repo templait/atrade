@@ -1,11 +1,13 @@
 #include "bconf.h"
+#include <log.h>
+#include <tools.h>
 
 #include <QChildEvent>
 #include <QMetaProperty>
 
 QMap<QString, const QMetaObject*> BConf::mRegistreadConfs;
 
-BConf::BConf(BConf *parent) : QObject(parent)
+BConf::BConf() : QObject(nullptr)
 {
 
 }
@@ -23,6 +25,11 @@ void BConf::setTitle(const QString &title)
 {
 	mTitle = title;
 	emit titleChanged(mTitle);
+}
+
+bool BConf::isConfRegistred(const BConf *conf)
+{
+	return mRegistreadConfs.contains(conf->metaObject()->className());
 }
 
 BConf *BConf::parentConf()
@@ -72,14 +79,18 @@ BConf *BConf::clone(BConf *parentConf) const
 
 bool BConf::insertChild(int index, BConf *conf)
 {
+	Q_UNUSED(index)
+	Q_UNUSED(conf)
+	/*
 	bool rv = canAppendChild(conf);
 	if(rv && conf->parent()!=this)
 	{
 		conf->setParent(this);
 		mChildren.insert(index, conf);
-	}
-
-	return rv;
+	}*/
+	Q_ASSERT(false);
+	Log::error(QString("%1.Attempt create child fo BConf.").arg(__CLASS_NAME__));
+	return false;
 }
 
 bool BConf::insertChild(int index, int typeIndex)
@@ -87,7 +98,7 @@ bool BConf::insertChild(int index, int typeIndex)
 	bool rv=false;
 	if(childTypesCount())
 	{
-		QObject* obj = mMetaChildren[typeIndex]->newInstance(Q_ARG(BConf*, this));
+		QObject* obj = mMetaChildren[typeIndex]->newInstance();
 		rv = insertChild(index, static_cast<BConf*>(obj));
 	}
 	return rv;
@@ -135,6 +146,18 @@ BConf *BConf::childAt(int index)
 	return rv;
 }
 
+void BConf::serialize(QDataStream &out) const
+{
+	out << mTitle;
+}
+
+void BConf::deserialize(QDataStream &in)
+{
+	QString t;
+	in >> t;
+	setTitle(t);
+}
+
 void BConf::appendMetaChild(const QMetaObject *metaChild)
 {
 	mMetaChildren << metaChild;
@@ -146,11 +169,9 @@ bool BConf::event(QEvent *event)
 	if(event->type() == QEvent::ChildAdded)
 	{
 		QChildEvent* chEvent = static_cast<QChildEvent*>(event);
-		// static_cast используется потому, что вызв обработчика события производится из конструктора потомка.
-		// Похоже, в этот момент информация о типе недоступна.
-		BConf* child = static_cast<BConf*>(chEvent->child());
+		BConf* child = qobject_cast<BConf*>(chEvent->child());
 		Q_CHECK_PTR(child);
-		//Q_ASSERT(canAppendChild(child));
+		Q_ASSERT(canAppendChild(child));
 		mChildren << child;
 	}
 	else if(event->type() == QEvent::ChildRemoved)

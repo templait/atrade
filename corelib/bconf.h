@@ -17,7 +17,7 @@ class BConf : public QObject
 	Q_OBJECT
 	Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged USER true)
 public:
-	Q_INVOKABLE BConf(BConf* parent = nullptr);
+	Q_INVOKABLE BConf();
 	virtual ~BConf() override;
 
 	const QString& title() const;
@@ -25,6 +25,7 @@ public:
 
 	template<class ConfT> static bool registerConf();
 	template<class ConfT> static bool isConfRegistred();
+	static bool isConfRegistred(const BConf * conf);
 
 	BConf* parentConf();
 	bool canAppendChild(const BConf* child) const;
@@ -39,6 +40,8 @@ public:
 	BConf* childAt(int index);
 protected:
 	template <class ChildT> void appendChildType();
+	virtual void serialize(QDataStream& out) const;
+	virtual void deserialize(QDataStream& in);
 private:
 	void appendMetaChild(const QMetaObject* metaChild);
 
