@@ -112,14 +112,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::onNewChartWindow()
 {
-	ChartWindowConf* conf = new ChartWindowConf;
+	ChartWindowConf conf;
 	ConfigurationEditor editor(conf, this);
 	if(editor.exec())
 	{
 
 	}
-	else
-	{	delete conf;	}
 }
 
 void MainWindow::onChartWindowConfiguration()

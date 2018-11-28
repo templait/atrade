@@ -20,7 +20,6 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 
 	mCandleWidth = 6;
 	mConfiguration = defaultConfiguration();
-	mConf = new ChartWindowConf;
 
 	ui = new Ui::ChartWindow;
 	ui->setupUi(this);
@@ -59,7 +58,6 @@ ChartWindow::ChartWindow(const Configuration &configuration, QWidget *parent)
 ChartWindow::~ChartWindow()
 {
 	delete ui;
-	delete mConf;
 }
 
 qint64 ChartWindow::timeFrame() const
@@ -199,7 +197,7 @@ const Configuration &ChartWindow::configuration() const
 	return mConfiguration;
 }
 
-ChartWindowConf *ChartWindow::conf()
+ChartWindowConf& ChartWindow::conf()
 {
 	return mConf;
 }

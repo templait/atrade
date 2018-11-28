@@ -5,17 +5,11 @@
 #include <datasources/quikdatasource/quikdatasourcefactory.h>
 #include <indicators/lualineindicator/lualineindicatorfactory.h>
 
-#include "chartconf.h"
-#include "chartwindowconf.h"
-
 int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 	app.setOrganizationName("zoldnet");
 	app.setApplicationName("atrade.terminal");
-
-	BConf::registerConf<ChartWindowConf>();
-	BConf::registerConf<ChartConf>();
 
 	DataSourceFactory::instance().registerUnit(new FileDataSourceFactory());
 	DataSourceFactory::instance().registerUnit(new QuikDataSourceFactory());

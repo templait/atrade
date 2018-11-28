@@ -1,14 +1,8 @@
 #include "chartwindowconf.h"
 #include "chartconf.h"
 
-ChartWindowConf::ChartWindowConf() : TimeIntervalConf()
+ChartWindowConf::ChartWindowConf(const QString& name) : ParentConf<TimeIntervalConf, ChartConf>(name.isEmpty() ? "ChartWindow" : name)
 {
-	appendChildType<ChartConf>();
-	setTitle(tr("Chart window"));
+	setTitle("Chart window");
 	setTimeInterval(ETimeInterval::IntervalD1);
-}
-
-void ChartWindowConf::serialize(QDataStream &out) const
-{
-	TimeIntervalConf::serialize(out);
 }

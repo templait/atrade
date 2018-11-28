@@ -11,7 +11,7 @@ public:
 	ConfModel(BConf *conf, QObject* parent=nullptr);
 	const BConf *conf(const QModelIndex &index) const;
 	BConf *conf(const QModelIndex &index);
-	bool appendChild(const QModelIndex &parent, int childType);
+	bool appendChild(const QModelIndex &parent);
 private:
 	BConf* mRoot;
 

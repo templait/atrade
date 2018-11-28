@@ -4,9 +4,6 @@
 
 class ChartConf : public BConf
 {
-	Q_OBJECT
-	CONF_NAME("Chart")
 public:
-	Q_INVOKABLE ChartConf();
-
+	ChartConf(const QString& name=QString());
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "chartwindowconf.h"
+
 #include <QDialog>
 #include <configuration.h>
 
@@ -16,14 +18,14 @@ class ConfigurationEditor : public QDialog
 {
 	Q_OBJECT
 public:
-	ConfigurationEditor(BConf* conf, QWidget* parent=nullptr);
+	ConfigurationEditor(const ChartWindowConf& conf, QWidget* parent=nullptr);
 	~ConfigurationEditor() override;
 	const Configuration& configuration() const;
 private:
 	Ui::ConfigurationEditor *ui;
 	ProductListModel* mProductListModel;
 	ConfModel *mConfModel;
-	BConf* mConf;
+	ChartWindowConf mConf;
 
 	void execContextMenu(const QPoint& point);
 

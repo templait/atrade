@@ -30,11 +30,11 @@ BConf *ConfModel::conf(const QModelIndex &index)
 	return rv;
 }
 
-bool ConfModel::appendChild(const QModelIndex &parent, int childType)
+bool ConfModel::appendChild(const QModelIndex &parent)
 {
 	int row = rowCount(parent);
 	beginInsertRows(parent, row, row);
-	bool rv = conf(parent)->appendChild(childType);
+	bool rv = conf(parent)->appendNewChild();
 	endInsertRows();
 	return rv;
 }
@@ -42,14 +42,14 @@ bool ConfModel::appendChild(const QModelIndex &parent, int childType)
 QModelIndex ConfModel::index(int row, int column, const QModelIndex &parent) const
 {
 	return createIndex(row, column, parent.isValid()
-	                   ? const_cast<BConf*>(conf(parent))->childAt(row)
+					   ? const_cast<BConf*>(const_cast<BConf*>(conf(parent))->childAt(row))
 	                   : const_cast<BConf*>(mRoot) );
 }
 
 QModelIndex ConfModel::parent(const QModelIndex &child) const
 {
 	QModelIndex rv;
-	BConf* parentConf = const_cast<BConf*>(conf(child))->parentConf();
+	BConf* parentConf = const_cast<BConf*>(const_cast<ConfModel*>(this)->conf(child)->parentConf());
 	if(parentConf)
 	{	rv = createIndex(0,0, parentConf);	}
 	return rv;

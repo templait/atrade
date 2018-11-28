@@ -8,7 +8,7 @@
 
 #include "confmodel.h"
 
-ConfigurationEditor::ConfigurationEditor(BConf *conf, QWidget *parent)
+ConfigurationEditor::ConfigurationEditor(const ChartWindowConf &conf, QWidget *parent)
 	: QDialog(parent)
 	, mConf(conf)
 {
@@ -25,7 +25,7 @@ ConfigurationEditor::ConfigurationEditor(BConf *conf, QWidget *parent)
 	ui->tvProductList->setModel(mProductListModel);
 	ui->tvProductList->expandAll();
 
-	mConfModel = new ConfModel(conf, this);
+	mConfModel = new ConfModel(&mConf, this);
 	ui->tvConf->setModel(mConfModel);
 	ui->tvConf->expandAll();
 	connect(ui->tvConf, &QWidget::customContextMenuRequested, [this](const QPoint& point){execContextMenu(ui->tvConf->viewport()->mapToGlobal(point));});
@@ -43,14 +43,12 @@ void ConfigurationEditor::execContextMenu(const QPoint &point)
 	{
 		QMenu menu;
 		BConf* conf = mConfModel->conf(index);
-		QStringList childNames = conf->childTypesNames();
-		for(int i=0; i<childNames.count(); i++)
-		{
-			QAction* act = menu.addAction(childNames[i]);
-			act->setData(i);
-		}
-		if(QAction* act = menu.exec(point))
-		{	mConfModel->appendChild(index, act->data().toInt());	}
+		QAction* act = nullptr;
+		QString childName = conf->childName();
+		if(! childName.isEmpty())
+		{	act = menu.addAction(childName);	}
+		if(menu.exec(point) == act)
+		{	mConfModel->appendChild(index);	}
 	}
 }
 

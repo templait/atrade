@@ -1,6 +1,6 @@
 #include "chartconf.h"
 
-ChartConf::ChartConf()
+ChartConf::ChartConf(const QString &name) : BConf(name.isEmpty() ? "Chart" : name)
 {
-	setTitle(tr("Chart"));
+	setTitle("Chart");
 }

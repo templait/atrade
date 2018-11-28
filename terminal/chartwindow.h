@@ -1,5 +1,7 @@
 #pragma once
 
+#include "chartwindowconf.h"
+
 #include <QWidget>
 #include <configuration.h>
 #include <types.h>
@@ -9,7 +11,6 @@ class ChartWidget;
 class QGraphicsWidget;
 class QGraphicsGridLayout;
 class QSettings;
-class ChartWindowConf;
 
 namespace QtCharts
 {
@@ -31,7 +32,7 @@ public:
 
 	void loadConfiguration(const Configuration &configuration);
 	const Configuration& configuration() const;
-	ChartWindowConf* conf();
+	ChartWindowConf &conf();
 	static Configuration defaultConfiguration();
 
 	void saveConfiguration(QSettings& settings) const;
@@ -44,7 +45,7 @@ private:
 	qreal mCandleWidth;
 	QList<ChartWidget*> mChartWidgets;
 	Configuration mConfiguration;
-	ChartWindowConf* mConf;
+	ChartWindowConf mConf;
 
 	void adjustScroll();
 	void setScrollValue(int value);

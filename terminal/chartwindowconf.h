@@ -1,15 +1,12 @@
 #pragma once
 
+#include "chartconf.h"
+
 #include <timeintervalconf.h>
+#include <parentconf.hpp>
 
-class ChartWindowConf final : public TimeIntervalConf
+class ChartWindowConf final : public ParentConf<TimeIntervalConf, ChartConf>
 {
-	Q_OBJECT
 public:
-	Q_INVOKABLE ChartWindowConf();
-
-	// BConf interface
-protected:
-	virtual void serialize(QDataStream &out) const override;
-	//virtual void deserialize(QDataStream &in) override;
+	Q_INVOKABLE ChartWindowConf(const QString& name=QString());
 };
