@@ -14,4 +14,8 @@ public:
 private:
 	ETimeInterval mTimeInterval;
 
+	// BConf interface
+public:
+	virtual void serialize(QDataStream &out) const override;
+	virtual void deserialize(QDataStream &in) override;
 };

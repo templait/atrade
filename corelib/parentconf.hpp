@@ -13,6 +13,8 @@ public:
 	virtual ~ParentConf() override{}
 private:
 	QList<ChildT> mChildren;
+protected:
+	const QList<ChildT>& children() const;
 	// BConf interface
 public:
 	virtual bool canAppendChild(const BConf &child) const override;
@@ -24,6 +26,12 @@ public:
 	virtual QString childName() const override;
 };
 
+
+template<class ParentT, class ChildT>
+const QList<ChildT> &ParentConf<ParentT, ChildT>::children() const
+{
+	return mChildren;
+}
 
 template<class ParentT, class ChildT>
 bool ParentConf<ParentT, ChildT>::canAppendChild(const BConf &child) const

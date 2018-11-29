@@ -14,6 +14,8 @@ public:
 	bool appendChild(const QModelIndex &parent);
 private:
 	BConf* mRoot;
+	void saveIndexes(QDataStream &out, const QModelIndexList &indexes) const;
+	QModelIndexList loadIndexes(QDataStream &in) const;
 
 	// QAbstractItemModel interface
 public:
@@ -26,9 +28,9 @@ public:
 //	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
 	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) const override;
-//	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int, const QModelIndex &parent) override;
+	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int, const QModelIndex &parent) override;
 	virtual QMimeData *mimeData(const QModelIndexList &indexes) const override;
-//	virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
-//	virtual Qt::DropActions supportedDropActions() const override;
-
+	virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
+	virtual Qt::DropActions supportedDropActions() const override;
+	virtual QStringList mimeTypes() const override;
 };

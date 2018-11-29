@@ -17,3 +17,15 @@ void TimeIntervalConf::setTimeInterval(ETimeInterval interval)
 	mTimeInterval = interval;
 }
 
+void TimeIntervalConf::serialize(QDataStream &out) const
+{
+	BConf::serialize(out);
+	out << mTimeInterval;
+}
+
+void TimeIntervalConf::deserialize(QDataStream &in)
+{
+	BConf::deserialize(in);
+	in >> (int&)mTimeInterval;
+}
+

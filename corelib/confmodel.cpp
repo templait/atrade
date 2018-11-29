@@ -2,7 +2,7 @@
 
 #include <QDataStream>
 #include <QMimeData>
-#include <QtDebug>
+#include <QStack>
 
 #define COL_COUNT 1
 
@@ -39,11 +39,65 @@ bool ConfModel::appendChild(const QModelIndex &parent)
 	return rv;
 }
 
+void ConfModel::saveIndexes(QDataStream &out, const QModelIndexList &indexes) const
+{
+	out << indexes.count();
+	for (const QModelIndex &index: indexes){
+		QModelIndex localIndex = index;
+		QStack<int> indexParentStack;
+		while (localIndex.isValid())
+		{
+			indexParentStack << localIndex.row();
+			localIndex = localIndex.parent();
+		}
+
+		out << indexParentStack.size();
+		while (!indexParentStack.isEmpty())
+		{
+			out << indexParentStack.pop();
+		}
+	}
+}
+
+QModelIndexList ConfModel::loadIndexes(QDataStream &in) const
+{
+	QModelIndexList result;
+	int count;
+	in >> count;
+	for(int i=0; i<count; i++)
+	{
+		int childDepth = 0;
+		in >> childDepth;
+
+		QModelIndex currentIndex = {};
+		for (int i = 0; i < childDepth; ++i)
+		{
+			int row = 0;
+			in >> row;
+			currentIndex = index(row, 0, currentIndex);
+		}
+		result << currentIndex;
+	}
+	return result;
+}
+
 QModelIndex ConfModel::index(int row, int column, const QModelIndex &parent) const
 {
+	QModelIndex rv;
+	if(parent.isValid())
+	{
+		BConf* parentConf = const_cast<BConf*>(conf(parent));
+		if(row < parentConf->childrenCount())
+		{	rv = createIndex(row, column, const_cast<BConf*>(parentConf->childAt(row)));	}
+	}
+	else
+	{	rv = createIndex(row, column, const_cast<BConf*>(mRoot));	}
+	return rv;
+/*
 	return createIndex(row, column, parent.isValid()
 					   ? const_cast<BConf*>(const_cast<BConf*>(conf(parent))->childAt(row))
 	                   : const_cast<BConf*>(mRoot) );
+*/
 }
 
 QModelIndex ConfModel::parent(const QModelIndex &child) const
@@ -84,22 +138,59 @@ Qt::ItemFlags ConfModel::flags(const QModelIndex &index) const
 
 	if(index.isValid())
 	{
-		rv |= Qt::ItemIsDragEnabled;
+		rv |= (Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
 	}
 	return rv;
 }
 
+// workaround. Сие необходимо для обхода глюка КуТе. При обработке события DragStrart необходимо вернуть true.
+// Иначе не будут поступать события DrugMove. Поэтому при первом заходе с новыми данными, всегда возвращаем true.
+static const QMimeData *__data = nullptr;
+
 bool ConfModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) const
 {
-	QByteArray encodedData = data->data("configuration/pointer");
-	QDataStream stream(&encodedData, QIODevice::ReadOnly);
-	while(!stream.atEnd())
+	if(data != __data)
 	{
-		BConf* cfg;
-		stream.readRawData(reinterpret_cast<char*>(&cfg), sizeof(cfg));
-		qDebug() << "drop: " << (ulong)cfg;//->metaObject()->className();
+		__data = data;
+		return true;
 	}
-	return false;
+
+	bool rv = false;
+	if(parent.isValid())
+	{
+		if(action==Qt::MoveAction && data->hasFormat("configuration/model-index"))
+		{
+			QByteArray encodedData = data->data("configuration/model-index");
+			QDataStream stream(&encodedData, QIODevice::ReadOnly);
+			for(const QModelIndex& index : loadIndexes(stream))
+			{
+				rv = conf(parent)->canAppendChild(*conf(index));
+				if(rv) break;
+			}
+		}
+	}
+	return rv;
+}
+
+bool ConfModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int, const QModelIndex &parent)
+{
+	__data = nullptr;
+	bool rv=false;
+	if(action==Qt::MoveAction && data->hasFormat("configuration/model-index"))
+	{
+		QByteArray encodedData = data->data("configuration/model-index");
+		QDataStream stream(&encodedData, QIODevice::ReadOnly);
+		const QModelIndexList& indexes = loadIndexes(stream);
+		beginInsertRows(parent, row, row+indexes.count()-1);
+		for(const QModelIndex& index : indexes)
+		{
+			conf(index)->setTitle(conf(index)->title()+"1");
+			conf(parent)->insertChild(*conf(index), row++);
+		}
+		endInsertRows();
+		rv = true;
+	}
+	return rv;
 }
 
 QMimeData *ConfModel::mimeData(const QModelIndexList &indexes) const
@@ -108,13 +199,38 @@ QMimeData *ConfModel::mimeData(const QModelIndexList &indexes) const
 	QByteArray encodedData;
 	QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
+	QModelIndexList idxs;
 	for(int row=indexes.first().row(); row<=indexes.last().row(); row++)
 	{
-		const BConf* cfg = conf(indexes.first().sibling(row,0));
-		stream.writeBytes(reinterpret_cast<const char*>(&cfg), sizeof(cfg));
-		qDebug() << "drag: " << (ulong)cfg;//->metaObject()->className();
+		idxs << indexes.first().sibling(row,0);
 	}
+	saveIndexes(stream, idxs);
 
-	rv->setData("configuration/pointer", 	encodedData);
+	rv->setData("configuration/model-index", 	encodedData);
 	return rv;
+}
+
+bool ConfModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+	BConf* parentConf = conf(parent);
+	row = qBound(0, row, parentConf->childrenCount()-1);
+	count = qBound(0, count, parentConf->childrenCount()-row);
+
+	beginRemoveRows(parent, row, row+count-1);
+	for(int i=row; i<row+count; i++)
+	{	parentConf->removeChild(i);	}
+	endRemoveRows();
+
+	return count>0;
+}
+
+Qt::DropActions ConfModel::supportedDropActions() const
+{
+	return Qt::MoveAction | Qt::CopyAction;
+}
+
+QStringList ConfModel::mimeTypes() const
+{
+	// эта функция необходима т.к. КуТе проверяет не только canDropMimeData() перед тем как разрешить перемещение элемента
+	return {"configuration/model-index"};
 }

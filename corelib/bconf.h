@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QMap>
-#include <QMetaType>
+#include <QString>
+
+class QDataStream;
 
 /*
 проблемы конфигурации:
@@ -30,6 +31,8 @@ public:
 	virtual const BConf* childAt(int index);
 	virtual bool removeChild(int index);
 	virtual QString childName() const;
+	virtual void serialize(QDataStream& out) const;
+	virtual void deserialize(QDataStream& in);
 protected:
 	void beParentForChild(BConf &child);
 
@@ -38,3 +41,6 @@ private:
 	QString mTitle;
 	QString mName;
 };
+
+QDataStream& operator<<(QDataStream& out, const BConf& conf);
+QDataStream& operator>>(QDataStream &in, BConf &conf);
