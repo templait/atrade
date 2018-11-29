@@ -17,15 +17,12 @@ void TimeIntervalConf::setTimeInterval(ETimeInterval interval)
 	mTimeInterval = interval;
 }
 
-void TimeIntervalConf::serialize(QDataStream &out) const
+bool TimeIntervalConf::isSame(const BConf &other) const
 {
-	BConf::serialize(out);
-	out << mTimeInterval;
+	bool rv = false;
+	if(const TimeIntervalConf* timeInterval = dynamic_cast<const TimeIntervalConf*>(&other))
+	{
+		rv = BConf::isSame(other) && mTimeInterval==timeInterval->mTimeInterval;
+	}
+	return rv;
 }
-
-void TimeIntervalConf::deserialize(QDataStream &in)
-{
-	BConf::deserialize(in);
-	in >> (int&)mTimeInterval;
-}
-

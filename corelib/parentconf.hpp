@@ -24,6 +24,7 @@ public:
 	virtual bool removeChild(int index) override;
 	virtual bool appendNewChild() override;
 	virtual QString childName() const override;
+	virtual bool isSame(const BConf& other) const override;
 };
 
 
@@ -89,4 +90,23 @@ template<class ParentT, class ChildT>
 QString ParentConf<ParentT, ChildT>::childName() const
 {
 	return ChildT().name();
+}
+
+template<class ParentT, class ChildT>
+bool ParentConf<ParentT, ChildT>::isSame(const BConf &other) const
+{
+	bool rv = false;
+	if(const ParentConf<ParentT, ChildT>* ptrOther = dynamic_cast<const ParentConf<ParentT, ChildT>*>(&other))
+	{
+		rv = ptrOther->isSame(other);
+		if(rv)
+		{
+			for(const ChildT& child : mChildren)
+			{
+				rv = child.isSame(*ptrOther);
+				if(!rv) break;
+			}
+		}
+	}
+	return rv;
 }

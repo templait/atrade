@@ -124,14 +124,10 @@ QMimeData *ProductListModel::mimeData(const QModelIndexList &indexes) const
 	for(const QModelIndex& index : indexes)
 	{
 		ProductID id = index.sibling(index.row(), 1).data().toUuid();
-		if(DataSourceFactory::instance().hasProduct(id))
-		{	stream << DataSourceFactory::instance().defaultConfiguration(id);	}
-		else if(IndicatorFactory::instance().hasProduct(id))
-		{	stream << IndicatorFactory::instance().defaultConfiguration(id);	}
-
+		stream << id;
 	}
 	QMimeData *rv = new QMimeData();
-	rv->setData("configuration/product", 	encodedData);
+	rv->setData("conf/product-id", 	encodedData);
 	return rv;
 }
 

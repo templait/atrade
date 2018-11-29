@@ -158,15 +158,19 @@ bool ConfModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, in
 	bool rv = false;
 	if(parent.isValid())
 	{
-		if(action==Qt::MoveAction && data->hasFormat("configuration/model-index"))
+		if(action==Qt::MoveAction && data->hasFormat("conf/model-index"))
 		{
-			QByteArray encodedData = data->data("configuration/model-index");
+			QByteArray encodedData = data->data("conf/model-index");
 			QDataStream stream(&encodedData, QIODevice::ReadOnly);
 			for(const QModelIndex& index : loadIndexes(stream))
 			{
 				rv = conf(parent)->canAppendChild(*conf(index));
 				if(rv) break;
 			}
+		}
+		else if(action==Qt::CopyAction && data->hasFormat("conf/product-id"))
+		{
+			rv = true;
 		}
 	}
 	return rv;
@@ -176,9 +180,9 @@ bool ConfModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
 {
 	__data = nullptr;
 	bool rv=false;
-	if(action==Qt::MoveAction && data->hasFormat("configuration/model-index"))
+	if(action==Qt::MoveAction && data->hasFormat("conf/model-index"))
 	{
-		QByteArray encodedData = data->data("configuration/model-index");
+		QByteArray encodedData = data->data("conf/model-index");
 		QDataStream stream(&encodedData, QIODevice::ReadOnly);
 		const QModelIndexList& indexes = loadIndexes(stream);
 		beginInsertRows(parent, row, row+indexes.count()-1);
@@ -206,7 +210,7 @@ QMimeData *ConfModel::mimeData(const QModelIndexList &indexes) const
 	}
 	saveIndexes(stream, idxs);
 
-	rv->setData("configuration/model-index", 	encodedData);
+	rv->setData("conf/model-index", 	encodedData);
 	return rv;
 }
 
@@ -232,5 +236,5 @@ Qt::DropActions ConfModel::supportedDropActions() const
 QStringList ConfModel::mimeTypes() const
 {
 	// эта функция необходима т.к. КуТе проверяет не только canDropMimeData() перед тем как разрешить перемещение элемента
-	return {"configuration/model-index"};
+	return {"conf/model-index", "conf/product-id"};
 }

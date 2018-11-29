@@ -74,29 +74,12 @@ QString BConf::childName() const
 	return QString();
 }
 
-void BConf::serialize(QDataStream &out) const
-{
-	out << mName << mTitle;
-}
-
-void BConf::deserialize(QDataStream &in)
-{
-	in >> mName >> mTitle;
-}
-
 void BConf::beParentForChild(BConf &child)
 {
 	child.mParent=this;
 }
 
-QDataStream &operator<<(QDataStream &out, const BConf &conf)
+bool BConf::isSame(const BConf &other) const
 {
-	conf.serialize(out);
-	return out;
-}
-
-QDataStream &operator>>(QDataStream &in, BConf &conf)
-{
-	conf.deserialize(in);
-	return in;
+	return mName==other.mName;
 }
