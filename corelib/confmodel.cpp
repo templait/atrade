@@ -4,6 +4,11 @@
 #include <QMimeData>
 #include <QStack>
 
+#include <datasources/datasourcefactory.h>
+#include <indicators/indicatorfactory.h>
+
+#include <QtDebug>
+
 #define COL_COUNT 1
 
 ConfModel::ConfModel(BConf *conf, QObject *parent)
@@ -170,7 +175,16 @@ bool ConfModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, in
 		}
 		else if(action==Qt::CopyAction && data->hasFormat("conf/product-id"))
 		{
-			rv = true;
+			QByteArray encodedData = data->data("conf/product-id");
+			QDataStream stream(&encodedData, QIODevice::ReadOnly);
+			ProductID id;
+			stream >> id;
+			if(DataSourceFactory::instance().hasProduct(id))
+			{
+				BConf* cfg = DataSourceFactory::instance().createDefaultConf(id);
+				rv = conf(parent)->canAppendChild(*cfg);
+				delete cfg;
+			}
 		}
 	}
 	return rv;
@@ -193,6 +207,19 @@ bool ConfModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
 		}
 		endInsertRows();
 		rv = true;
+	}
+	else if(action==Qt::CopyAction && data->hasFormat("conf/product-id"))
+	{
+		QByteArray encodedData = data->data("conf/product-id");
+		QDataStream stream(&encodedData, QIODevice::ReadOnly);
+		ProductID id;
+		stream >> id;
+		if(DataSourceFactory::instance().hasProduct(id))
+		{
+			BConf* cfg = DataSourceFactory::instance().createDefaultConf(id);
+			rv = conf(parent)->insertChild(*cfg, row);
+			delete cfg;
+		}
 	}
 	return rv;
 }

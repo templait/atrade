@@ -5,8 +5,10 @@
 
 class TimeIntervalConf : public BConf
 {
+protected:
+	TimeIntervalConf(const QString& name);
 public:
-	TimeIntervalConf(const QString& name=QString());
+	TimeIntervalConf();
 	virtual ~TimeIntervalConf() override {}
 
 	ETimeInterval timeInterval() const;

@@ -57,26 +57,20 @@ int BConf::childrenCount() const
 	return 0;
 }
 
-const BConf *BConf::childAt(int index)
+const BConf *BConf::childAt(int index) const
 {
 	Q_UNUSED(index)
 	return nullptr;
 }
 
-bool BConf::removeChild(int index)
-{
-	Q_UNUSED(index)
-	return false;
-}
-
-QString BConf::childName() const
+QString BConf::creatableChildName() const
 {
 	return QString();
 }
 
-void BConf::beParentForChild(BConf &child)
+void BConf::beParentForChild(BConf *child)
 {
-	child.mParent=this;
+	child->mParent=this;
 }
 
 bool BConf::isSame(const BConf &other) const

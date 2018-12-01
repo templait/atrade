@@ -3,10 +3,13 @@
 #include "chartconf.h"
 
 #include <timeintervalconf.h>
-#include <parentconf.hpp>
+#include <addchildparentconf.hpp>
 
-class ChartWindowConf final : public ParentConf<TimeIntervalConf, ChartConf>
+class ChartWindowConf final : public AddChildParentConf<TimeIntervalConf, ChartConf>
 {
 public:
-	Q_INVOKABLE ChartWindowConf(const QString& name=QString());
+	ChartWindowConf();
+	// BConf interface
+public:
+	virtual BConf *clone() const override;
 };

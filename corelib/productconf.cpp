@@ -1,6 +1,6 @@
 #include "productconf.h"
 
-ProductConf::ProductConf(const QString &name) : BConf(name.isEmpty() ? "Product" : name)
+ProductConf::ProductConf(const QString &name) : BConf(name)
 {
 
 }

@@ -1,6 +1,11 @@
 #include "chartconf.h"
 
-ChartConf::ChartConf(const QString &name) : BConf(name.isEmpty() ? "Chart" : name)
+ChartConf::ChartConf() : ParentConf<BConf, DataSourceConf>("Chart")
 {
 	setTitle("Chart");
+}
+
+BConf *ChartConf::clone() const
+{
+	return new ChartConf(*this);
 }

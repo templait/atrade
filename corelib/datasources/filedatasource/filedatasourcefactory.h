@@ -10,7 +10,6 @@ public:
 
 	// Unit interface
 public:
-	virtual BDataSource *create(const Configuration &configuration) const override;
-	virtual Configuration defaultConfiguration() const override;
-	virtual ConfigurationEditorModule *createConfigurationEditor(const QModelIndex &configuration, QWidget *parent) const override;
+	virtual BDataSource *create(const ProductConf &conf) const override;
+	virtual ProductConf *createDefaultConf() const override;
 };

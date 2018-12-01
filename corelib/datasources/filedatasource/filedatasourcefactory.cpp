@@ -1,8 +1,8 @@
 #include "filedatasourcefactory.h"
 #include "filedatasource.h"
-#include "filedatasourceconfigurationeditor.h"
-#include "filedatasourceconfnames.h"
+#include "filedatasourceconf.h"
 
+#include <timeintervalconf.h>
 #include <log.h>
 #include <tools.h>
 
@@ -16,46 +16,39 @@ FileDataSourceFactory::FileDataSourceFactory()
 
 }
 
-BDataSource *FileDataSourceFactory::create(const Configuration &configuration) const
+BDataSource *FileDataSourceFactory::create(const ProductConf &conf) const
 {
 	BDataSource* rv=nullptr;
 
-	if(configuration.value().toUuid() == QUuid(PRODUCT_ID))
+	if(const FileDataSourceConf* dsConf = dynamic_cast<const FileDataSourceConf*>(&conf))
 	{
-		QSettings appSettings;
-		QString path = QString("%1/%2/%3/%4.txt")
-		        .arg(appSettings.value("DataSourceFileDir", "../DataSourceFile").toString())
-				.arg(configuration[CN_CLASS].value().toString())
-				.arg(configuration[CN_CODE].value().toString())
-				.arg(intervalToString(static_cast<ETimeInterval>(configuration[CN_TIME_INTERVAL].value().toInt())));
-		rv = new FileDataSource(path);
+		if(const TimeIntervalConf* intervalConf = conf.findParent<TimeIntervalConf>())
+		{
+			if(dsConf->productID() == QUuid(PRODUCT_ID))
+			{
+				QSettings appSettings;
+				QString path = QString("%1/%2/%3/%4.txt")
+				        .arg(appSettings.value("DataSourceFileDir", "../DataSourceFile").toString())
+				        .arg(dsConf->className())
+				        .arg(dsConf->code())
+				        .arg(intervalToString(intervalConf->timeInterval()));
+				rv = new FileDataSource(path);
+			}
+			else
+			{	Log::error(QString("%1.invalid ProductID: \"%2\"").arg(__CLASS_NAME__).arg(conf.productID().toString()));	}
+		}
+		else
+		{	Log::error(QString("%1.Configuration haven't TimeIntervalConf parents"));	}
 	}
 	else
-	{
-		Log::error(QString("%1.invalid ProductID: \"%2\"").arg(__CLASS_NAME__).arg(configuration.value().toUuid().toString()));
-	}
+	{	Log::error(QString("%1.Configuration isn't FileDataSourceConf"));	}
 
 	return rv;
 }
 
-Configuration FileDataSourceFactory::defaultConfiguration() const
+ProductConf* FileDataSourceFactory::createDefaultConf() const
 {
-	QString name = productName();
-	Configuration rv
-	{
-		{Configuration::Value, CN_CLASS,	"TQBR",			QObject::tr("Класс",	name.toLocal8Bit())},
-		{Configuration::Value, CN_CODE,		"SBER",			QObject::tr("Символ",	name.toLocal8Bit())},
-		//{Configuration::Value, CN_TIME_INTERVAL",	IntervalD1,		QObject::tr("Интервал",		name.toLocal8Bit())}
-	};
-	rv.setName(name);
-	rv.setValue(ProductID(PRODUCT_ID));
-	rv.setTitle(QObject::tr("Файловый источник данных", name.toLocal8Bit()));
-	rv.setUserEditableMap(Configuration::Title);
-
+	FileDataSourceConf* rv = new FileDataSourceConf(ProductID(PRODUCT_ID), "TQBR", "SBER");
+	rv->setTitle(QObject::tr("Файловый источник данных", __CLASS_NAME__.toLocal8Bit()));
 	return rv;
-}
-
-ConfigurationEditorModule *FileDataSourceFactory::createConfigurationEditor(const QModelIndex& configuration, QWidget *parent) const
-{
-	return new FileDataSourceConfigurationEditor(configuration, parent);
 }

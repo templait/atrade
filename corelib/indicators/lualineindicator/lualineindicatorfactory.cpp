@@ -1,4 +1,5 @@
 #include "lualineindicatorfactory.h"
+/*
 #include "lualineindicator.h"
 #include "lualineindicatorconfigurationeditor.h"
 #include "lualineindicatorconfnames.h"
@@ -59,3 +60,4 @@ ConfigurationEditorModule *LuaLineIndicatorFactory::createConfigurationEditor(co
 {
 	return new LuaLineIndicatorConfigurationEditor(configuration, parent);
 }
+*/

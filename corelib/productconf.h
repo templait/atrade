@@ -1,12 +1,14 @@
 #pragma once
 
 #include <bconf.h>
-#include <factory.hpp>
+#include <types.h>
 
 class ProductConf : public BConf
 {
+protected:
+	ProductConf(const QString& name);
+	ProductConf() = delete;
 public:
-	ProductConf(const QString& name=QString());
 	virtual ~ProductConf() override {}
 
 	ProductID productID() const;

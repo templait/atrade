@@ -2,7 +2,12 @@
 
 #include <QDataStream>
 
-TimeIntervalConf::TimeIntervalConf(const QString &name) : BConf(name.isEmpty() ? "TimeInterval" : name)
+TimeIntervalConf::TimeIntervalConf(const QString &name) : BConf(name)
+{
+
+}
+
+TimeIntervalConf::TimeIntervalConf() : BConf("TimeInterval")
 {
 
 }

@@ -1,9 +1,14 @@
 #pragma once
 
-#include <bconf.h>
+#include <datasourceconf.h>
+#include <parentconf.hpp>
 
-class ChartConf : public BConf
+class ChartConf final : public ParentConf<BConf, DataSourceConf>
 {
 public:
-	ChartConf(const QString& name=QString());
+	ChartConf();
+
+	// BConf interface
+public:
+	virtual BConf *clone() const override;
 };

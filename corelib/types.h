@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDateTime>
+#include <QUuid>
 #include <sharedpointer.hpp>
 #include <QtCore/QMetaType>
 
@@ -34,5 +35,8 @@ struct ValueRange : public Range<qreal>
 {
 	using Range<qreal>::Range;
 };
+
+typedef QUuid ProductID;
+typedef QList<QPair<QString, ProductID> > ProductList;
 
 #define DAYS_IN_YEAR 365.259641

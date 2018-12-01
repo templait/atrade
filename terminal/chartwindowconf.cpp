@@ -1,8 +1,13 @@
 #include "chartwindowconf.h"
 #include "chartconf.h"
 
-ChartWindowConf::ChartWindowConf(const QString& name) : ParentConf<TimeIntervalConf, ChartConf>(name.isEmpty() ? "ChartWindow" : name)
+ChartWindowConf::ChartWindowConf() : AddChildParentConf<TimeIntervalConf, ChartConf>("ChartWindow")
 {
 	setTitle("Chart window");
 	setTimeInterval(ETimeInterval::IntervalD1);
+}
+
+BConf *ChartWindowConf::clone() const
+{
+	return new ChartWindowConf(*this);
 }

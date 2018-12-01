@@ -13,11 +13,11 @@ QuikDataSourceFactory::QuikDataSourceFactory()
 
 }
 
-BDataSource *QuikDataSourceFactory::create(const Configuration &configuration) const
+BDataSource *QuikDataSourceFactory::create(const ProductConf &conf) const
 {
 	BDataSource* rv=nullptr;
-
-	if(configuration.value().toUuid() == QUuid(PRODUCT_ID))
+/*
+	if(conf.value().toUuid() == QUuid(PRODUCT_ID))
 	{		
 		QSettings appSettings;
 		QString quikURL = appSettings.value("DataSourceQUIK").toString();
@@ -26,9 +26,9 @@ BDataSource *QuikDataSourceFactory::create(const Configuration &configuration) c
 		{
 			QString hostName = lst[0].trimmed();
 			quint16 port = static_cast<quint16>(lst[1].trimmed().toUInt());
-			ETimeInterval interval = static_cast<ETimeInterval>(configuration["interval"].value().toInt());
-			QString className = configuration["class"].value().toString();
-			QString code = configuration["code"].value().toString();
+			ETimeInterval interval = static_cast<ETimeInterval>(conf["interval"].value().toInt());
+			QString className = conf["class"].value().toString();
+			QString code = conf["code"].value().toString();
 
 			rv = new QuikDataSource(interval, className, code, hostName, port);
 		}
@@ -39,14 +39,15 @@ BDataSource *QuikDataSourceFactory::create(const Configuration &configuration) c
 	}
 	else
 	{
-		Log::error(QString("%1.invalid ProductID: \"%2\"").arg(__CLASS_NAME__).arg(configuration.value().toUuid().toString()));
+		Log::error(QString("%1.invalid ProductID: \"%2\"").arg(__CLASS_NAME__).arg(conf.value().toUuid().toString()));
 	}
-
+*/
 	return rv;
 }
 
-Configuration QuikDataSourceFactory::defaultConfiguration() const
+ProductConf* QuikDataSourceFactory::createDefaultConf() const
 {
+	/*
 	QString name = productName();
 	Configuration rv
 	{
@@ -58,6 +59,6 @@ Configuration QuikDataSourceFactory::defaultConfiguration() const
 	rv.setValue(ProductID(PRODUCT_ID));
 	rv.setTitle(QObject::tr("Источник данных QUIK", name.toLocal8Bit()));
 	rv.setUserEditableMap(Configuration::Title);
-
-	return rv;
+*/
+	return nullptr;
 }

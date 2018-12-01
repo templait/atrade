@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 
 	DataSourceFactory::instance().registerUnit(new FileDataSourceFactory());
 	DataSourceFactory::instance().registerUnit(new QuikDataSourceFactory());
-	IndicatorFactory::instance().registerUnit(new LuaLineIndicatorFactory(LuaLineIndicatorFactory::IndicatorMA));
+	//IndicatorFactory::instance().registerUnit(new LuaLineIndicatorFactory(LuaLineIndicatorFactory::IndicatorMA));
 
 	MainWindow w;
 	w.show();

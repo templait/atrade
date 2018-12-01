@@ -35,11 +35,12 @@ ChartWidget::ChartWidget(ETimeInterval interval, QGraphicsItem *parent) : QGraph
 	//mChart->legend()->hide();
 }
 
-ChartWidget::ChartWidget(ETimeInterval interval, const Configuration &configuration, QGraphicsItem *parent)
+ChartWidget::ChartWidget(ETimeInterval interval, const BConf &conf, QGraphicsItem *parent)
     : ChartWidget(interval, parent)
 {
-	for(int i=0; i<configuration.childrenCount(); i++)
+	for(int i=0; i<conf.childrenCount(); i++)
 	{
+		/*
 		const Configuration* conf = configuration.childAt(i);
 		if(DataSourceFactory::instance().hasProduct(conf->value().toUuid()))
 		{
@@ -50,27 +51,29 @@ ChartWidget::ChartWidget(ETimeInterval interval, const Configuration &configurat
 		else if(IndicatorFactory::instance().hasProduct(conf->value().toUuid()))
 		{
 			addIndicator(*conf);
-		}
+		}*/
 	}
 }
 
-void ChartWidget::addDataSource(const Configuration &dataSource)
+void ChartWidget::addDataSource(const ProductConf &dataSource)
 {
 	DataSource ds = DataSourceFactory::instance().product(dataSource);
 	if(!ds.isNull())
 	{
 		DataSourceSeries *dss = new DataSourceSeries(mChart, ds, this);
+		/*
 		QColor increasingColor = dataSource.containsChild("increasingColor") ? dataSource["increasingColor"].value().value<QColor>() : QColor();
 		QColor decreasingColor = dataSource.containsChild("decreasingColor") ? dataSource["decreasingColor"].value().value<QColor>() : QColor();
 		QColor penColor = dataSource.containsChild("penColor") ? dataSource["penColor"].value().value<QColor>() : QColor();
 		dss->setAppearance(increasingColor, decreasingColor, penColor);
+		*/
 		dss->setName(dataSource.title());
 		connect(dss, SIGNAL(candlesAdppended(int)), SLOT(onCandlesAppended(int)));
 		mSeries << dss;
 	}
 }
 
-void ChartWidget::addIndicator(const Configuration &indicator)
+void ChartWidget::addIndicator(const ProductConf &indicator)
 {
 	/*Indicator ind = IndicatorFactory::instance().product(indicator);
 	LineIndicatorSeries *is = new LineIndicatorSeries(mChart, ind, this);

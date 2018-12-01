@@ -1,7 +1,7 @@
 #pragma once
 
 #include <configurationeditormodule.h>
-
+/*
 namespace Ui
 {
 class LuaLineIndicatorConfigurationEditor;
@@ -23,3 +23,4 @@ private:
 	QModelIndex sourceIndex();
 	const Configuration* sourceConf() const;
 };
+*/

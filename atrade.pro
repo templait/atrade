@@ -1,4 +1,4 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS	 = corelib terminal dsdump tests
+SUBDIRS	 = corelib terminal
 

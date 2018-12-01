@@ -3,15 +3,12 @@
 #include <QSet>
 #include <QSharedPointer>
 #include <QUuid>
-#include <configuration.h>
+#include <productconf.h>
 #include <sharedpointer.hpp>
 #include <log.h>
 #include <tools.h>
 
-typedef QUuid ProductID;
-typedef QList<QPair<QString, ProductID> > ProductList;
-
-class ConfigurationEditorModule;
+class ConfEditorModule;
 
 template <class T>
 class Factory
@@ -24,10 +21,14 @@ private:
 	Factory(){}
 	~Factory(){}
 
+	typedef QSharedPointer<ProductConf> ConfPtr;
+
 	struct ProductKey
 	{
+		ProductKey(const ProductID& id, const ProductConf& cfg) : productID(id), conf(const_cast<ProductConf*>(&cfg)){}
+		ProductKey(const ProductKey& other) : productID(other.productID), conf(other.conf.data()){}
 		ProductID productID;
-		Configuration settings;
+		ConfPtr conf;
 	};
 	class ProductMap
 	{
@@ -35,13 +36,13 @@ private:
 		class ProductSet
 		{
 		public:
-			bool contains(const Configuration& key) const;
-			bool remove(const Configuration& key);
-			Product  operator [](const Configuration& key) const;
-			Product& operator [](const Configuration& key);
+			bool contains(const ProductConf& key) const;
+			bool remove(const ProductConf& key);
+			Product  operator [](const ProductConf& key) const;
+			Product& operator [](const ProductConf& key);
 		private:
-			int find(const Configuration& key) const;
-			QList<QPair<Configuration, Product> > mList;
+			int find(const ProductConf& key) const;
+			QList<QPair<ConfPtr, Product> > mList;
 		};
 		QMap<ProductID,  ProductSet> mMap;
 
@@ -61,9 +62,8 @@ public:
 		{
 		}
 		virtual ~Unit(){}
-		virtual T* create(const Configuration& configuration) const = 0;
-		virtual Configuration defaultConfiguration() const = 0;
-		virtual ConfigurationEditorModule* createConfigurationEditor(const QModelIndex &, QWidget *) const {return nullptr;}
+		virtual T* create(const ProductConf& conf) const = 0;
+		virtual ProductConf* createDefaultConf() const = 0;
 		const QString& productName() const					{return mProductName;}
 		const ProductID& productID() const					{return mProductID;}
 	private:
@@ -72,12 +72,11 @@ public:
 	};
 
 	static Factory& instance();
-	Product product(const Configuration& settings = Configuration());
+	Product product(const ProductConf& conf);
 	bool hasProduct(const ProductID &id) const;
-	Configuration defaultConfiguration(const ProductID &id) const;
+	ProductConf* createDefaultConf(const ProductID &id) const;
 	bool registerUnit(Unit *unit);
 	ProductList productList() const;
-	ConfigurationEditorModule* createConfigurationEditor(const ProductID &id, const QModelIndex& configuration, QWidget*parent=nullptr) const;
 private:
 
 	QMap<ProductID, QSharedPointer<Unit> > mUnitMap; //
@@ -92,16 +91,16 @@ Factory<T> &Factory<T>::instance()
 }
 
 template<class T>
-typename Factory<T>::Product Factory<T>::product(const Configuration &settings)
+typename Factory<T>::Product Factory<T>::product(const ProductConf &conf)
 {
 	Product rv;
-	ProductID id = settings.value().toUuid();
-	ProductKey productKey = {id, settings};
+	ProductID id = conf.productID();
+	ProductKey productKey = {id, conf};
 	if(!mProductMap.contains(productKey))
 	{
 		if(mUnitMap.contains(id))
 		{
-			rv = Product(mUnitMap[id]->create(settings), [this, productKey](int count){
+			rv = Product(mUnitMap[id]->create(conf), [this, productKey](int count){
 				if(count == 1)
 				{	mProductMap.remove(productKey);	}
 			});
@@ -123,12 +122,12 @@ bool Factory<T>::hasProduct(const ProductID &id) const
 }
 
 template<class T>
-Configuration Factory<T>::defaultConfiguration(const ProductID &id) const
+ProductConf *Factory<T>::createDefaultConf(const ProductID &id) const
 {
-	Configuration rv;
+	ProductConf* rv;
 	if(mUnitMap.contains(id))
 	{
-		rv = mUnitMap[id]->defaultConfiguration();
+		rv = mUnitMap[id]->createDefaultConf();
 	}
 	return rv;
 }
@@ -158,24 +157,13 @@ ProductList Factory<T>::productList() const
 }
 
 template<class T>
-ConfigurationEditorModule *Factory<T>::createConfigurationEditor(const ProductID &id, const QModelIndex &configuration, QWidget *parent) const
-{
-	ConfigurationEditorModule* rv=nullptr;
-	if(hasProduct(id))
-	{
-		rv = mUnitMap[id]->createConfigurationEditor(configuration, parent);
-	}
-	return rv;
-}
-
-template<class T>
-bool Factory<T>::ProductMap::ProductSet::contains(const Configuration &key) const
+bool Factory<T>::ProductMap::ProductSet::contains(const ProductConf &key) const
 {
 	return find(key)>=0;
 }
 
 template<class T>
-bool Factory<T>::ProductMap::ProductSet::remove(const Configuration &key)
+bool Factory<T>::ProductMap::ProductSet::remove(const ProductConf &key)
 {
 	bool rv = false;
 	int i = find(key);
@@ -188,13 +176,13 @@ bool Factory<T>::ProductMap::ProductSet::remove(const Configuration &key)
 }
 
 template<class T>
-int Factory<T>::ProductMap::ProductSet::find(const Configuration &key) const
+int Factory<T>::ProductMap::ProductSet::find(const ProductConf &key) const
 {
 	int rv = -1;
 	for(int i=0; i<mList.size(); i++)
 	{
 		const auto& val = mList[i];
-		if(val.first == key)
+		if(val.first->isSame(key))
 		{
 			rv = i;
 			break;
@@ -204,20 +192,20 @@ int Factory<T>::ProductMap::ProductSet::find(const Configuration &key) const
 }
 
 template<class T>
-typename Factory<T>::Product Factory<T>::ProductMap::ProductSet::operator [](const Configuration &key) const
+typename Factory<T>::Product Factory<T>::ProductMap::ProductSet::operator [](const ProductConf &key) const
 {
 	return mList[find(key)].second;
 }
 
 template<class T>
-typename Factory<T>::Product &Factory<T>::ProductMap::ProductSet::operator [](const Configuration &key)
+typename Factory<T>::Product &Factory<T>::ProductMap::ProductSet::operator [](const ProductConf &key)
 {
 	int i = find(key);
 	if(i>=0)
 	{	return mList[find(key)].second;	}
 	else
 	{
-		mList.append({key, Product()});
+		mList.append({ConfPtr(static_cast<ProductConf*>(key.clone())), Product()});
 		return mList.last().second;
 	}
 }
@@ -225,7 +213,7 @@ typename Factory<T>::Product &Factory<T>::ProductMap::ProductSet::operator [](co
 template<class T>
 bool Factory<T>::ProductMap::contains(const Factory<T>::ProductKey &key) const
 {
-	return mMap.contains(key.productID) && mMap[key.productID].contains(key.settings);
+	return mMap.contains(key.productID) && mMap[key.productID].contains(*(key.conf));
 }
 
 template<class T>
@@ -233,18 +221,18 @@ bool Factory<T>::ProductMap::remove(const Factory<T>::ProductKey &key)
 {
 	bool rv = false;
 	if(mMap.contains(key.productID))
-	{	rv = mMap[key.productID].remove(key.settings);	}
+	{	rv = mMap[key.productID].remove(*(key.conf));	}
 	return rv;
 }
 
 template<class T>
 typename Factory<T>::Product Factory<T>::ProductMap::operator [](const Factory<T>::ProductKey &key) const
 {
-	return mMap[key.productID][key.settings];
+	return mMap[key.productID][*(key.conf)];
 }
 
 template<class T>
 typename Factory<T>::Product &Factory<T>::ProductMap::operator [](const Factory<T>::ProductKey &key)
 {
-	return mMap[key.productID][key.settings];
+	return mMap[key.productID][*(key.conf)];
 }

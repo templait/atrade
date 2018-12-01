@@ -1,7 +1,7 @@
 #pragma once
 
 #include <indicators/indicatorfactory.h>
-
+/*
 class LuaLineIndicatorFactory : public IndicatorFactory::Unit
 {
 public:
@@ -16,5 +16,5 @@ private:
 public:
 	virtual BIndicator *create(const Configuration &configuration) const override;
 	virtual Configuration defaultConfiguration() const override;
-	virtual ConfigurationEditorModule *createConfigurationEditor(const QModelIndex& configuration, QWidget* parent=nullptr) const override;
 };
+*/

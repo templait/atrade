@@ -44,7 +44,7 @@ void ConfigurationEditor::execContextMenu(const QPoint &point)
 		QMenu menu;
 		BConf* conf = mConfModel->conf(index);
 		QAction* act = nullptr;
-		QString childName = conf->childName();
+		QString childName = conf->creatableChildName();
 		if(! childName.isEmpty())
 		{	act = menu.addAction(childName);	}
 		if(menu.exec(point) == act)

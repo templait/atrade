@@ -1,4 +1,5 @@
 #include "lualineindicatorconfigurationeditor.h"
+/*
 #include "ui_lualineindicatorconfigurationeditor.h"
 #include "lualineindicatorconfnames.h"
 
@@ -71,3 +72,4 @@ const Configuration *LuaLineIndicatorConfigurationEditor::sourceConf() const
 	{	rv = configuration()[CN_SOURCE].childAt(0);	}
 	return rv;
 }
+*/
