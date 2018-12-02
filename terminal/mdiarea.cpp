@@ -23,7 +23,7 @@ void MDIArea::saveWindowState(QSettings& settings)
 		{
 			settings.setValue("WindowType", "ChartWindow");
 			settings.setValue("Geometry", sub->geometry());
-			cw->saveConfiguration(settings);
+			cw->saveConf(settings);
 		}
 	}
 	settings.endArray();

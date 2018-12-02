@@ -8,7 +8,6 @@
 #include <QGraphicsGridLayout>
 #include <QSettings>
 #include <tools.h>
-#include <confnames.h>
 
 #include "chartwindowconf.h"
 
@@ -49,10 +48,10 @@ ChartWindow::ChartWindow(QWidget *parent) : QWidget(parent)
 	});
 }
 
-ChartWindow::ChartWindow(const BConf &conf, QWidget *parent)
+ChartWindow::ChartWindow(const ChartWindowConf &conf, QWidget *parent)
     : ChartWindow(parent)
 {
-	loadConfiguration(conf);
+	loadConf(conf);
 }
 
 ChartWindow::~ChartWindow()
@@ -173,21 +172,20 @@ int ChartWindow::rescaleInt64(qint64 value) const
 	return static_cast<int>(value);
 }
 
-void ChartWindow::loadConfiguration(const BConf& conf)
+void ChartWindow::loadConf(const ChartWindowConf &conf)
 {
 	clear();
-	/*
-	mConfiguration = configuration;
-	setWindowTitle(configuration.title());
-	for(int i=0; i<mConfiguration.childrenCount(); i++)
+
+	mConf = conf;
+	setWindowTitle(conf.title());
+	for(int i=0; i<mConf.childrenCount(); i++)
 	{
-		const Configuration* conf = mConfiguration.childAt(i);
-		if(conf->name() == CN_CHART)
+		if(const ChartConf* chartConf = dynamic_cast<const ChartConf*>(mConf.childAt(i)))
 		{	
-			cregetChartWidget(*conf, i);
+			cregetChartWidget(*chartConf, i);
 		}
 	}
-	*/
+
 	ui->cbTimeInterval->blockSignals(true);
 	ui->cbTimeInterval->setTimeInterval(timeInterval());
 	ui->cbTimeInterval->blockSignals(false);
@@ -210,7 +208,7 @@ ChartWindowConf ChartWindow::defaultConf()
 	return chartWindow;
 }
 
-void ChartWindow::saveConfiguration(QSettings &settings) const
+void ChartWindow::saveConf(QSettings &settings) const
 {
 	QByteArray array;
 	QDataStream stream(&array, QIODevice::WriteOnly);
@@ -218,13 +216,13 @@ void ChartWindow::saveConfiguration(QSettings &settings) const
 	settings.setValue("configuration", array);
 }
 
-void ChartWindow::loadConfiguration(QSettings &settings)
+void ChartWindow::loadConf(QSettings &settings)
 {
 	QByteArray array = settings.value("configuration").toByteArray();
 	QDataStream stream(&array, QIODevice::ReadOnly);
 	ChartWindowConf conf;
 	//stream >> conf;
-	loadConfiguration(conf);
+	loadConf(conf);
 }
 
 void ChartWindow::clear()
@@ -234,14 +232,14 @@ void ChartWindow::clear()
 	adjustScroll();
 }
 
-ChartWidget *ChartWindow::cregetChartWidget(const BConf& conf, int widgetNum)
+ChartWidget *ChartWindow::cregetChartWidget(const ChartConf &conf, int widgetNum)
 {
 	ChartWidget * rv = nullptr;
 
 	if(widgetNum >= mChartWidgets.size())
 	{
 		widgetNum = mChartWidgets.size();
-		rv = new ChartWidget(timeInterval(), conf);
+		rv = new ChartWidget(conf);
 		mSceneLayout->addItem(rv, widgetNum, 0);
 		mChartWidgets << rv;
 		connect(rv, &ChartWidget::candlesAppended, this, &ChartWindow::onCandlesAppend);

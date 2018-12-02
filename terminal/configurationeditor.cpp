@@ -36,6 +36,11 @@ ConfigurationEditor::~ConfigurationEditor()
 	delete ui;
 }
 
+const ChartWindowConf &ConfigurationEditor::conf() const
+{
+	return mConf;
+}
+
 void ConfigurationEditor::execContextMenu(const QPoint &point)
 {
 	QModelIndex index = ui->tvConf->currentIndex();

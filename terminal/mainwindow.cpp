@@ -116,7 +116,9 @@ void MainWindow::onNewChartWindow()
 	ConfigurationEditor editor(conf, this);
 	if(editor.exec())
 	{
-
+		ChartWindow* cw = new ChartWindow(editor.conf());
+		currentMDIArea()->addSubWindow(cw);
+		cw->show();
 	}
 }
 

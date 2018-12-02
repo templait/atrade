@@ -27,9 +27,9 @@ public:
 	virtual int childrenCount() const override;
 	virtual const BConf *childAt(int index) const override;
 	virtual void removeChild(int index) override;
-	virtual bool isSame(const BConf& other) const override;
-	virtual void serialize(QDataStream& out) const;
-	virtual void deserialize(QDataStream& in);
+	//virtual bool isSame(const BConf& other) const override;
+	virtual void serialize(QDataStream& out) const override;
+	virtual void deserialize(QDataStream& in) override;
 };
 
 template<class ParentT, class ChildT>
@@ -73,25 +73,25 @@ void ParentConf<ParentT, ChildT>::removeChild(int index)
 	Q_ASSERT(index>=0 && index<mChildren.count());
 	mChildren.removeAt(index);
 }
-
+/*
 template<class ParentT, class ChildT>
 bool ParentConf<ParentT, ChildT>::isSame(const BConf &other) const
 {
 	bool rv = false;
 	if(const ParentConf<ParentT, ChildT>* ptrOther = dynamic_cast<const ParentConf<ParentT, ChildT>*>(&other))
 	{
-		rv = ptrOther->isSame(other);
-		if(rv)
+		rv = ParentT::isSame(*ptrOther);
+		if(rv && mChildren.count()==ptrOther->childrenCount())
 		{
-			for(const ChildT& child : mChildren)
+			for(int i=0; i<mChildren.count(); i++)
 			{
-				rv = child.isSame(*ptrOther);
+				rv = mChildren[i].isSame(ptrOther->mChildren[i]);
 				if(!rv) break;
 			}
 		}
 	}
 	return rv;
-}
+}*/
 
 template<class ParentT, class ChildT>
 void ParentConf<ParentT, ChildT>::serialize(QDataStream &out) const

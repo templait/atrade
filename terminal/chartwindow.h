@@ -26,15 +26,15 @@ class ChartWindow : public QWidget
 	Q_OBJECT
 public:
 	ChartWindow(QWidget* parent=nullptr);
-	ChartWindow(const BConf &conf, QWidget* parent=nullptr);
+	ChartWindow(const ChartWindowConf &conf, QWidget* parent=nullptr);
 	~ChartWindow();
 
-	void loadConfiguration(const BConf &conf);
+	void loadConf(const ChartWindowConf &conf);
 	ChartWindowConf &conf();
 	static ChartWindowConf defaultConf();
 
-	void saveConfiguration(QSettings& settings) const;
-	void loadConfiguration(QSettings& settings);
+	void saveConf(QSettings& settings) const;
+	void loadConf(QSettings& settings);
 
 private:
 	Ui::ChartWindow *ui;
@@ -54,7 +54,7 @@ private:
 	ETimeInterval timeInterval() const;
 	int rescaleInt64(qint64 value) const;
 	void clear();
-	ChartWidget* cregetChartWidget(const BConf &conf, int widgetNum=0);
+	ChartWidget* cregetChartWidget(const ChartConf &conf, int widgetNum=0);
 
 	void onCandlesAppend(const DataSource&, int);
 

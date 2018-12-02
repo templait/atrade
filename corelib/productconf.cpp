@@ -27,7 +27,7 @@ QVariant ProductConf::param(const QString &name) const
 {
 	QVariant rv;
 	if(mParams.contains(name))
-	{	rv = mParams["name"];	}
+	{	rv = mParams[name];	}
 	return rv;
 }
 

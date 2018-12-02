@@ -20,7 +20,7 @@ class ConfigurationEditor : public QDialog
 public:
 	ConfigurationEditor(const ChartWindowConf& conf, QWidget* parent=nullptr);
 	~ConfigurationEditor() override;
-	const Configuration& configuration() const;
+	const ChartWindowConf& conf() const;
 private:
 	Ui::ConfigurationEditor *ui;
 	ProductListModel* mProductListModel;

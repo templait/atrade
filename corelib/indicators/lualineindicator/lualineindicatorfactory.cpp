@@ -41,10 +41,10 @@ BIndicator *LuaLineIndicatorFactory::create(const IndicatorConf &conf) const
 			rv = new LuaLineIndicator(luaPath +'/'+ fileName, DataSourceFactory::instance().product(*dsConf));
 		}
 		else
-		{	Log::error(QString("%1.Configuration haven't DataSourceConf parents"));	}
+		{	Log::error(QString("%1.Configuration haven't DataSourceConf parents").arg(__CLASS_NAME__));	}
 	}
 	else
-	{	Log::error(QString("%1.Configuration isn't IndicatorConf"));	}
+	{	Log::error(QString("%1.Configuration isn't IndicatorConf").arg(__CLASS_NAME__));	}
 
 	return rv;
 }

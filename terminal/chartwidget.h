@@ -13,14 +13,14 @@ class QDateTimeAxis;
 
 class BSeries;
 class BIndicator;
-class Configuration;
+class ChartConf;
 
 class ChartWidget : public QGraphicsWidget
 {
 	Q_OBJECT
 public:
 	ChartWidget(ETimeInterval interval, QGraphicsItem* parent=nullptr);
-	ChartWidget(ETimeInterval interval, const BConf &conf, QGraphicsItem* parent=nullptr);
+	ChartWidget(const ChartConf &chartConf, QGraphicsItem* parent=nullptr);
 	void addDataSource(const DataSourceConf &dataSource);
 	void addIndicator(const IndicatorConf &indicator);
 	TimeRange viewTimeRange() const;

@@ -38,10 +38,10 @@ BDataSource *FileDataSourceFactory::create(const DataSourceConf &conf) const
 			{	Log::error(QString("%1.invalid ProductID: \"%2\"").arg(__CLASS_NAME__).arg(conf.productID().toString()));	}
 		}
 		else
-		{	Log::error(QString("%1.Configuration haven't TimeIntervalConf parents"));	}
+		{	Log::error(QString("%1.Configuration haven't TimeIntervalConf parents").arg(__CLASS_NAME__));	}
 	}
 	else
-	{	Log::error(QString("%1.Configuration isn't DataSourceConf"));	}
+	{	Log::error(QString("%1.Configuration isn't DataSourceConf").arg(__CLASS_NAME__));	}
 
 	return rv;
 }

@@ -1,6 +1,8 @@
 #include "chartwidget.h"
+#include "chartconf.h"
 
 #include <math.h>
+#include <timeintervalconf.h>
 
 #include "series/datasourceseries.h"
 #include "series/lineindicatorseries.h"
@@ -35,23 +37,25 @@ ChartWidget::ChartWidget(ETimeInterval interval, QGraphicsItem *parent) : QGraph
 	//mChart->legend()->hide();
 }
 
-ChartWidget::ChartWidget(ETimeInterval interval, const BConf &conf, QGraphicsItem *parent)
-    : ChartWidget(interval, parent)
+ChartWidget::ChartWidget(const ChartConf &chartConf, QGraphicsItem *parent)
+    : ChartWidget(chartConf.findParent<TimeIntervalConf>()->timeInterval(), parent)
 {
-	for(int i=0; i<conf.childrenCount(); i++)
+	for(int i=0; i<chartConf.childrenCount(); i++)
 	{
-		/*
-		const Configuration* conf = configuration.childAt(i);
-		if(DataSourceFactory::instance().hasProduct(conf->value().toUuid()))
+		const BConf* conf = chartConf.childAt(i);
+		if(const DataSourceConf* dsConf = dynamic_cast<const DataSourceConf*>(conf))
 		{
-			Configuration dsConf(*conf);
-			dsConf.insertChild({CN_TIME_INTERVAL,	interval,		tr("Interval")});
-			addDataSource(dsConf);
+			if(DataSourceFactory::instance().hasProduct(dsConf->productID()))
+			{	addDataSource(*dsConf);	}
+			else
+			{	Log::warning(QString("%1. Can't create datasource. ID: %2").arg(__CLASS_NAME__).arg(dsConf->productID().toString()));	}
 		}
-		else if(IndicatorFactory::instance().hasProduct(conf->value().toUuid()))
+		else if(const IndicatorConf* indicatorConf = dynamic_cast<const IndicatorConf*>(conf))
 		{
-			addIndicator(*conf);
-		}*/
+			if(IndicatorFactory::instance().hasProduct(indicatorConf->productID()))
+			{	addIndicator(*indicatorConf);	}
+			{	Log::warning(QString("%1. Can't create indicator. ID: %2").arg(__CLASS_NAME__).arg(dsConf->productID().toString()));	}
+		}
 	}
 }
 
