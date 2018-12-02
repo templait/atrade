@@ -46,11 +46,11 @@ bool ProductConf::isSame(const BConf &other) const
 void ProductConf::serialize(QDataStream &out) const
 {
 	BConf::serialize(out);
-	out << mParams;
+	out << mProductID << mParams;
 }
 
 void ProductConf::deserialize(QDataStream &in)
 {
 	BConf::deserialize(in);
-	in >> mParams;
+	in >> mProductID >> mParams;
 }

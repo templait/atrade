@@ -18,9 +18,8 @@
 
 using namespace QtCharts;
 
-ChartWidget::ChartWidget(ETimeInterval interval, QGraphicsItem *parent) : QGraphicsWidget(parent)
+ChartWidget::ChartWidget(QGraphicsItem *parent) : QGraphicsWidget(parent)
 {
-	mTimeInterval = interval;
 	QGraphicsLinearLayout* layout = new QGraphicsLinearLayout;
 	layout->setContentsMargins(0,0,0,0);
 	setLayout(layout);
@@ -38,7 +37,7 @@ ChartWidget::ChartWidget(ETimeInterval interval, QGraphicsItem *parent) : QGraph
 }
 
 ChartWidget::ChartWidget(const ChartConf &chartConf, QGraphicsItem *parent)
-    : ChartWidget(chartConf.findParent<TimeIntervalConf>()->timeInterval(), parent)
+    : ChartWidget(parent)
 {
 	for(int i=0; i<chartConf.childrenCount(); i++)
 	{

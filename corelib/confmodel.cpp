@@ -7,8 +7,6 @@
 #include <datasources/datasourcefactory.h>
 #include <indicators/indicatorfactory.h>
 
-#include <QtDebug>
-
 #define COL_COUNT 1
 
 ConfModel::ConfModel(BConf *conf, QObject *parent)

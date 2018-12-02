@@ -55,6 +55,7 @@ private:
 	int rescaleInt64(qint64 value) const;
 	void clear();
 	ChartWidget* cregetChartWidget(const ChartConf &conf, int widgetNum=0);
+	void reloadConf();
 
 	void onCandlesAppend(const DataSource&, int);
 

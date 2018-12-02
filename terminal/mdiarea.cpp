@@ -43,7 +43,7 @@ void MDIArea::loadWindowState(QSettings& settings)
 			QMdiSubWindow* sub = addSubWindow(cw);
 			sub->setGeometry(settings.value("Geometry").toRect());
 			cw->show();
-			//cw->loadConfiguration(settings);
+			cw->loadConf(settings);
 		}
 	}
 	settings.endArray();

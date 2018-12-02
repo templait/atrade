@@ -154,11 +154,8 @@ void ChartWindow::adjustGraphicsScene()
 
 void ChartWindow::setTimeInterval(ETimeInterval interval)
 {
-	/*
-	Configuration newConf(mConfiguration);
-	newConf[CN_TIME_INTERVAL].setValue(interval);
-	loadConfiguration(newConf);
-	*/
+	mConf.setTimeInterval(interval);
+	reloadConf();
 }
 
 ETimeInterval ChartWindow::timeInterval() const
@@ -172,16 +169,14 @@ int ChartWindow::rescaleInt64(qint64 value) const
 	return static_cast<int>(value);
 }
 
-void ChartWindow::loadConf(const ChartWindowConf &conf)
+void ChartWindow::reloadConf()
 {
 	clear();
-
-	mConf = conf;
-	setWindowTitle(conf.title());
+	setWindowTitle(mConf.title());
 	for(int i=0; i<mConf.childrenCount(); i++)
 	{
 		if(const ChartConf* chartConf = dynamic_cast<const ChartConf*>(mConf.childAt(i)))
-		{	
+		{
 			cregetChartWidget(*chartConf, i);
 		}
 	}
@@ -191,6 +186,12 @@ void ChartWindow::loadConf(const ChartWindowConf &conf)
 	ui->cbTimeInterval->blockSignals(false);
 	QApplication::processEvents(); // нужно подождать пока все виджеты примут должный размер
 	adjustScroll();
+}
+
+void ChartWindow::loadConf(const ChartWindowConf &conf)
+{
+	mConf = conf;
+	reloadConf();
 }
 
 ChartWindowConf& ChartWindow::conf()
@@ -212,7 +213,7 @@ void ChartWindow::saveConf(QSettings &settings) const
 {
 	QByteArray array;
 	QDataStream stream(&array, QIODevice::WriteOnly);
-	//stream << mConf;
+	mConf.serialize(stream);
 	settings.setValue("configuration", array);
 }
 
@@ -221,7 +222,7 @@ void ChartWindow::loadConf(QSettings &settings)
 	QByteArray array = settings.value("configuration").toByteArray();
 	QDataStream stream(&array, QIODevice::ReadOnly);
 	ChartWindowConf conf;
-	//stream >> conf;
+	conf.deserialize(stream);
 	loadConf(conf);
 }
 

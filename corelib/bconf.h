@@ -50,9 +50,12 @@ const ParentT *BConf::findParent() const
 {
 	static_assert (std::is_base_of<BConf, ParentT>::value, "ParentT must be subclass of BConf");
 	const ParentT* rv = nullptr;
-	if(const ParentT* p = dynamic_cast<const ParentT*>(mParent))
-	{	rv = p;	}
-	else
-	{	rv = mParent->findParent<ParentT>();	}
+	if(mParent)
+	{
+		if(const ParentT* p = dynamic_cast<const ParentT*>(mParent))
+		{	rv = p;	}
+		else
+		{	rv = mParent->findParent<ParentT>();	}
+	}
 	return rv;
 }

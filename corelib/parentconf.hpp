@@ -14,6 +14,7 @@ class ParentConf : public ParentT
 	ParentConf() = delete;
 protected:
 	ParentConf(const QString& name) : ParentT(name){}
+	ParentConf(const ParentConf& other);
 public:
 	virtual ~ParentConf() override {}
 private:
@@ -32,6 +33,15 @@ public:
 	virtual void deserialize(QDataStream& in) override;
 };
 
+
+template<class ParentT, class ChildT>
+ParentConf<ParentT, ChildT>::ParentConf(const ParentConf &other) : ParentT(other)
+{
+	mChildren = other.mChildren;
+	for(ChildT& child : mChildren)
+	{	this->beParentForChild(&child);	}
+}
+
 template<class ParentT, class ChildT>
 bool ParentConf<ParentT, ChildT>::canAppendChild(const BConf &child) const
 {
@@ -46,7 +56,7 @@ bool ParentConf<ParentT, ChildT>::insertChild(const BConf &conf, int index)
 	{
 		index = qBound(0, index, mChildren.count());
 		mChildren.insert(index, static_cast<const ChildT&>(conf));
-		ParentT::beParentForChild(&mChildren[index]);
+		this->beParentForChild(&mChildren[index]);
 		rv = true;
 	}
 	return rv;
@@ -112,6 +122,6 @@ void ParentConf<ParentT, ChildT>::deserialize(QDataStream &in)
 	{
 		ChildT child;
 		child.deserialize(in);
-		canAppendChild(child);
+		this->appendChild(child);
 	}
 }
