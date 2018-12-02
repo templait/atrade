@@ -1,6 +1,6 @@
 VPATH += $$PWD
 
-HEADERS += bindicator.h indicator.h indicatorfactory.h
+HEADERS += bindicator.h indicator.h indicatorfactory.h indicatorconf.h
 
 HEADERS += blineindicator.h
 SOURCES += blineindicator.cpp

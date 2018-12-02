@@ -9,7 +9,4 @@ class ChartWindowConf final : public AddChildParentConf<TimeIntervalConf, ChartC
 {
 public:
 	ChartWindowConf();
-	// BConf interface
-public:
-	virtual BConf *clone() const override;
 };

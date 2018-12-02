@@ -1,7 +1,7 @@
 #pragma once
 
 #include <indicators/indicatorfactory.h>
-/*
+
 class LuaLineIndicatorFactory : public IndicatorFactory::Unit
 {
 public:
@@ -14,7 +14,6 @@ private:
 	
 	// Unit interface
 public:
-	virtual BIndicator *create(const Configuration &configuration) const override;
-	virtual Configuration defaultConfiguration() const override;
+	virtual BIndicator *create(const IndicatorConf &conf) const override;
+	virtual IndicatorConf* createDefaultConf() const override;
 };
-*/

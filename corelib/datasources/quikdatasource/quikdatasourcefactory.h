@@ -10,6 +10,6 @@ public:
 
 	// Unit interface
 public:
-	virtual BDataSource *create(const ProductConf &conf) const override;
-	virtual ProductConf* createDefaultConf() const override;
+	virtual BDataSource *create(const DataSourceConf &conf) const override;
+	virtual DataSourceConf* createDefaultConf() const override;
 };

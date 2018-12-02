@@ -15,9 +15,9 @@ class ParentConf : public ParentT
 protected:
 	ParentConf(const QString& name) : ParentT(name){}
 public:
-	virtual ~ParentConf() override;
+	virtual ~ParentConf() override {}
 private:
-	QList<ChildT*> mChildren;
+	QList<ChildT> mChildren;
 protected:
 	const QList<ChildT>& children() const;
 	// BConf interface
@@ -28,15 +28,9 @@ public:
 	virtual const BConf *childAt(int index) const override;
 	virtual void removeChild(int index) override;
 	virtual bool isSame(const BConf& other) const override;
+	//virtual void serialize(QDataStream& out) const;
+	//virtual void deserialize(QDataStream& in);
 };
-
-
-
-template<class ParentT, class ChildT>
-ParentConf<ParentT, ChildT>::~ParentConf()
-{
-	qDeleteAll(mChildren);
-}
 
 template<class ParentT, class ChildT>
 bool ParentConf<ParentT, ChildT>::canAppendChild(const BConf &child) const
@@ -51,8 +45,8 @@ bool ParentConf<ParentT, ChildT>::insertChild(const BConf &conf, int index)
 	if(canAppendChild(conf))
 	{
 		index = qBound(0, index, mChildren.count());
-		mChildren.insert(index, static_cast<ChildT*>(conf.clone()));
-		ParentT::beParentForChild(mChildren[index]);
+		mChildren.insert(index, static_cast<const ChildT&>(conf));
+		ParentT::beParentForChild(&mChildren[index]);
 		rv = true;
 	}
 	return rv;
@@ -69,7 +63,7 @@ const BConf *ParentConf<ParentT, ChildT>::childAt(int index) const
 {
 	const BConf * rv = nullptr;
 	if(index>=0 && index<mChildren.size())
-	{	rv = mChildren[index];	}
+	{	rv = &mChildren[index];	}
 	return rv;
 }
 
@@ -77,7 +71,6 @@ template<class ParentT, class ChildT>
 void ParentConf<ParentT, ChildT>::removeChild(int index)
 {
 	Q_ASSERT(index>=0 && index<mChildren.count());
-	delete mChildren[index];
 	mChildren.removeAt(index);
 }
 
@@ -90,9 +83,9 @@ bool ParentConf<ParentT, ChildT>::isSame(const BConf &other) const
 		rv = ptrOther->isSame(other);
 		if(rv)
 		{
-			for(const ChildT* child : mChildren)
+			for(const ChildT& child : mChildren)
 			{
-				rv = child->isSame(*ptrOther);
+				rv = child.isSame(*ptrOther);
 				if(!rv) break;
 			}
 		}

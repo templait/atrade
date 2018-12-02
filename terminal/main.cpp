@@ -12,8 +12,8 @@ int main(int argc, char** argv)
 	app.setApplicationName("atrade.terminal");
 
 	DataSourceFactory::instance().registerUnit(new FileDataSourceFactory());
-	DataSourceFactory::instance().registerUnit(new QuikDataSourceFactory());
-	//IndicatorFactory::instance().registerUnit(new LuaLineIndicatorFactory(LuaLineIndicatorFactory::IndicatorMA));
+	//DataSourceFactory::instance().registerUnit(new QuikDataSourceFactory());
+	IndicatorFactory::instance().registerUnit(new LuaLineIndicatorFactory(LuaLineIndicatorFactory::IndicatorMA));
 
 	MainWindow w;
 	w.show();

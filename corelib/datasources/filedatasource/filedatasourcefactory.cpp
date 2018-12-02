@@ -1,7 +1,7 @@
 #include "filedatasourcefactory.h"
 #include "filedatasource.h"
-#include "filedatasourceconf.h"
 
+#include <datasources/datasourceconf.h>
 #include <timeintervalconf.h>
 #include <log.h>
 #include <tools.h>
@@ -16,11 +16,11 @@ FileDataSourceFactory::FileDataSourceFactory()
 
 }
 
-BDataSource *FileDataSourceFactory::create(const ProductConf &conf) const
+BDataSource *FileDataSourceFactory::create(const DataSourceConf &conf) const
 {
 	BDataSource* rv=nullptr;
 
-	if(const FileDataSourceConf* dsConf = dynamic_cast<const FileDataSourceConf*>(&conf))
+	if(const DataSourceConf* dsConf = dynamic_cast<const DataSourceConf*>(&conf))
 	{
 		if(const TimeIntervalConf* intervalConf = conf.findParent<TimeIntervalConf>())
 		{
@@ -29,8 +29,8 @@ BDataSource *FileDataSourceFactory::create(const ProductConf &conf) const
 				QSettings appSettings;
 				QString path = QString("%1/%2/%3/%4.txt")
 				        .arg(appSettings.value("DataSourceFileDir", "../DataSourceFile").toString())
-				        .arg(dsConf->className())
-				        .arg(dsConf->code())
+				        .arg(dsConf->param("className").toString())
+				        .arg(dsConf->param("code").toString())
 				        .arg(intervalToString(intervalConf->timeInterval()));
 				rv = new FileDataSource(path);
 			}
@@ -41,14 +41,17 @@ BDataSource *FileDataSourceFactory::create(const ProductConf &conf) const
 		{	Log::error(QString("%1.Configuration haven't TimeIntervalConf parents"));	}
 	}
 	else
-	{	Log::error(QString("%1.Configuration isn't FileDataSourceConf"));	}
+	{	Log::error(QString("%1.Configuration isn't DataSourceConf"));	}
 
 	return rv;
 }
 
-ProductConf* FileDataSourceFactory::createDefaultConf() const
+DataSourceConf *FileDataSourceFactory::createDefaultConf() const
 {
-	FileDataSourceConf* rv = new FileDataSourceConf(ProductID(PRODUCT_ID), "TQBR", "SBER");
+	DataSourceConf* rv = new DataSourceConf;
+	rv->setProductID(PRODUCT_ID);
 	rv->setTitle(QObject::tr("Файловый источник данных", __CLASS_NAME__.toLocal8Bit()));
+	rv->setParam("className", "TQBR");
+	rv->setParam("code", "SBER");
 	return rv;
 }

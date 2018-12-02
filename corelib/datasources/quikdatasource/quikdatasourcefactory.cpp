@@ -13,7 +13,7 @@ QuikDataSourceFactory::QuikDataSourceFactory()
 
 }
 
-BDataSource *QuikDataSourceFactory::create(const ProductConf &conf) const
+BDataSource *QuikDataSourceFactory::create(const DataSourceConf &conf) const
 {
 	BDataSource* rv=nullptr;
 /*
@@ -45,7 +45,7 @@ BDataSource *QuikDataSourceFactory::create(const ProductConf &conf) const
 	return rv;
 }
 
-ProductConf* QuikDataSourceFactory::createDefaultConf() const
+DataSourceConf *QuikDataSourceFactory::createDefaultConf() const
 {
 	/*
 	QString name = productName();

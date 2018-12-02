@@ -55,7 +55,7 @@ ChartWidget::ChartWidget(ETimeInterval interval, const BConf &conf, QGraphicsIte
 	}
 }
 
-void ChartWidget::addDataSource(const ProductConf &dataSource)
+void ChartWidget::addDataSource(const DataSourceConf &dataSource)
 {
 	DataSource ds = DataSourceFactory::instance().product(dataSource);
 	if(!ds.isNull())
@@ -73,7 +73,7 @@ void ChartWidget::addDataSource(const ProductConf &dataSource)
 	}
 }
 
-void ChartWidget::addIndicator(const ProductConf &indicator)
+void ChartWidget::addIndicator(const IndicatorConf &indicator)
 {
 	/*Indicator ind = IndicatorFactory::instance().product(indicator);
 	LineIndicatorSeries *is = new LineIndicatorSeries(mChart, ind, this);

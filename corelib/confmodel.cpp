@@ -185,6 +185,12 @@ bool ConfModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, in
 				rv = conf(parent)->canAppendChild(*cfg);
 				delete cfg;
 			}
+			else if(IndicatorFactory::instance().hasProduct(id))
+			{
+				BConf* cfg = IndicatorFactory::instance().createDefaultConf(id);
+				rv = conf(parent)->canAppendChild(*cfg);
+				delete cfg;
+			}
 		}
 	}
 	return rv;
@@ -217,6 +223,12 @@ bool ConfModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
 		if(DataSourceFactory::instance().hasProduct(id))
 		{
 			BConf* cfg = DataSourceFactory::instance().createDefaultConf(id);
+			rv = conf(parent)->insertChild(*cfg, row);
+			delete cfg;
+		}
+		else if(IndicatorFactory::instance().hasProduct(id))
+		{
+			BConf* cfg = IndicatorFactory::instance().createDefaultConf(id);
 			rv = conf(parent)->insertChild(*cfg, row);
 			delete cfg;
 		}

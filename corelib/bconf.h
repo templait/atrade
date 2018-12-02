@@ -23,8 +23,10 @@ public:
 
 	const QString& name() const;
 
-	const BConf* parentConf();
+	const BConf* parentConf() const;
 	bool appendChild(const BConf &conf);
+	template<class ParentT> const ParentT* findParent() const;
+
 	virtual bool appendNewChild();
 	virtual bool canAppendChild(const BConf& child) const;
 	virtual bool insertChild(const BConf &conf, int index);
@@ -33,8 +35,8 @@ public:
 	virtual void removeChild(int index){Q_UNUSED(index)}
 	virtual QString creatableChildName() const;
 	virtual bool isSame(const BConf & other) const;
-	virtual BConf* clone() const = 0;
-	template<class ParentT> const ParentT* findParent() const;
+	virtual void serialize(QDataStream& out) const;
+	virtual void deserialize(QDataStream& in);
 protected:
 	void beParentForChild(BConf *child);
 private:

@@ -21,8 +21,8 @@ class ChartWidget : public QGraphicsWidget
 public:
 	ChartWidget(ETimeInterval interval, QGraphicsItem* parent=nullptr);
 	ChartWidget(ETimeInterval interval, const BConf &conf, QGraphicsItem* parent=nullptr);
-	void addDataSource(const ProductConf &dataSource);
-	void addIndicator(const ProductConf &indicator);
+	void addDataSource(const DataSourceConf &dataSource);
+	void addIndicator(const IndicatorConf &indicator);
 	TimeRange viewTimeRange() const;
 	void setViewTimeRange(const TimeRange &range);
 	TimeRange timeRange() const;	// return whole timerange

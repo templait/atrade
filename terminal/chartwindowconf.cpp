@@ -6,8 +6,3 @@ ChartWindowConf::ChartWindowConf() : AddChildParentConf<TimeIntervalConf, ChartC
 	setTitle("Chart window");
 	setTimeInterval(ETimeInterval::IntervalD1);
 }
-
-BConf *ChartWindowConf::clone() const
-{
-	return new ChartWindowConf(*this);
-}

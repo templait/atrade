@@ -24,7 +24,7 @@ const QString &BConf::name() const
 	return mName;
 }
 
-const BConf *BConf::parentConf()
+const BConf *BConf::parentConf() const
 {
 	return mParent;
 }
@@ -76,4 +76,14 @@ void BConf::beParentForChild(BConf *child)
 bool BConf::isSame(const BConf &other) const
 {
 	return mName==other.mName;
+}
+
+void BConf::serialize(QDataStream &out) const
+{
+	out << mName << mTitle;
+}
+
+void BConf::deserialize(QDataStream &in)
+{
+	in >> mName >> mTitle;
 }

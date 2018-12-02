@@ -1,6 +1,7 @@
 #pragma once
 
 #include <indicators/bindicator.h>
+#include <indicators/indicatorconf.h>
 #include <factory.hpp>
 
-typedef Factory<BIndicator> IndicatorFactory;
+typedef Factory<BIndicator, IndicatorConf> IndicatorFactory;

@@ -1,10 +1,12 @@
 #include "lualineindicatorfactory.h"
-/*
+
 #include "lualineindicator.h"
 #include "lualineindicatorconfigurationeditor.h"
-#include "lualineindicatorconfnames.h"
 
 #include <QSettings>
+
+#include <indicators/indicatorconf.h>
+#include <datasources/datasourceconf.h>
 
 QMap<LuaLineIndicatorFactory::EIndicatorType, QUuid> LuaLineIndicatorFactory::mTypeMap = {
     {	LuaLineIndicatorFactory::IndicatorMA, QUuid("53826e87-f97c-42d3-a043-0d041674ab5a")	}
@@ -17,7 +19,7 @@ LuaLineIndicatorFactory::LuaLineIndicatorFactory(LuaLineIndicatorFactory::EIndic
 	
 }
 
-BIndicator *LuaLineIndicatorFactory::create(const Configuration &configuration) const
+BIndicator *LuaLineIndicatorFactory::create(const IndicatorConf &conf) const
 {
 	QString fileName;
 	switch(mType)
@@ -32,32 +34,25 @@ BIndicator *LuaLineIndicatorFactory::create(const Configuration &configuration) 
 	
 	LuaLineIndicator* rv=nullptr;
 
-	if(configuration[CN_SOURCE].childrenCount()==1)
+	if(/*const LuaLineIndicatorConf* llConf = */dynamic_cast<const IndicatorConf*>(&conf))
 	{
-		const Configuration* dsConf = configuration[CN_SOURCE].childAt(0);
-		rv = new LuaLineIndicator(luaPath +'/'+ fileName, DataSourceFactory::instance().product(*dsConf));
+		if(const DataSourceConf* dsConf = conf.findParent<DataSourceConf>())
+		{
+			rv = new LuaLineIndicator(luaPath +'/'+ fileName, DataSourceFactory::instance().product(*dsConf));
+		}
+		else
+		{	Log::error(QString("%1.Configuration haven't DataSourceConf parents"));	}
 	}
 	else
-	{	Log::error(QString("%1.Source product doesn't defined.").arg(__CLASS_NAME__).arg(configuration.value().toUuid().toString()));	}
+	{	Log::error(QString("%1.Configuration isn't IndicatorConf"));	}
 
 	return rv;
 }
 
-Configuration LuaLineIndicatorFactory::defaultConfiguration() const
+IndicatorConf *LuaLineIndicatorFactory::createDefaultConf() const
 {
-	Configuration rv;
-
-	QString name = productName();
-	rv.setName(name);
-	rv.setValue(mTypeMap[mType]);
-	rv.setTitle(QObject::tr("Lua line indicator", name.toLocal8Bit()));
-	rv.setUserEditableMap(Configuration::Title);
-	rv.insertChild({CN_SOURCE});
+	IndicatorConf* rv = new IndicatorConf;
+	rv->setProductID(mTypeMap[mType]);
+	rv->setTitle(QObject::tr("Индикатор Lua", __CLASS_NAME__.toLocal8Bit()));
 	return rv;
 }
-
-ConfigurationEditorModule *LuaLineIndicatorFactory::createConfigurationEditor(const QModelIndex &configuration, QWidget *parent) const
-{
-	return new LuaLineIndicatorConfigurationEditor(configuration, parent);
-}
-*/
