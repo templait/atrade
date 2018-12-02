@@ -31,3 +31,17 @@ bool TimeIntervalConf::isSame(const BConf &other) const
 	}
 	return rv;
 }
+
+void TimeIntervalConf::serialize(QDataStream &out) const
+{
+	BConf::serialize(out);
+	out << static_cast<int>(mTimeInterval);
+}
+
+void TimeIntervalConf::deserialize(QDataStream &in)
+{
+	BConf::deserialize(in);
+	int interval;
+	in >> interval;
+	mTimeInterval = static_cast<ETimeInterval>(interval);
+}

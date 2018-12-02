@@ -1,5 +1,6 @@
 #include "productconf.h"
 
+#include <QDataStream>
 #include <QVariant>
 
 ProductConf::ProductConf(const QString &name) : BConf(name)
@@ -40,4 +41,16 @@ bool ProductConf::isSame(const BConf &other) const
 		        && mParams==productConf->mParams;
 	}
 	return rv;
+}
+
+void ProductConf::serialize(QDataStream &out) const
+{
+	BConf::serialize(out);
+	out << mParams;
+}
+
+void ProductConf::deserialize(QDataStream &in)
+{
+	BConf::deserialize(in);
+	in >> mParams;
 }

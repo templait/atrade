@@ -28,8 +28,8 @@ public:
 	virtual const BConf *childAt(int index) const override;
 	virtual void removeChild(int index) override;
 	virtual bool isSame(const BConf& other) const override;
-	//virtual void serialize(QDataStream& out) const;
-	//virtual void deserialize(QDataStream& in);
+	virtual void serialize(QDataStream& out) const;
+	virtual void deserialize(QDataStream& in);
 };
 
 template<class ParentT, class ChildT>
@@ -91,4 +91,27 @@ bool ParentConf<ParentT, ChildT>::isSame(const BConf &other) const
 		}
 	}
 	return rv;
+}
+
+template<class ParentT, class ChildT>
+void ParentConf<ParentT, ChildT>::serialize(QDataStream &out) const
+{
+	ParentT::serialize(out);
+	out << mChildren.count();
+	for(const ChildT& child : mChildren)
+	{	child.serialize(out);	}
+}
+
+template<class ParentT, class ChildT>
+void ParentConf<ParentT, ChildT>::deserialize(QDataStream &in)
+{
+	ParentT::deserialize(in);
+	int chCount;
+	in >> chCount;
+	for(int i=0; i<chCount; i++)
+	{
+		ChildT child;
+		child.deserialize(in);
+		canAppendChild(child);
+	}
 }
