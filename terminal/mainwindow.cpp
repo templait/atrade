@@ -22,7 +22,7 @@ MainWindow::MainWindow()
 	connect(ui->actionCascade, &QAction::triggered, [this](){currentMDIArea()->cascadeSubWindows();});
 	connect(ui->actionTile, &QAction::triggered, [this](){currentMDIArea()->tileSubWindows();});
 
-	connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onCurrentTabChanfed);
+	connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onCurrentTabChanged);
 	connect(ui->tabWidget, &QTabWidget::tabCloseRequested, ui->tabWidget, &QTabWidget::removeTab);
 
 	initDocks();
@@ -80,8 +80,8 @@ void MainWindow::loadWindowState()
 		MDIArea* mdiArea = new MDIArea;
 		//mdiArea->setMaximumSize({900,800});
 		mdiArea->setObjectName(tabName);
-		mdiArea->loadWindowState(settings);
 		appendMDIArea(mdiArea);
+		mdiArea->loadWindowState(settings);
 	}
 	settings.endArray();
 	ui->tabWidget->setCurrentIndex(settings.value("CurrentTab", 0).toInt());
@@ -98,7 +98,7 @@ MDIArea *MainWindow::currentMDIArea()
 
 void MainWindow::appendMDIArea(MDIArea *area)
 {
-	ui->tabWidget->addTab(area, area->windowTitle());
+	ui->tabWidget->addTab(area, area->objectName());
 	connect(area, &QMdiArea::subWindowActivated, this, [this](QMdiSubWindow *window){
 		ui->actionChart_window_configuration->setEnabled(window);
 	});
@@ -128,7 +128,7 @@ void MainWindow::onChartWindowConfiguration()
 	Q_ASSERT(cw);
 	ConfigurationEditor editor(cw->conf(), this);
 	if(editor.exec())
-	{		}
+	{	cw->loadConf(editor.conf());	}
 }
 
 void MainWindow::onNewTab()
@@ -162,7 +162,7 @@ void MainWindow::onNewTab()
 	appendMDIArea(mdiArea);
 }
 
-void MainWindow::onCurrentTabChanfed(int index)
+void MainWindow::onCurrentTabChanged(int index)
 {
 	ui->actionNew_chart_window->setEnabled(index>=0);
 	ui->actionCascade->setEnabled(index>=0);

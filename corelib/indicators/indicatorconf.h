@@ -5,5 +5,9 @@
 class IndicatorConf final : public ProductConf
 {
 public:
-	IndicatorConf() : ProductConf("Indicator"){}
+	IndicatorConf();
+
+	// BConf interface
+public:
+	virtual bool isSame(const BConf &) const override;
 };

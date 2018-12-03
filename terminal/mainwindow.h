@@ -28,7 +28,7 @@ private:
 	void onNewChartWindow();
 	void onChartWindowConfiguration();
 	void onNewTab();
-	void onCurrentTabChanfed(int index);
+	void onCurrentTabChanged(int index);
 
 	// QWidget interface
 protected:

@@ -34,7 +34,8 @@ BIndicator *LuaLineIndicatorFactory::create(const IndicatorConf &conf) const
 	
 	LuaLineIndicator* rv=nullptr;
 
-	if(/*const LuaLineIndicatorConf* llConf = */dynamic_cast<const IndicatorConf*>(&conf))
+	const IndicatorConf* indConf = dynamic_cast<const IndicatorConf*>(&conf);
+	if(indConf)
 	{
 		if(const DataSourceConf* dsConf = conf.findParent<DataSourceConf>())
 		{

@@ -15,6 +15,7 @@ class BConf
 	BConf() = delete;
 protected:
 	BConf(const QString& name);
+	BConf(const BConf& other);
 public:
 	virtual ~BConf();
 

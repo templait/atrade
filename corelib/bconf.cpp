@@ -5,6 +5,14 @@ BConf::BConf(const QString& name) : mParent(nullptr), mName(name)
 
 }
 
+BConf::BConf(const BConf &other)
+	: mParent(nullptr)
+	, mTitle(other.mTitle)
+	, mName(other.mName)
+{
+
+}
+
 BConf::~BConf()
 {
 }
