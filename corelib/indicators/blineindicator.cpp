@@ -12,7 +12,7 @@ BLineIndicator::BLineIndicator(DataSource dataSource, QObject *parent)
 {
 	connect(&dataSource, SIGNAL(candlesAppended(int)), SLOT(onCandlesAppended(int)));
 	connect(&dataSource, SIGNAL(candleUpdated(int)), SLOT(onCandleUpdated(int)));
-	QTimer::singleShot(100, Qt::VeryCoarseTimer, [this](){append();});
+	//QTimer::singleShot(100, Qt::VeryCoarseTimer, [this](){append();});
 }
 
 int BLineIndicator::size() const
@@ -20,9 +20,14 @@ int BLineIndicator::size() const
 	return mPoints.size();
 }
 
+void BLineIndicator::populate()
+{
+	append();
+}
+
 const Point *BLineIndicator::at(int index) const
 {
-	const Point * rv(0);
+	const Point * rv(nullptr);
 	if(index<mPoints.size())
 	{	rv = &mPoints[index]; }
 	return rv;

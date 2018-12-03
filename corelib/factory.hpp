@@ -10,11 +10,11 @@
 
 class ConfEditorModule;
 
-template <class dsT, class confT>
+template <class ProductT, class ConfT>
 class Factory
 {
 public:
-	typedef SharedPointer<dsT> Product;
+	typedef SharedPointer<ProductT> Product;
 private:
 	Factory(Factory const&) = delete;
 	Factory& operator= (Factory const&) = delete;
@@ -24,7 +24,7 @@ private:
 	struct ProductKey
 	{
 		ProductID productID;
-		confT conf;
+		ConfT conf;
 	};
 	class ProductMap
 	{
@@ -32,13 +32,13 @@ private:
 		class ProductSet
 		{
 		public:
-			bool contains(const confT& key) const;
-			bool remove(const confT& key);
-			Product  operator [](const confT& key) const;
-			Product& operator [](const confT& key);
+			bool contains(const ConfT& key) const;
+			bool remove(const ConfT& key);
+			Product  operator [](const ConfT& key) const;
+			Product& operator [](const ConfT& key);
 		private:
-			int find(const confT& key) const;
-			QList<QPair<confT, Product> > mList;
+			int find(const ConfT& key) const;
+			QList<QPair<ConfT, Product> > mList;
 		};
 		QMap<ProductID,  ProductSet> mMap;
 
@@ -58,8 +58,8 @@ public:
 		{
 		}
 		virtual ~Unit(){}
-		virtual dsT* create(const confT& conf) const = 0;
-		virtual confT* createDefaultConf() const = 0;
+		virtual ProductT* create(const ConfT& conf) const = 0;
+		virtual ConfT* createDefaultConf() const = 0;
 		const QString& productName() const					{return mProductName;}
 		const ProductID& productID() const					{return mProductID;}
 	private:
@@ -68,7 +68,7 @@ public:
 	};
 
 	static Factory& instance();
-	Product product(const confT &conf);
+	Product product(const ConfT &conf);
 	bool hasProduct(const ProductID &id) const;
 	ProductConf* createDefaultConf(const ProductID &id) const;
 	bool registerUnit(Unit *unit);
@@ -79,15 +79,15 @@ private:
 	ProductMap mProductMap;	// список созданных продуктов
 };
 
-template<class dsT, class confT>
-Factory<dsT, confT> &Factory<dsT, confT>::instance()
+template<class ProductT, class ConfT>
+Factory<ProductT, ConfT> &Factory<ProductT, ConfT>::instance()
 {
 	static Factory rv;
 	return rv;
 }
 
-template<class dsT, class confT>
-typename Factory<dsT, confT>::Product Factory<dsT, confT>::product(const confT &conf)
+template<class ProductT, class ConfT>
+typename Factory<ProductT, ConfT>::Product Factory<ProductT, ConfT>::product(const ConfT &conf)
 {
 	Product rv;
 	ProductID id = conf.productID();
@@ -111,14 +111,14 @@ typename Factory<dsT, confT>::Product Factory<dsT, confT>::product(const confT &
 	return rv;
 }
 
-template<class dsT, class confT>
-bool Factory<dsT, confT>::hasProduct(const ProductID &id) const
+template<class ProductT, class ConfT>
+bool Factory<ProductT, ConfT>::hasProduct(const ProductID &id) const
 {
 	return mUnitMap.contains(id);
 }
 
-template<class dsT, class confT>
-ProductConf *Factory<dsT, confT>::createDefaultConf(const ProductID &id) const
+template<class ProductT, class ConfT>
+ProductConf *Factory<ProductT, ConfT>::createDefaultConf(const ProductID &id) const
 {
 	ProductConf* rv;
 	if(mUnitMap.contains(id))
@@ -128,8 +128,8 @@ ProductConf *Factory<dsT, confT>::createDefaultConf(const ProductID &id) const
 	return rv;
 }
 
-template<class dsT, class confT>
-bool Factory<dsT, confT>::registerUnit(Unit* unit)
+template<class ProductT, class ConfT>
+bool Factory<ProductT, ConfT>::registerUnit(Unit* unit)
 {
 	bool rv = false;
 	QSharedPointer<Unit> unitPtr(unit);
@@ -141,8 +141,8 @@ bool Factory<dsT, confT>::registerUnit(Unit* unit)
 	return rv;
 }
 
-template<class dsT, class confT>
-ProductList Factory<dsT, confT>::productList() const
+template<class ProductT, class ConfT>
+ProductList Factory<ProductT, ConfT>::productList() const
 {
 	ProductList rv;
 	for(auto unit : mUnitMap.values())
@@ -152,14 +152,14 @@ ProductList Factory<dsT, confT>::productList() const
 	return rv;
 }
 
-template<class dsT, class confT>
-bool Factory<dsT, confT>::ProductMap::ProductSet::contains(const confT &key) const
+template<class ProductT, class ConfT>
+bool Factory<ProductT, ConfT>::ProductMap::ProductSet::contains(const ConfT &key) const
 {
 	return find(key)>=0;
 }
 
-template<class dsT, class confT>
-bool Factory<dsT, confT>::ProductMap::ProductSet::remove(const confT &key)
+template<class ProductT, class ConfT>
+bool Factory<ProductT, ConfT>::ProductMap::ProductSet::remove(const ConfT &key)
 {
 	bool rv = false;
 	int i = find(key);
@@ -171,8 +171,8 @@ bool Factory<dsT, confT>::ProductMap::ProductSet::remove(const confT &key)
 	return rv;
 }
 
-template<class dsT, class confT>
-int Factory<dsT, confT>::ProductMap::ProductSet::find(const confT &key) const
+template<class ProductT, class ConfT>
+int Factory<ProductT, ConfT>::ProductMap::ProductSet::find(const ConfT &key) const
 {
 	int rv = -1;
 	for(int i=0; i<mList.size(); i++)
@@ -187,14 +187,14 @@ int Factory<dsT, confT>::ProductMap::ProductSet::find(const confT &key) const
 	return rv;
 }
 
-template<class dsT, class confT>
-typename Factory<dsT, confT>::Product Factory<dsT, confT>::ProductMap::ProductSet::operator [](const confT &key) const
+template<class ProductT, class ConfT>
+typename Factory<ProductT, ConfT>::Product Factory<ProductT, ConfT>::ProductMap::ProductSet::operator [](const ConfT &key) const
 {
 	return mList[find(key)].second;
 }
 
-template<class dsT, class confT>
-typename Factory<dsT, confT>::Product &Factory<dsT, confT>::ProductMap::ProductSet::operator [](const confT &key)
+template<class ProductT, class ConfT>
+typename Factory<ProductT, ConfT>::Product &Factory<ProductT, ConfT>::ProductMap::ProductSet::operator [](const ConfT &key)
 {
 	int i = find(key);
 	if(i>=0)
@@ -206,14 +206,14 @@ typename Factory<dsT, confT>::Product &Factory<dsT, confT>::ProductMap::ProductS
 	}
 }
 
-template<class dsT, class confT>
-bool Factory<dsT, confT>::ProductMap::contains(const Factory<dsT, confT>::ProductKey &key) const
+template<class ProductT, class ConfT>
+bool Factory<ProductT, ConfT>::ProductMap::contains(const Factory<ProductT, ConfT>::ProductKey &key) const
 {
 	return mMap.contains(key.productID) && mMap[key.productID].contains(key.conf);
 }
 
-template<class dsT, class confT>
-bool Factory<dsT, confT>::ProductMap::remove(const Factory<dsT, confT>::ProductKey &key)
+template<class ProductT, class ConfT>
+bool Factory<ProductT, ConfT>::ProductMap::remove(const Factory<ProductT, ConfT>::ProductKey &key)
 {
 	bool rv = false;
 	if(mMap.contains(key.productID))
@@ -221,14 +221,14 @@ bool Factory<dsT, confT>::ProductMap::remove(const Factory<dsT, confT>::ProductK
 	return rv;
 }
 
-template<class dsT, class confT>
-typename Factory<dsT, confT>::Product Factory<dsT, confT>::ProductMap::operator [](const Factory<dsT, confT>::ProductKey &key) const
+template<class ProductT, class ConfT>
+typename Factory<ProductT, ConfT>::Product Factory<ProductT, ConfT>::ProductMap::operator [](const Factory<ProductT, ConfT>::ProductKey &key) const
 {
 	return mMap[key.productID][key.conf];
 }
 
-template<class dsT, class confT>
-typename Factory<dsT, confT>::Product &Factory<dsT, confT>::ProductMap::operator [](const Factory<dsT, confT>::ProductKey &key)
+template<class ProductT, class ConfT>
+typename Factory<ProductT, ConfT>::Product &Factory<ProductT, ConfT>::ProductMap::operator [](const Factory<ProductT, ConfT>::ProductKey &key)
 {
 	return mMap[key.productID][key.conf];
 }

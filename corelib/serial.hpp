@@ -34,8 +34,11 @@ class Serial
 	};
 
 public:
+	typedef Serial<T> SerialT;
 	virtual int size() const = 0;
 	virtual const T * at(int index) const = 0; //!< временная метка каждой последующей свечки должна быть больше предыдущей.
+	virtual void populate() = 0;
+	virtual bool isSame(const Serial<T>& other) const = 0;
 
 	const T& operator[](int index) const;
 	const T& first() const;

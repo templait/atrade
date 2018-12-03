@@ -8,10 +8,12 @@ extern "C" {
 #include "lualib.h"
 }
 
-LuaLineIndicator::LuaLineIndicator(const QString &fileName, DataSource dataSource, QObject* parent) : BLineIndicator(dataSource, parent)
+LuaLineIndicator::LuaLineIndicator(const QString &fileName, DataSource dataSource, QObject* parent)
+    : BLineIndicator(dataSource, parent)
+    , mFileName(fileName)
 {
 	mState = luaL_newstate();
-	if(luaL_loadfile(mState, fileName.toLocal8Bit()))
+	if(luaL_loadfile(mState, mFileName.toLocal8Bit()))
 	{
 		Log::error(QString("%1:%2").arg(__CLASS_NAME__).arg(lua_tostring(mState,-1)));
 	}
@@ -142,5 +144,15 @@ Point LuaLineIndicator::candle2point(int index) const
 		{	Log::error(lua_tostring(mState,-1));	}
 	}
 
+	return rv;
+}
+
+bool LuaLineIndicator::isSame(const SerialT &other) const
+{
+	bool rv = false;
+	if(const LuaLineIndicator* li = dynamic_cast<const LuaLineIndicator*>(&other))
+	{
+		rv = dataSource()->isSame(*li->dataSource()) && mFileName==li->mFileName;
+	}
 	return rv;
 }

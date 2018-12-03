@@ -8,11 +8,12 @@ class BLineIndicator : public BIndicator
 {
 	Q_OBJECT
 public:
-	BLineIndicator(DataSource dataSource, QObject* parent=0);
+	BLineIndicator(DataSource dataSource, QObject* parent=nullptr);
 	virtual ~BLineIndicator(){}
 
 	// Serial interface
 	int size() const override;
+	virtual void populate() override;
 	const Point *at(int index) const override;
 protected:
 	virtual Point candle2point(int index) const = 0;

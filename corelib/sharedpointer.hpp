@@ -21,6 +21,8 @@ public:
 	const T* operator&() const;
 	T* operator&();
 
+	const T& operator*() const;
+
 	bool operator==(const SharedPointer& other) const;
 	SharedPointer& operator=(const SharedPointer& other);
 
@@ -74,6 +76,12 @@ template<class T>
 inline T *SharedPointer<T>::operator&()
 {
 	return mPointer;
+}
+
+template<class T>
+const T &SharedPointer<T>::operator*() const
+{
+	return *mPointer;
 }
 
 template<class T>

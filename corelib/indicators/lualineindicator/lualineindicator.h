@@ -12,6 +12,7 @@ public:
 private:
 	lua_State* mState;
 	int mLineCount;
+	QString mFileName;
 
 	static int candleC(lua_State* L);
 	static int candleO(lua_State* L);
@@ -20,6 +21,8 @@ private:
 	static int candleV(lua_State* L);
 
 	// BLineIndicator interface
+public:
+	virtual bool isSame(const SerialT &other) const override;
 protected:
 	virtual Point candle2point(int index) const override;
 };

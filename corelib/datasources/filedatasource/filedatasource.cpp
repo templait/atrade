@@ -8,13 +8,9 @@
 #include "log.h"
 
 
-FileDataSource::FileDataSource(const QString &fileName, QObject* parent) : BDataSource(parent)
+FileDataSource::FileDataSource(const QString &fileName, QObject* parent) : BDataSource(parent), mFile(nullptr)
 {
 	mFile = new QFile(fileName, this);
-	if(mFile->open(QIODevice::ReadOnly))
-	{	readData();	}
-	else
-	{	Log::error(QString("%1.%2:%3").arg(__CLASS_NAME__).arg(sourceName()).arg(errorString()));	}
 }
 
 FileDataSource::~FileDataSource()
@@ -120,6 +116,14 @@ int FileDataSource::size() const
 	return mCandles.size();
 }
 
+void FileDataSource::populate()
+{
+	if(mFile->open(QIODevice::ReadOnly))
+	{	readData();	}
+	else
+	{	Log::error(QString("%1.%2:%3").arg(__CLASS_NAME__).arg(sourceName()).arg(errorString()));	}
+}
+
 const Candle *FileDataSource::at(int index) const
 {
 	const Candle * rv = nullptr;
@@ -141,4 +145,19 @@ QString FileDataSource::errorString() const
 ETimeInterval FileDataSource::interval() const
 {
 	return mSettings.interval;
+}
+
+bool FileDataSource::isSame(const SerialT &other) const
+{
+	bool rv = false;
+	if(const FileDataSource* fds = dynamic_cast<const FileDataSource*>(&other))
+	{
+		rv = mSettings==(fds->mSettings);
+	}
+	return rv;
+}
+
+bool FileDataSource::FDSSettings::operator==(const FileDataSource::FDSSettings &other) const
+{
+	return fileName==other.fileName && className==other.className && code==other.code && interval==other.interval;
 }
