@@ -23,6 +23,7 @@ void MDIArea::saveWindowState(QSettings& settings)
 		{
 			settings.setValue("WindowType", "ChartWindow");
 			settings.setValue("Geometry", sub->geometry());
+			settings.setValue("State", static_cast<int>(sub->windowState()));
 			cw->saveConf(settings);
 		}
 	}
@@ -41,8 +42,8 @@ void MDIArea::loadWindowState(QSettings& settings)
 		{
 			ChartWindow* cw = new ChartWindow;
 			QMdiSubWindow* sub = addSubWindow(cw);
+			sub->setWindowState(settings.value("State").value<Qt::WindowState>());
 			sub->setGeometry(settings.value("Geometry").toRect());
-			cw->show();
 			cw->loadConf(settings);
 		}
 	}

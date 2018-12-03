@@ -150,12 +150,12 @@ Qt::ItemFlags ConfModel::flags(const QModelIndex &index) const
 // Иначе не будут поступать события DrugMove. Поэтому при первом заходе с новыми данными, всегда возвращаем true.
 static const QMimeData *__data = nullptr;
 
-bool ConfModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) const
+bool ConfModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
 {
 	if(data != __data)
 	{
 		__data = data;
-		return true;
+		return QAbstractItemModel::canDropMimeData(data, action, row, column, parent);
 	}
 
 	bool rv = false;
