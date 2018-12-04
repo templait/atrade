@@ -40,4 +40,5 @@ public:
 	virtual QString errorString() const override;
 	virtual ETimeInterval interval() const override;
 	virtual bool isSame(const SerialT &other) const override;
+	virtual SerialT::Info info() const override;
 };

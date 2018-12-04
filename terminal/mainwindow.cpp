@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "logdoc/logdoc.h"
+#include "productdoc/productdoc.h"
 #include "chartwindow.h"
 #include "chartwindowconf.h"
 #include "configurationeditor.h"
@@ -40,6 +41,11 @@ void MainWindow::initDocks()
 	addDockWidget(Qt::BottomDockWidgetArea, mLogDoc);
 	mLogDoc->hide();// hide by default
 	ui->menuView->addAction(mLogDoc->toggleViewAction());
+
+	mProductDoc = new ProductDoc(this);
+	addDockWidget(Qt::BottomDockWidgetArea, mProductDoc);
+	mProductDoc->hide();// hide by default
+	ui->menuView->addAction(mProductDoc->toggleViewAction());
 }
 
 

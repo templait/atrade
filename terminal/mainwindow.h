@@ -8,6 +8,7 @@ namespace Ui
 }
 
 class LogDoc;
+class ProductDoc;
 class MDIArea;
 
 class MainWindow : public QMainWindow
@@ -19,6 +20,7 @@ public:
 private:
 	Ui::MainWindow *ui;
 	LogDoc *mLogDoc;
+	ProductDoc *mProductDoc;
 
 	void initDocks();
 	void saveWindowState() const;

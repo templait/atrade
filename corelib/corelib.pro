@@ -4,7 +4,7 @@ include(../project.pri)
 
 QT = core network charts
 
-HEADERS = types.h confnames.h serial.hpp sharedpointer.hpp factory.hpp
+HEADERS = types.h serial.hpp sharedpointer.hpp factory.hpp
 
 HEADERS += parentconf.hpp addchildparentconf.hpp
 
@@ -14,8 +14,8 @@ SOURCES += bconf.cpp timeintervalconf.cpp productconf.cpp
 HEADERS += log.h   tools.h   candle.h   point.h   configuration.h   configurationeditormodule.h   productcombobox.h
 SOURCES += log.cpp tools.cpp candle.cpp point.cpp configuration.cpp configurationeditormodule.cpp productcombobox.cpp
 
-HEADERS += productlistmodel.h   configurationmodel.h   confmodel.h
-SOURCES += productlistmodel.cpp configurationmodel.cpp confmodel.cpp
+HEADERS += productlistmodel.h   confmodel.h
+SOURCES += productlistmodel.cpp confmodel.cpp
 
 include(datasources/datasources.pri)
 include(indicators/indicators.pri)

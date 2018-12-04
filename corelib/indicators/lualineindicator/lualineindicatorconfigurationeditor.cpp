@@ -1,7 +1,6 @@
 #include "lualineindicatorconfigurationeditor.h"
 /*
 #include "ui_lualineindicatorconfigurationeditor.h"
-#include "lualineindicatorconfnames.h"
 
 #include <datasources/datasourcefactory.h>
 #include <configurationmodel.h>

@@ -14,6 +14,7 @@ public:
 	~SharedPointer();
 
 	bool isNull() const;
+	uint count() const;
 
 	const T* operator->() const;
 	T* operator->();
@@ -142,7 +143,10 @@ inline bool SharedPointer<T>::isNull() const
 }
 
 template<class T>
-uint qHash(const SharedPointer<T> &pt, uint)
+uint SharedPointer<T>::count() const
 {
-	return reinterpret_cast<std::uintptr_t>(&pt);
+	uint rv = 0;
+	if(!isNull())
+	{	rv = mCounter[mPointer];	}
+	return rv;
 }

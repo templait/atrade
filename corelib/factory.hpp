@@ -24,6 +24,11 @@ public:
 	class Unit
 	{
 	public:
+		struct ProductInfo : public ProductT::Info
+		{
+			int count;
+		};
+
 		Unit(const QString& productName, const ProductID& productID)
 			: mProductName(productName)
 			, mProductID(productID)
@@ -34,6 +39,7 @@ public:
 		virtual ConfT* createDefaultConf() const = 0;
 		const QString& productName() const					{return mProductName;}
 		const ProductID& productID() const					{return mProductID;}
+		QList<ProductInfo> info() const;
 	private:
 		QString mProductName;
 		ProductID mProductID;
@@ -131,5 +137,13 @@ ProductList Factory<ProductT, ConfT>::productList() const
 	{
 		rv << QPair<QString, ProductID>(unit->productName(), unit->productID());
 	}
+	return rv;
+}
+
+template<class ProductT, class ConfT>
+QList<typename Factory<ProductT, ConfT>::Unit::ProductInfo> Factory<ProductT, ConfT>::Unit::info() const
+{
+	QList<ProductInfo> rv;
+
 	return rv;
 }

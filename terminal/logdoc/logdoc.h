@@ -10,7 +10,7 @@ class LogDoc : public QDockWidget
 {
 	Q_OBJECT
 public:
-	LogDoc(QWidget *parent=0);
+	LogDoc(QWidget *parent=nullptr);
 	~LogDoc();
 private:
 	Ui::wLogDoc *ui;

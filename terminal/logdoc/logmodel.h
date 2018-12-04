@@ -6,7 +6,7 @@ class LogModel : public QAbstractListModel
 {
 	Q_OBJECT
 public:
-	LogModel(QObject *parent=0);
+	LogModel(QObject *parent=nullptr);
 	void appendString(const QString & string, int level = 0);
 public slots:
 	void clear();

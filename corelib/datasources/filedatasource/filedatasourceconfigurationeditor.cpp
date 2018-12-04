@@ -4,13 +4,11 @@
 #include <log.h>
 #include <tools.h>
 #include <ui_filedatasourceconfigurationeditor.h>
-#include <configurationmodel.h>
-#include "filedatasourceconfnames.h"
 
 FileDataSourceConfigurationEditor::FileDataSourceConfigurationEditor(const QModelIndex &index, QWidget *parent)
 	: ConfigurationEditorModule(index, parent)
 {
-	ui = new Ui::ConfigurationEditor;
+	/*ui = new Ui::ConfigurationEditor;
 	ui->setupUi(this);
 
 	QSettings settings;
@@ -47,7 +45,7 @@ FileDataSourceConfigurationEditor::FileDataSourceConfigurationEditor(const QMode
 		connect(ui->pbSetDefaultTitle, &QAbstractButton::clicked, this, &FileDataSourceConfigurationEditor::onSetDefaulTitle);
 	}
 	else
-	{	Log::error(QString("%1.invalid path: \"%2\"").arg(__CLASS_NAME__).arg(dir.path()));	}
+	{	Log::error(QString("%1.invalid path: \"%2\"").arg(__CLASS_NAME__).arg(dir.path()));	}*/
 
 }
 
@@ -76,16 +74,16 @@ bool FileDataSourceConfigurationEditor::loadCodesForClass(const QString& textCla
 
 void FileDataSourceConfigurationEditor::onClassActivated(const QString &textClassName)
 {
-	configuration()[CN_CLASS].setValue(textClassName);
+	//configuration()[CN_CLASS].setValue(textClassName);
 	loadCodesForClass(textClassName);
 }
 
 void FileDataSourceConfigurationEditor::onCodeActivated(const QString &textCodeName)
 {
-	configuration()[CN_CODE].setValue(textCodeName);
+	//configuration()[CN_CODE].setValue(textCodeName);
 }
 
 void FileDataSourceConfigurationEditor::onSetDefaulTitle()
 {
-	model()->setData(modelIndex().sibling(modelIndex().row(), 0), ui->cbClass->currentText() + '.' + ui->cbCode->currentText(), Qt::EditRole);
+	//model()->setData(modelIndex().sibling(modelIndex().row(), 0), ui->cbClass->currentText() + '.' + ui->cbCode->currentText(), Qt::EditRole);
 }

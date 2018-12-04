@@ -156,3 +156,9 @@ bool LuaLineIndicator::isSame(const SerialT &other) const
 	}
 	return rv;
 }
+
+LuaLineIndicator::Serial::Info LuaLineIndicator::info() const
+{
+	auto dsInfo = dataSource()->info();
+	return {__CLASS_NAME__, QString("DS:{%1, %2}, File:%3").arg(dsInfo.type).arg(dsInfo.info).arg(mFileName)};
+}

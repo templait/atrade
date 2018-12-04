@@ -157,6 +157,11 @@ bool FileDataSource::isSame(const SerialT &other) const
 	return rv;
 }
 
+BDataSource::SerialT::Info FileDataSource::info() const
+{
+	return {__CLASS_NAME__, QString("I:%1, Class:%2, Code:%3").arg(intervalToString(mSettings.interval)).arg(mSettings.className).arg(mSettings.code)};
+}
+
 bool FileDataSource::FDSSettings::operator==(const FileDataSource::FDSSettings &other) const
 {
 	return fileName==other.fileName && className==other.className && code==other.code && interval==other.interval;

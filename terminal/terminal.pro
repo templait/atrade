@@ -21,4 +21,5 @@ SOURCES += configurationeditor.cpp titleconfigurationeditor.cpp timeintervalconf
 FORMS	+= configurationeditor.ui  titleconfigurationeditor.ui  timeintervalconfigurationeditor.ui
 
 include(logdoc/logdoc.pri)
+include(productdoc/productdoc.pri)
 include(series/series.pri)

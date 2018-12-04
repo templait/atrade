@@ -1,7 +1,5 @@
 VPATH += $$PWD
 
-HEADERS += confnames.h
-
 HEADERS += lualineindicator.h   lualineindicatorfactory.h
 SOURCES += lualineindicator.cpp lualineindicatorfactory.cpp
 
