@@ -31,18 +31,6 @@ QVariant ProductConf::param(const QString &name) const
 	return rv;
 }
 
-bool ProductConf::isSame(const BConf &other) const
-{
-	bool rv = false;
-	if(const ProductConf* productConf = dynamic_cast<const ProductConf*>(&other))
-	{
-		rv = BConf::isSame(other)
-		        && mProductID==productConf->mProductID
-		        && mParams==productConf->mParams;
-	}
-	return rv;
-}
-
 void ProductConf::serialize(QDataStream &out) const
 {
 	BConf::serialize(out);

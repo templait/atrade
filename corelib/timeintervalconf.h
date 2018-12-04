@@ -18,7 +18,6 @@ private:
 
 	// BConf interface
 public:
-	virtual bool isSame(const BConf &other) const override;
 	virtual void serialize(QDataStream &out) const override;
 	virtual void deserialize(QDataStream &in) override;
 };

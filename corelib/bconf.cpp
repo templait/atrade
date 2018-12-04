@@ -81,11 +81,6 @@ void BConf::beParentForChild(BConf *child)
 	child->mParent=this;
 }
 
-bool BConf::isSame(const BConf &other) const
-{
-	return mName==other.mName;
-}
-
 void BConf::serialize(QDataStream &out) const
 {
 	out << mName << mTitle;

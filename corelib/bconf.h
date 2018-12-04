@@ -35,7 +35,6 @@ public:
 	virtual const BConf* childAt(int index) const;
 	virtual void removeChild(int index){Q_UNUSED(index)}
 	virtual QString creatableChildName() const;
-	virtual bool isSame(const BConf & other) const;
 	virtual void serialize(QDataStream& out) const;
 	virtual void deserialize(QDataStream& in);
 protected:
