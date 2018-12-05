@@ -1,6 +1,6 @@
 #pragma once
 
-#include <configurationeditormodule.h>
+//#include <configurationeditormodule.h>
 /*
 namespace Ui
 {

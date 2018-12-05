@@ -7,6 +7,7 @@
 #include <productlistmodel.h>
 
 #include "confmodel.h"
+#include "timeintervalconfeditor.h"
 #include "titleconfeditor.h"
 
 ConfEditor::ConfEditor(const ChartWindowConf &conf, QWidget *parent)
@@ -53,6 +54,14 @@ void ConfEditor::showChartWindowConf(ChartWindowConf &conf)
 	TitleConfEditor* tce = new TitleConfEditor(conf);
 	ui->vlConfModules->addWidget(tce);
 	connect(tce, &ConfEditorModule::confChanged, this, &ConfEditor::updateCurrentConf);
+	ui->vlConfModules->addWidget(new TimeIntervalConfEditor(conf));
+}
+
+void ConfEditor::showChartConf(ChartConf &conf)
+{
+	TitleConfEditor* tce = new TitleConfEditor(conf);
+	ui->vlConfModules->addWidget(tce);
+	connect(tce, &ConfEditorModule::confChanged, this, &ConfEditor::updateCurrentConf);
 }
 
 void ConfEditor::updateCurrentConf()
@@ -85,9 +94,9 @@ void ConfEditor::onCurrentConfChanged(const QModelIndex &index)
 	{
 		clearConfEditor();
 		if(ChartWindowConf* cwConf = dynamic_cast<ChartWindowConf*>(conf))
-		{
-			showChartWindowConf(*cwConf);
-		}
+		{	showChartWindowConf(*cwConf);	}
+		else if(ChartConf* cConf = dynamic_cast<ChartConf*>(conf))
+		{	showChartConf(*cConf);	}
 	}
 }
 

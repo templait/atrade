@@ -29,6 +29,7 @@ private:
 
 	void clearConfEditor();
 	void showChartWindowConf(ChartWindowConf &conf);
+	void showChartConf(ChartConf &conf);
 	void updateCurrentConf();
 	void execContextMenu(const QPoint& point);
 	void onCurrentConfChanged(const QModelIndex &index);
