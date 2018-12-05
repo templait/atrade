@@ -12,6 +12,7 @@ TimeIntervalConfEditor::TimeIntervalConfEditor(TimeIntervalConf &conf, QWidget *
 
 	connect(ui->cbTimeInterval, qOverload<int>(&QComboBox::currentIndexChanged), [this](int){
 		static_cast<TimeIntervalConf&>(this->conf()).setTimeInterval(ui->cbTimeInterval->timeInterval());
+		emit confChanged();
 	});
 }
 
