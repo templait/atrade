@@ -1,13 +1,13 @@
 #pragma once
 
 #include <configurationeditormodule.h>
-
+/*
 namespace Ui
 {
-class ConfigurationEditor;
+class ConfEditor;
 }
 
-class FileDataSourceConfigurationEditor : public ConfigurationEditorModule
+class FileDataSourceConfigurationEditor : public ConfEditorModule
 {
 	Q_OBJECT
 public:
@@ -20,5 +20,6 @@ private:
 	void onCodeActivated(const QString& textCodeName);
 	void onSetDefaulTitle();
 
-	Ui::ConfigurationEditor* ui;
+	Ui::ConfEditor* ui;
 };
+*/

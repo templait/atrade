@@ -1,13 +1,13 @@
 #pragma once
 
 #include <configurationeditormodule.h>
-
+/*
 namespace Ui
 {
 class TitleConfigurationEditor;
 }
 
-class TitleConfigurationEditor : public ConfigurationEditorModule
+class TitleConfigurationEditor : public ConfEditorModule
 {
 	Q_OBJECT
 public:
@@ -18,3 +18,4 @@ private:
 
 	void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &);
 };
+*/

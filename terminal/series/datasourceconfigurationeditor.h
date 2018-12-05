@@ -1,13 +1,13 @@
 #pragma once
 
 #include <configurationeditormodule.h>
-
+/*
 namespace Ui
 {
 class DataSourceConfigurationEditor;
 }
 
-class DataSourceConfigurationEditor : public ConfigurationEditorModule
+class DataSourceConfigurationEditor : public ConfEditorModule
 {
 	Q_OBJECT
 public:
@@ -22,3 +22,4 @@ private:
 	void onButtonClicked();
 	void onSetAllColors();
 };
+*/

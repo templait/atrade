@@ -1,14 +1,14 @@
 #include "filedatasourceconfigurationeditor.h"
-#include <QDir>
+/*#include <QDir>
 #include <QSettings>
 #include <log.h>
 #include <tools.h>
 #include <ui_filedatasourceconfigurationeditor.h>
 
 FileDataSourceConfigurationEditor::FileDataSourceConfigurationEditor(const QModelIndex &index, QWidget *parent)
-	: ConfigurationEditorModule(index, parent)
+	: ConfEditorModule(index, parent)
 {
-	/*ui = new Ui::ConfigurationEditor;
+	ui = new Ui::ConfigurationEditor;
 	ui->setupUi(this);
 
 	QSettings settings;
@@ -45,7 +45,7 @@ FileDataSourceConfigurationEditor::FileDataSourceConfigurationEditor(const QMode
 		connect(ui->pbSetDefaultTitle, &QAbstractButton::clicked, this, &FileDataSourceConfigurationEditor::onSetDefaulTitle);
 	}
 	else
-	{	Log::error(QString("%1.invalid path: \"%2\"").arg(__CLASS_NAME__).arg(dir.path()));	}*/
+	{	Log::error(QString("%1.invalid path: \"%2\"").arg(__CLASS_NAME__).arg(dir.path()));	}
 
 }
 
@@ -87,3 +87,4 @@ void FileDataSourceConfigurationEditor::onSetDefaulTitle()
 {
 	//model()->setData(modelIndex().sibling(modelIndex().row(), 0), ui->cbClass->currentText() + '.' + ui->cbCode->currentText(), Qt::EditRole);
 }
+*/

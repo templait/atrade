@@ -29,6 +29,7 @@ ConfEditor::ConfEditor(const ChartWindowConf &conf, QWidget *parent)
 	ui->tvConf->setModel(mConfModel);
 	ui->tvConf->expandAll();
 	connect(ui->tvConf, &QWidget::customContextMenuRequested, [this](const QPoint& point){execContextMenu(ui->tvConf->viewport()->mapToGlobal(point));});
+	connect(ui->tvConf, &QAbstractItemView::activated, this, &ConfEditor::onConfActivated);
 }
 
 ConfEditor::~ConfEditor()
@@ -39,6 +40,16 @@ ConfEditor::~ConfEditor()
 const ChartWindowConf &ConfEditor::conf() const
 {
 	return mConf;
+}
+
+void ConfEditor::clearConfEditor()
+{
+	qDeleteAll(ui->gbConfModules->findChildren<QWidget*>());
+}
+
+void ConfEditor::showChartWindowConf(const ChartWindowConf &conf)
+{
+
 }
 
 void ConfEditor::execContextMenu(const QPoint &point)
@@ -54,6 +65,19 @@ void ConfEditor::execContextMenu(const QPoint &point)
 		{	act = menu.addAction(childName);	}
 		if(menu.exec(point) == act)
 		{	mConfModel->appendChild(index);	}
+	}
+}
+
+void ConfEditor::onConfActivated(const QModelIndex &index)
+{
+	const BConf* conf = mConfModel->conf(index);
+	if(conf)
+	{
+		clearConfEditor();
+		if(const ChartWindowConf* cwConf = dynamic_cast<const ChartWindowConf*>(conf))
+		{
+			qDebug("ssss");
+		}
 	}
 }
 

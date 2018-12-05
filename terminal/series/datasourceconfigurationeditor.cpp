@@ -4,9 +4,9 @@
 #include <ui_datasourceconfigurationeditor.h>
 
 #define DECREASING_ALPHA 150
-
+/*
 DataSourceConfigurationEditor::DataSourceConfigurationEditor(const QModelIndex &index, QWidget *parent)
-	: ConfigurationEditorModule(index, parent)
+	: ConfEditorModule(index, parent)
 {
 	ui = new Ui::DataSourceConfigurationEditor;
 	ui->setupUi(this);
@@ -84,3 +84,4 @@ void DataSourceConfigurationEditor::onSetAllColors()
 		saveConfiguration();
 	}
 }
+*/

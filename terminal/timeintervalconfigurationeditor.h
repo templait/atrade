@@ -1,13 +1,13 @@
 #pragma once
 
 #include <configurationeditormodule.h>
-
+/*
 namespace Ui
 {
 class TimeIntervalConfigurationEditor;
 }
 
-class TimeIntervalConfigurationEditor : public ConfigurationEditorModule
+class TimeIntervalConfigurationEditor : public ConfEditorModule
 {
 	Q_OBJECT
 public:
@@ -16,3 +16,4 @@ public:
 private:
 	Ui::TimeIntervalConfigurationEditor* ui;
 };
+*/

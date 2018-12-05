@@ -27,7 +27,10 @@ private:
 	ConfModel *mConfModel;
 	ChartWindowConf mConf;
 
+	void clearConfEditor();
+	void showChartWindowConf(const ChartWindowConf& conf);
 	void execContextMenu(const QPoint& point);
+	void onConfActivated(const QModelIndex &index);
 
 	// QWidget interface
 protected:
