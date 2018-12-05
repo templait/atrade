@@ -11,18 +11,18 @@ class ConfModel;
 
 namespace Ui
 {
-class ConfigurationEditor;
+class ConfEditor;
 }
 
-class ConfigurationEditor : public QDialog
+class ConfEditor : public QDialog
 {
 	Q_OBJECT
 public:
-	ConfigurationEditor(const ChartWindowConf& conf, QWidget* parent=nullptr);
-	~ConfigurationEditor() override;
+	ConfEditor(const ChartWindowConf& conf, QWidget* parent=nullptr);
+	~ConfEditor() override;
 	const ChartWindowConf& conf() const;
 private:
-	Ui::ConfigurationEditor *ui;
+	Ui::ConfEditor *ui;
 	ProductListModel* mProductListModel;
 	ConfModel *mConfModel;
 	ChartWindowConf mConf;

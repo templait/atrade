@@ -1,6 +1,6 @@
-#include "configurationeditor.h"
+#include "confeditor.h"
 
-#include <ui_configurationeditor.h>
+#include <ui_confeditor.h>
 
 #include <QMenu>
 #include <QSettings>
@@ -8,11 +8,11 @@
 
 #include "confmodel.h"
 
-ConfigurationEditor::ConfigurationEditor(const ChartWindowConf &conf, QWidget *parent)
+ConfEditor::ConfEditor(const ChartWindowConf &conf, QWidget *parent)
 	: QDialog(parent)
 	, mConf(conf)
 {
-	ui = new Ui::ConfigurationEditor;
+	ui = new Ui::ConfEditor;
 	ui->setupUi(this);
 
 	QSettings settings;
@@ -31,17 +31,17 @@ ConfigurationEditor::ConfigurationEditor(const ChartWindowConf &conf, QWidget *p
 	connect(ui->tvConf, &QWidget::customContextMenuRequested, [this](const QPoint& point){execContextMenu(ui->tvConf->viewport()->mapToGlobal(point));});
 }
 
-ConfigurationEditor::~ConfigurationEditor()
+ConfEditor::~ConfEditor()
 {
 	delete ui;
 }
 
-const ChartWindowConf &ConfigurationEditor::conf() const
+const ChartWindowConf &ConfEditor::conf() const
 {
 	return mConf;
 }
 
-void ConfigurationEditor::execContextMenu(const QPoint &point)
+void ConfEditor::execContextMenu(const QPoint &point)
 {
 	QModelIndex index = ui->tvConf->currentIndex();
 	if(index.isValid())
@@ -57,7 +57,7 @@ void ConfigurationEditor::execContextMenu(const QPoint &point)
 	}
 }
 
-void ConfigurationEditor::closeEvent(QCloseEvent *event)
+void ConfEditor::closeEvent(QCloseEvent *event)
 {
 	QSettings settings;
 	settings.beginGroup(objectName());

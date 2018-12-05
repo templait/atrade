@@ -16,9 +16,9 @@ HEADERS += mainwindow.h   chartwindow.h   mdiarea.h   chartwidget.h   timeinterv
 SOURCES += mainwindow.cpp chartwindow.cpp mdiarea.cpp chartwidget.cpp timeintervalcombobox.cpp
 FORMS	=  mainwindow.ui  chartwindow.ui
 
-HEADERS += configurationeditor.h   titleconfigurationeditor.h   timeintervalconfigurationeditor.h
-SOURCES += configurationeditor.cpp titleconfigurationeditor.cpp timeintervalconfigurationeditor.cpp
-FORMS	+= configurationeditor.ui  titleconfigurationeditor.ui  timeintervalconfigurationeditor.ui
+HEADERS += confeditor.h   titleconfigurationeditor.h   timeintervalconfigurationeditor.h
+SOURCES += confeditor.cpp titleconfigurationeditor.cpp timeintervalconfigurationeditor.cpp
+FORMS	+= confeditor.ui  titleconfigurationeditor.ui  timeintervalconfigurationeditor.ui
 
 include(logdoc/logdoc.pri)
 include(productdoc/productdoc.pri)

@@ -3,7 +3,7 @@
 #include "productdoc/productdoc.h"
 #include "chartwindow.h"
 #include "chartwindowconf.h"
-#include "configurationeditor.h"
+#include "confeditor.h"
 #include "mdiarea.h"
 
 #include <ui_mainwindow.h>
@@ -129,7 +129,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::onNewChartWindow()
 {
 	ChartWindowConf conf;
-	ConfigurationEditor editor(conf, this);
+	ConfEditor editor(conf, this);
 	if(editor.exec())
 	{
 		ChartWindow* cw = new ChartWindow(editor.conf());
@@ -142,7 +142,7 @@ void MainWindow::onChartWindowConfiguration()
 {
 	ChartWindow* cw = qobject_cast<ChartWindow*>(currentMDIArea()->activeSubWindow()->widget());
 	Q_ASSERT(cw);
-	ConfigurationEditor editor(cw->conf(), this);
+	ConfEditor editor(cw->conf(), this);
 	if(editor.exec())
 	{	cw->loadConf(editor.conf());	}
 }
