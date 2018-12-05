@@ -5,10 +5,17 @@
 #include <QUuid>
 #include <productconf.h>
 #include <sharedpointer.hpp>
+#include <serial.hpp>
 #include <log.h>
 #include <tools.h>
 
 class ConfEditorModule;
+
+struct ProductInfo : public SerialInfo
+{
+	int count;
+	QString addr;
+};
 
 template <class ProductT, class ConfT>
 class Factory
@@ -24,11 +31,6 @@ public:
 	class Unit
 	{
 	public:
-		struct ProductInfo : public ProductT::Info
-		{
-			int count;
-		};
-
 		Unit(const QString& productName, const ProductID& productID)
 			: mProductName(productName)
 			, mProductID(productID)
@@ -39,7 +41,6 @@ public:
 		virtual ConfT* createDefaultConf() const = 0;
 		const QString& productName() const					{return mProductName;}
 		const ProductID& productID() const					{return mProductID;}
-		QList<ProductInfo> info() const;
 	private:
 		QString mProductName;
 		ProductID mProductID;
@@ -51,6 +52,7 @@ public:
 	ProductConf* createDefaultConf(const ProductID &id) const;
 	bool registerUnit(Unit *unit);
 	ProductList productList() const;
+	QList<ProductInfo> info() const;
 private:
 
 	QMap<ProductID, QSharedPointer<Unit> > mUnitMap;
@@ -141,9 +143,18 @@ ProductList Factory<ProductT, ConfT>::productList() const
 }
 
 template<class ProductT, class ConfT>
-QList<typename Factory<ProductT, ConfT>::Unit::ProductInfo> Factory<ProductT, ConfT>::Unit::info() const
+QList<ProductInfo> Factory<ProductT, ConfT>::info() const
 {
 	QList<ProductInfo> rv;
-
+	for(const Product& product : mProducts)
+	{
+		ProductInfo inf;
+		SerialInfo pInf = product->info();
+		inf.type = pInf.type;
+		inf.info = pInf.info;
+		inf.count = product.count()-1;
+		inf.addr = QString("0x%1").arg(QString::number(reinterpret_cast<ulong>(&product), 16).toUpper());
+		rv << inf;
+	}
 	return rv;
 }

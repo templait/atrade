@@ -15,14 +15,12 @@ public:
 	FileDataSource(const QString &fileName, QObject* parent=nullptr);
 	virtual ~FileDataSource() override;
 private:
-	struct FDSSettings
+	struct FDSInfo
 	{
-		QString fileName;
 		QString className;
 		QString code;
 		ETimeInterval interval;
-		bool operator==(const FDSSettings& other)const;
-	} mSettings;
+	} mInfo;
 
 	QList<Candle> mCandles;
 	QFile *mFile;
@@ -40,5 +38,5 @@ public:
 	virtual QString errorString() const override;
 	virtual ETimeInterval interval() const override;
 	virtual bool isSame(const SerialT &other) const override;
-	virtual SerialT::Info info() const override;
+	virtual SerialInfo info() const override;
 };

@@ -19,7 +19,7 @@ LogDoc::LogDoc(QWidget *parent) : QDockWidget(parent)
 	connect(mLogModel, &LogModel::rowsInserted, [this](QModelIndex i, int, int l){
 		ui->lvLog->scrollTo(mLogModel->index(l,0, i));
 	});
-	connect(ui->pbClear, SIGNAL(clicked(bool)), mLogModel, SLOT(clear()));
+	connect(ui->pbClear, &QPushButton::clicked, mLogModel, &LogModel::clear);
 
 	Log::setLogFunction([this](const QString& str, Log::ELevel l){mLogModel->appendString(str, l);});
 	Log::setColor(Qt::black, Log::Info);

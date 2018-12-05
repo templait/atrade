@@ -49,7 +49,6 @@ QVariant LogModel::data(const QModelIndex &index, int role) const
 			case 1:
 				rv = mItems[index.row()].level;
 				break;
-			break;
 			}
 		break;
 		case Qt::ForegroundRole:

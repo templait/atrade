@@ -23,7 +23,7 @@ private:
 	// BLineIndicator interface
 public:
 	virtual bool isSame(const SerialT &other) const override;
-		virtual Info info() const override;
+		virtual SerialInfo info() const override;
 protected:
 	virtual Point candle2point(int index) const override;
 };

@@ -50,7 +50,7 @@ void FileDataSource::readData()
 							obj.value("C").toDouble(),
 							obj.value("V").toDouble(),
 							time,
-							mSettings.interval
+							mInfo.interval
 						);
 			}
 
@@ -65,44 +65,44 @@ bool FileDataSource::readSettings(const QJsonObject &obj)
 {
 	bool rv = false;
 	QString strInterval = obj.value("Interval").toString();
-	QString className = obj.value("ClassName").toString();
-	QString code = obj.value("Code").toString();
-	if(strInterval.isNull() || className.isNull() || code.isNull())
+	mInfo.className = obj.value("ClassName").toString();
+	mInfo.code = obj.value("Code").toString();
+	if(strInterval.isNull() || mInfo.className.isNull() || mInfo.code.isNull())
 	{
 		Log::warning(sourceName() + ": \"" + tr("settings string isn't valid") + '"');
 	}
 	else
 	{
 		if(strInterval == "TICK")
-			mSettings.interval = IntervalTICK;
+			mInfo.interval = IntervalTICK;
 		else if(strInterval == "M1")
-			mSettings.interval = IntervalM1;
+			mInfo.interval = IntervalM1;
 		else if(strInterval == "M5")
-			mSettings.interval = IntervalM5;
+			mInfo.interval = IntervalM5;
 		else if(strInterval == "M10")
-			mSettings.interval = IntervalM10;
+			mInfo.interval = IntervalM10;
 		else if(strInterval == "M15")
-			mSettings.interval = IntervalM15;
+			mInfo.interval = IntervalM15;
 		else if(strInterval == "M20")
-			mSettings.interval = IntervalM20;
+			mInfo.interval = IntervalM20;
 		else if(strInterval == "M30")
-			mSettings.interval = IntervalM30;
+			mInfo.interval = IntervalM30;
 		else if(strInterval == "H1")
-			mSettings.interval = IntervalH1;
+			mInfo.interval = IntervalH1;
 		else if(strInterval == "H2")
-			mSettings.interval = IntervalH2;
+			mInfo.interval = IntervalH2;
 		else if(strInterval == "H4")
-			mSettings.interval = IntervalH4;
+			mInfo.interval = IntervalH4;
 		else if(strInterval == "D1")
-			mSettings.interval = IntervalD1;
+			mInfo.interval = IntervalD1;
 		else if(strInterval == "W1")
-			mSettings.interval = IntervalW1;
+			mInfo.interval = IntervalW1;
 		else if(strInterval == "MN1")
-			mSettings.interval = IntervalMN1;
+			mInfo.interval = IntervalMN1;
 		else
-			mSettings.interval = IntervalUnknown;
+			mInfo.interval = IntervalUnknown;
 
-		if(mSettings.interval == IntervalUnknown)
+		if(mInfo.interval == IntervalUnknown)
 		{	Log::warning(sourceName() + ": \"" + tr("Unknown time interval") + '"');	}
 		else
 		{	rv = true;	}
@@ -144,7 +144,7 @@ QString FileDataSource::errorString() const
 
 ETimeInterval FileDataSource::interval() const
 {
-	return mSettings.interval;
+	return mInfo.interval;
 }
 
 bool FileDataSource::isSame(const SerialT &other) const
@@ -152,17 +152,12 @@ bool FileDataSource::isSame(const SerialT &other) const
 	bool rv = false;
 	if(const FileDataSource* fds = dynamic_cast<const FileDataSource*>(&other))
 	{
-		rv = mSettings==(fds->mSettings);
+		rv = mFile->fileName()==fds->mFile->fileName();
 	}
 	return rv;
 }
 
-BDataSource::SerialT::Info FileDataSource::info() const
+SerialInfo FileDataSource::info() const
 {
-	return {__CLASS_NAME__, QString("I:%1, Class:%2, Code:%3").arg(intervalToString(mSettings.interval)).arg(mSettings.className).arg(mSettings.code)};
-}
-
-bool FileDataSource::FDSSettings::operator==(const FileDataSource::FDSSettings &other) const
-{
-	return fileName==other.fileName && className==other.className && code==other.code && interval==other.interval;
+	return {__CLASS_NAME__, QString("I:%1, %2.%3").arg(intervalToString(mInfo.interval)).arg(mInfo.className).arg(mInfo.code)};
 }

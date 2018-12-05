@@ -3,6 +3,12 @@
 #include <types.h>
 #include <iterator>
 
+struct SerialInfo
+{
+	QString type;
+	QString info;
+};
+
 template<class T>
 class Serial
 {
@@ -34,17 +40,12 @@ class Serial
 	};
 
 public:
-	struct Info
-	{
-		QString type;
-		QString info;
-	};
 	typedef Serial<T> SerialT;
 	virtual int size() const = 0;
 	virtual const T * at(int index) const = 0; //!< временная метка каждой последующей свечки должна быть больше предыдущей.
 	virtual void populate() = 0;
 	virtual bool isSame(const Serial<T>& other) const = 0;
-	virtual Info info() const = 0;
+	virtual SerialInfo info() const = 0;
 
 	const T& operator[](int index) const;
 	const T& first() const;

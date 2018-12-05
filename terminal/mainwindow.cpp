@@ -69,6 +69,11 @@ void MainWindow::saveWindowState() const
 	}
 	settings.endArray();
 	settings.setValue("CurrentTab", ui->tabWidget->currentIndex());
+
+	settings.beginGroup("ProductDoc");
+	mProductDoc->saveState(settings);
+	settings.endGroup();
+
 	settings.endGroup();
 }
 
@@ -91,6 +96,11 @@ void MainWindow::loadWindowState()
 	}
 	settings.endArray();
 	ui->tabWidget->setCurrentIndex(settings.value("CurrentTab", 0).toInt());
+
+	settings.beginGroup("ProductDoc");
+	mProductDoc->restoreState(settings);
+	settings.endGroup();
+
 	settings.endGroup();
 }
 
