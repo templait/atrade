@@ -7,6 +7,7 @@
 #include <productlistmodel.h>
 
 #include "confmodel.h"
+#include "titleconfeditor.h"
 
 ConfEditor::ConfEditor(const ChartWindowConf &conf, QWidget *parent)
 	: QDialog(parent)
@@ -29,7 +30,7 @@ ConfEditor::ConfEditor(const ChartWindowConf &conf, QWidget *parent)
 	ui->tvConf->setModel(mConfModel);
 	ui->tvConf->expandAll();
 	connect(ui->tvConf, &QWidget::customContextMenuRequested, [this](const QPoint& point){execContextMenu(ui->tvConf->viewport()->mapToGlobal(point));});
-	connect(ui->tvConf, &QAbstractItemView::activated, this, &ConfEditor::onConfActivated);
+	connect(ui->tvConf->selectionModel(), &QItemSelectionModel::currentChanged, this, &ConfEditor::onCurrentConfChanged);
 }
 
 ConfEditor::~ConfEditor()
@@ -44,12 +45,21 @@ const ChartWindowConf &ConfEditor::conf() const
 
 void ConfEditor::clearConfEditor()
 {
-	qDeleteAll(ui->gbConfModules->findChildren<QWidget*>());
+	qDeleteAll(ui->gbConfModules->findChildren<ConfEditorModule*>());
 }
 
-void ConfEditor::showChartWindowConf(const ChartWindowConf &conf)
+void ConfEditor::showChartWindowConf(ChartWindowConf &conf)
 {
+	TitleConfEditor* tce = new TitleConfEditor(conf);
+	ui->vlConfModules->addWidget(tce);
+	connect(tce, &ConfEditorModule::confChanged, this, &ConfEditor::updateCurrentConf);
+}
 
+void ConfEditor::updateCurrentConf()
+{
+	QModelIndex currentIndex = ui->tvConf->selectionModel()->currentIndex();
+	Q_ASSERT(currentIndex.isValid());
+	emit mConfModel->dataChanged(currentIndex, currentIndex);
 }
 
 void ConfEditor::execContextMenu(const QPoint &point)
@@ -68,15 +78,15 @@ void ConfEditor::execContextMenu(const QPoint &point)
 	}
 }
 
-void ConfEditor::onConfActivated(const QModelIndex &index)
+void ConfEditor::onCurrentConfChanged(const QModelIndex &index)
 {
-	const BConf* conf = mConfModel->conf(index);
+	BConf* conf = mConfModel->conf(index);
 	if(conf)
 	{
 		clearConfEditor();
-		if(const ChartWindowConf* cwConf = dynamic_cast<const ChartWindowConf*>(conf))
+		if(ChartWindowConf* cwConf = dynamic_cast<ChartWindowConf*>(conf))
 		{
-			qDebug("ssss");
+			showChartWindowConf(*cwConf);
 		}
 	}
 }

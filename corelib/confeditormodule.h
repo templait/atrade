@@ -15,4 +15,6 @@ protected:
 	BConf &conf();
 private:
 	BConf& mConf;
+signals:
+	void confChanged();
 };
