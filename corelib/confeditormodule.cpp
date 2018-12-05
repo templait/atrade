@@ -1,4 +1,4 @@
-#include "configurationeditormodule.h"
+#include "confeditormodule.h"
 
 ConfEditorModule::ConfEditorModule(BConf &conf, QWidget *parent)
 	:QWidget(parent), mConf(conf)
