@@ -17,3 +17,4 @@ public:
 public:
 	virtual DataSourceConf *createConf() override;
 };
+
