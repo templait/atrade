@@ -1,7 +1,6 @@
 #include "datasourceconfigurationeditor.h"
-#include <configuration.h>
 #include <QColorDialog>
-#include <ui_datasourceconfigurationeditor.h>
+//#include <ui_datasourceconfigurationeditor.h>
 
 #define DECREASING_ALPHA 150
 /*

@@ -11,7 +11,6 @@
 #include <QDateTimeAxis>
 #include <QGraphicsLinearLayout>
 #include <QValueAxis>
-#include <configuration.h>
 #include <datasources/datasource.h>
 #include <indicators/indicator.h>
 

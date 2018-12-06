@@ -11,11 +11,11 @@ HEADERS += parentconf.hpp addchildparentconf.hpp
 HEADERS += bconf.h   timeintervalconf.h   productconf.h
 SOURCES += bconf.cpp timeintervalconf.cpp productconf.cpp
 
-HEADERS += log.h   tools.h   candle.h   point.h   configuration.h   confeditormodule.h   productcombobox.h
-SOURCES += log.cpp tools.cpp candle.cpp point.cpp configuration.cpp confeditormodule.cpp productcombobox.cpp
+HEADERS += log.h   tools.h   candle.h   point.h   confeditormodule.h   productcombobox.h
+SOURCES += log.cpp tools.cpp candle.cpp point.cpp confeditormodule.cpp productcombobox.cpp
 
-HEADERS += productlistmodel.h   confmodel.h
-SOURCES += productlistmodel.cpp confmodel.cpp
+HEADERS += productlistmodel.h
+SOURCES += productlistmodel.cpp
 
 include(datasources/datasources.pri)
 include(indicators/indicators.pri)

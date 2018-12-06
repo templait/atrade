@@ -3,7 +3,6 @@
 #include "chartwindowconf.h"
 
 #include <QDialog>
-#include <configuration.h>
 
 class ProductListModel;
 class BConf;

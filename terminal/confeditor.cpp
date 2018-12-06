@@ -6,7 +6,7 @@
 #include <QSettings>
 #include <productlistmodel.h>
 
-#include "confmodel.h"
+#include "confmodel.cpp"
 #include "timeintervalconfeditor.h"
 #include "titleconfeditor.h"
 
